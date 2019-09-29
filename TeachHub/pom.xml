@@ -1,0 +1,15 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>TeachHub</groupId>
+  <artifactId>TeachHub</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>TeachHub- an abstraction of the GitHub API</name>
+  <description>API designed to assist teachers in creating github repos for new students in classes programically with added use of adding/removing TAs as seen fit</description>
+  <dependencies>
+  	<dependency>
+  		<groupId>com.jcabi</groupId>
+  		<artifactId>jcabi-github</artifactId>
+  		<version>0.41</version>
+  	</dependency>
+  </dependencies>
+</project>
