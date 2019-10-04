@@ -1,7 +1,4 @@
 package data_structures;
-
-import java.util.ArrayList;
-
 public class Que<T> {
 	private int counter;
 	private Node<T> head;
@@ -21,6 +18,7 @@ public class Que<T> {
 		if ((this.head == null) && (this.tail == null)) {
 			this.head = newNode;
 			this.tail = newNode;
+			counter++;
 			return;
 		}
 		newNode.next = this.tail;
@@ -34,9 +32,10 @@ public class Que<T> {
 			return null;
 		}
 		Node<T> nodeToReturn = this.head;
-		if (counter == -1) {
+		if (counter == 1) {
 			this.head = null;
 			this.tail = null;
+			counter--;
 			return nodeToReturn.data;
 		}
 		this.head = this.head.prev;

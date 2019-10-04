@@ -1,2 +1,2 @@
-user,Repo_name,Create_Repo,Prof_Add_Collab,Prof_Remove_Collab,TA_Add_Collab,TA_Remove_Collab,Student_Add_Collab,Student_Remove_Collab
-shalom,gottesman,yes,avrahamleff,,GottesmanShalom,,this,
+user,Repo_name,Create_Repo,Prof_Add_Collab,TA_Add_Collab,Student_Add_Collab
+shalom,gottesman,yes,avrahamleff,GottesmanShalom,this

@@ -5,14 +5,18 @@ import java.util.ArrayList;
 import command.ExecuteCommand;
 
 public class CSVParser {
+	private CSVHeaderParse format;;
 	
-	CSVParser(){}
+	public CSVParser(){}
 	
-	public CSVHeaderParse parseCSVHeader(String header) {
-		return new CSVHeaderParse(header);
+	public void parseCSVHeader(String header) {
+		this.format =  new CSVHeaderParse(header);
 	}
 	
-	public ExecuteCommand parseLine(String line, CSVHeaderParse format) {
+	public ExecuteCommand parseLine(String line) {
+		if (this.format == null) {
+			throw new IllegalStateException();
+		}
 		String[] info = line.split(",");
 		if (info.length != format.getNumberOfColumns()) {
 			throw new IllegalArgumentException ("the number of arguments in this line does not match the number of arguments in the header");
