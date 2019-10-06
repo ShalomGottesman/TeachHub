@@ -1,6 +1,9 @@
 package authentication;
 
-public class Credential {
+import com.jcabi.github.Github;
+import com.jcabi.github.RtGithub;
+
+public class Credential implements Authentication {
 	private String userName;
 	private String password;
 	
@@ -8,12 +11,10 @@ public class Credential {
 		this.userName = username;
 		this.password = password;
 	}
-	
-	public String getUsername() {
-		return this.userName;
+
+	public Github authenticate() {
+		Github github = new RtGithub(userName, password);
+		return github;
 	}
 	
-	public String getPassword() {
-		return this.password;
-	}
 }

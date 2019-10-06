@@ -22,6 +22,7 @@ public class Main {
 	private static String pathToFile = currentDir + "\\src\\main\\resources\\Book1.csv";
 	
 	
+	
 	public static void main(String[] args) throws FileNotFoundException {
 		File file = new File(pathToFile);
 		Scanner sc = new Scanner(file);

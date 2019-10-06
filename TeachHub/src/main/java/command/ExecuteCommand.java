@@ -1,5 +1,6 @@
 package command;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class ExecuteCommand {
@@ -9,7 +10,10 @@ public class ExecuteCommand {
 	private String repoName;
 	private ArrayList<String> addColabs = new ArrayList<String>();
 	private ArrayList<String> removeColabs = new ArrayList<String>();
-
+	private boolean cloneRepo;
+	private File cloneLocation;
+	
+	
 	public ExecuteCommand(){}
 
 	public boolean isCreateRepo() {
@@ -58,6 +62,22 @@ public class ExecuteCommand {
 
 	public void setRemoveColabs(ArrayList<String> removeColabs) {
 		this.removeColabs = removeColabs;
+	}
+	
+	public boolean isCloneRepo() {
+		return cloneRepo;
+	}
+
+	public void setCloneRepo(boolean cloneRepo) {
+		this.cloneRepo = cloneRepo;
+	}
+
+	public File getCloneLocation() {
+		return cloneLocation;
+	}
+
+	public void setCloneLocation(File cloneLocation) {
+		this.cloneLocation = cloneLocation;
 	}
 	
 }
