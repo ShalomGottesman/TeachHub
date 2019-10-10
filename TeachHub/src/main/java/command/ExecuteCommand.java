@@ -9,6 +9,24 @@ public class ExecuteCommand {
 	private String repoName;
 	private ArrayList<String> addColabs = new ArrayList<String>();
 	private ArrayList<String> removeColabs = new ArrayList<String>();
+	private boolean makeRepoPrivate;
+	private boolean deleteRepo;
+	
+	public boolean isDeleteRepo() {
+		return deleteRepo;
+	}
+
+	public void setDeleteRepo(boolean deleteRepo) {
+		this.deleteRepo = deleteRepo;
+	}
+
+	public boolean isMakeRepoPrivate() {
+		return makeRepoPrivate;
+	}
+
+	public void setMakeRepoPrivate(boolean makeRepoPrivate) {
+		this.makeRepoPrivate = makeRepoPrivate;
+	}
 
 	public ExecuteCommand(){}
 

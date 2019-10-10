@@ -25,19 +25,22 @@ public class CSVParser {
 		//user
 		int userColumn = format.getUserColumn();
 		cmd.setUser(info[userColumn]);
+		
 		//repo name
 		int repoColumn = format.getRepoNameColumn();
 		cmd.setRepoName(info[repoColumn]);
+		
 		//create repo
-		int createBooleanColumn = format.getCreateRepoColumn();
-		String boo = info[createBooleanColumn];
+		int createRepoColumn = format.getCreateRepoColumn();
+		String boo = info[createRepoColumn];
 		if (boo.toLowerCase().equals("yes")) {
 			cmd.setCreateRepo(true);
 		} else if (boo.toLowerCase().equals("no")) {
 			cmd.setCreateRepo(false);
 		} else {
-			throw new IllegalArgumentException ("the argument in column [" + createBooleanColumn + "] does not conform to a boolean data type");
+			throw new IllegalArgumentException ("the argument in column [" + createRepoColumn + "] does not conform to a boolean data type");
 		}
+		
 		//add collaborators 
 		ArrayList<Integer> columnsOfColabsToAdd = format.getAllAddsColabs();
 		for (int columnNum : columnsOfColabsToAdd) {
@@ -45,6 +48,7 @@ public class CSVParser {
 			temp.add(info[columnNum]);
 			cmd.setAddColabs(temp);
 		}
+		
 		//remove collaborators
 		ArrayList<Integer> columnsOfColabsToRemove = format.getAllRemovesColabs();
 		for (int columnNum : columnsOfColabsToRemove) {
