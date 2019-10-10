@@ -1,8 +1,10 @@
 package runner;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 
 import com.jcabi.github.Github;
@@ -14,6 +16,8 @@ import com.jcabi.github.RtGithub;
 import command.ExecuteCommand;
 import data_structures.Que;
 import parser.CSVParser;
+import parser.IllegalDataException;
+import parser.IllegalHeaderException;
 
 import com.jcabi.github.Coordinates;
 
@@ -23,7 +27,8 @@ public class Main {
 	
 	
 	
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws IOException {
+		/*
 		File file = new File(pathToFile);
 		Scanner sc = new Scanner(file);
 		String topLine = sc.nextLine();
@@ -40,10 +45,52 @@ public class Main {
 		}
 		
 		sc.close();
+		*/
 		
-		
-		
-	}
+		/*
+		Runtime rt = Runtime.getRuntime();
+		rt.exec("cmd/c cd C:\\Users\\Administrator\\Desktop");
+		rt.exec("mkdir javatest");
+		rt.exec("cd javatest");
+		rt.exec("git clone https://github.com/ShalomGottesman/CompOrg.git");
+		*/
+		ProcessBuilder processBuilder = new ProcessBuilder();
+		processBuilder.command("cmd.exe", "/C", "start" 
+				,"cd", "C:\\Users\\Administrator\\Desktop" 
+				//,"timeout", "2"
+				//,"mkdir", "javatest"
+				//,"timeout", "2"
+				//,"cd javatest"//
+				//,"git clone https://github.com/ShalomGottesman/CompOrg.git"
+				);
+		try {
+
+			Process process = processBuilder.start();
+
+			StringBuilder output = new StringBuilder();
+
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(process.getInputStream()));
+
+			String line;
+			while ((line = reader.readLine()) != null) {
+				output.append(line + "\n");
+			}
+
+			int exitVal = process.waitFor();
+			if (exitVal == 0) {
+				System.out.println("Success!");
+				System.out.println(output);
+				System.exit(0);
+			} else {
+				//abnormal...
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}	}
 	/*
 	public static void main(String[] args) throws IOException {
 		Github github = new RtGithub("ShalomGottesman", "");

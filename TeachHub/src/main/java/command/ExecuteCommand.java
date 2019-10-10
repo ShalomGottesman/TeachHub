@@ -10,9 +10,12 @@ public class ExecuteCommand {
 	private String repoName;
 	private ArrayList<String> addColabs = new ArrayList<String>();
 	private ArrayList<String> removeColabs = new ArrayList<String>();
-<<<<<<< HEAD
+	private boolean cloneRepo;
+	private File cloneLocation;
 	private boolean makeRepoPrivate;
 	private boolean deleteRepo;
+	
+	public ExecuteCommand(){}
 	
 	public boolean isDeleteRepo() {
 		return deleteRepo;
@@ -28,15 +31,7 @@ public class ExecuteCommand {
 
 	public void setMakeRepoPrivate(boolean makeRepoPrivate) {
 		this.makeRepoPrivate = makeRepoPrivate;
-	}
-
-=======
-	private boolean cloneRepo;
-	private File cloneLocation;
-	
-	
->>>>>>> cca476448471d40e10df9612af017c16931e9473
-	public ExecuteCommand(){}
+	}	
 
 	public boolean isCreateRepo() {
 		return createRepo;

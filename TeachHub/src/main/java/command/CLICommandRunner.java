@@ -1,5 +1,6 @@
 package command;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -79,6 +80,12 @@ public class CLICommandRunner {
 			} else {
 				System.out.println("deleteion verification returned false, not deleting this repo!");
 			}
+		}
+		
+		if (cmd.isCloneRepo()) {
+			File cloneLocation = cmd.getCloneLocation();
+			String cloneUrl = repo.json().getString("clone_url");
+			
 		}
 		
 		

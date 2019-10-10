@@ -27,50 +27,28 @@ public class CSVParser {
 		int userColumn = format.getUserColumn();
 		cmd.setUser(info[userColumn]);
 		
-<<<<<<< HEAD
-		//repo name
-=======
 		//repo name-data cannot be empirically invalid
->>>>>>> cca476448471d40e10df9612af017c16931e9473
 		int repoColumn = format.getRepoNameColumn();
 		cmd.setRepoName(info[repoColumn]);
 		
 		//create repo
-<<<<<<< HEAD
 		int createRepoColumn = format.getCreateRepoColumn();
-		String boo = info[createRepoColumn];
-		if (boo.toLowerCase().equals("yes")) {
-=======
-		int createBooleanColumn = format.getCreateRepoColumn();
-		String createRepo = info[createBooleanColumn];
+		String createRepo = info[createRepoColumn];
 		if (createRepo.toLowerCase().equals("yes")) {
->>>>>>> cca476448471d40e10df9612af017c16931e9473
 			cmd.setCreateRepo(true);
 		} else if (createRepo.toLowerCase().equals("no")) {
 			cmd.setCreateRepo(false);
 		} else {
-<<<<<<< HEAD
-			throw new IllegalArgumentException ("the argument in column [" + createRepoColumn + "] does not conform to a boolean data type");
-		}
-		
-		//add collaborators 
-=======
-			throw new IllegalDataException (createBooleanColumn, info[createBooleanColumn], "the data at this entry does not conform to a boolean type!");
+			throw new IllegalDataException (createRepoColumn, info[createRepoColumn], "the data at this entry does not conform to a boolean type!");
 		}
 		//add collaborators-data cannot be empirically invalid
->>>>>>> cca476448471d40e10df9612af017c16931e9473
 		ArrayList<Integer> columnsOfColabsToAdd = format.getAllAddsColabs();
 		for (int columnNum : columnsOfColabsToAdd) {
 			ArrayList<String> temp = cmd.getAddColabs();
 			temp.add(info[columnNum]);
 			cmd.setAddColabs(temp);
 		}
-<<<<<<< HEAD
-		
-		//remove collaborators
-=======
 		//remove collaborators-data cannot be empirically invalid
->>>>>>> cca476448471d40e10df9612af017c16931e9473
 		ArrayList<Integer> columnsOfColabsToRemove = format.getAllRemovesColabs();
 		for (int columnNum : columnsOfColabsToRemove) {
 			ArrayList<String> temp = cmd.getRemoveColabs();
