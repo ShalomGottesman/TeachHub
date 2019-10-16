@@ -1,6 +1,8 @@
 package archive;
 
+import java.awt.TrayIcon.MessageType;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -9,6 +11,8 @@ import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import notification.Alert;
 public class HistoryArchive {
 	private String ProgramFilesLocationString;
 	private File ProgramFilesLocationFile;
@@ -18,14 +22,14 @@ public class HistoryArchive {
 	
 	public HistoryArchive() {
 		String location = System.getProperty("user.home");
-		this.createFolderAndZipFile(location);
+		this.createFolder(location);
 	}
 	
 	public HistoryArchive(String baseLocation) {
-		this.createFolderAndZipFile(baseLocation);
+		this.createFolder(baseLocation);
 	}
 	
-	private void createFolderAndZipFile(String location) {
+	private void createFolder(String location) {
 		this.ProgramFilesLocationString = location + File.separator + "TeachHub";
 		this.ProgramFilesLocationFile = new File(ProgramFilesLocationString);
 		this.ProgramFilesLocationFile.mkdir();
@@ -40,11 +44,18 @@ public class HistoryArchive {
 		if (!logHist.exists()) {
 			logHist.mkdir();
 		}
-		//check if the log summery file has already been created
+		//check if the log summary file has already been created
 		File logSummeryFile = new File(ProgramFilesLocationString + File.separator + "Log_Summery.txt");
 		this.logSummeryFile = logSummeryFile;
 		if (!logSummeryFile.exists()) {
-			logSummeryFile.createNewFile();
+			try {
+				logSummeryFile.createNewFile();
+			} catch (IOException e) {
+				Alert alert = new Alert(MessageType.ERROR);
+				alert.setMessege("TeachHub", "couldn't create new file in TeachHub directory: IOException, skipping feature");
+				alert.execute();
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -52,14 +63,28 @@ public class HistoryArchive {
 		//add new log file to folder /LogHistory and note new entry in log_summery.txt
 		Date date = new Date(System.currentTimeMillis());
 		String text = "new log entry at " + date;
-	    Files.write(logSummeryFile.toPath(), text.getBytes(), StandardOpenOption.APPEND);
+	    try {
+			Files.write(logSummeryFile.toPath(), text.getBytes(), StandardOpenOption.APPEND);
+		} catch (IOException e) {
+			Alert alert = new Alert(MessageType.WARNING);
+			alert.setMessege("TeachHub", "couldn't write new log entry in log summary file: IOException, skipping feature");
+			alert.execute();
+			e.printStackTrace();
+		}
 	    
 	    String logName = newLog.getName();
 	    Path dest = Paths.get(logHistDir.toPath().toString() + File.separator + logName);
 	    if (dest.toFile().exists()) {
 	    	dest = Paths.get(dest.toString() + "(1)");
 	    }
-	    Files.copy(newLog.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
+	    try {
+			Files.copy(newLog.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			Alert alert = new Alert(MessageType.WARNING);
+			alert.setMessege("TeachHub", "couldn't copy new log file into log entry folder: IOException, skipping feature");
+			alert.execute();
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -81,8 +106,22 @@ public class HistoryArchive {
 		Path execCopyPath = Paths.get(ExecHistDir.toString() + File.separator + execFileName);
 		Path undoCopyPath = Paths.get(ExecHistDir.toString() + File.separator + undoFileName);
 		
-		Files.copy(execFile.toPath(), execCopyPath, StandardCopyOption.REPLACE_EXISTING);
-		Files.copy(undoFile.toPath(), undoCopyPath, StandardCopyOption.REPLACE_EXISTING);		
+		try {
+			Files.copy(execFile.toPath(), execCopyPath, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			Alert alert = new Alert(MessageType.WARNING);
+			alert.setMessege("TeachHub", "couldn't copy file the execution file to program files directory: IOException, skipping feature");
+			alert.execute();
+			e.printStackTrace();
+		}
+		try {
+			Files.copy(undoFile.toPath(), undoCopyPath, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			Alert alert = new Alert(MessageType.WARNING);
+			alert.setMessege("TeachHub", "couldn't copy file the undo file to program files directory: IOException, skipping feature");
+			alert.execute();
+			e.printStackTrace();
+		}
 	}
 	
 	public static void main(String[] args) {
@@ -94,7 +133,7 @@ public class HistoryArchive {
 	
 	
 	/*
-	 * .zip file
+	 * TeachHub
 	 * |	mostRecentUndoFile.csv
 	 * |    summerOfLogFiles
 	 * |
