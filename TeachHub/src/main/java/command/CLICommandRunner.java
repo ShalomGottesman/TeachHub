@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
+import org.eclipse.jgit.api.Git;
+
 import com.jcabi.github.Coordinates;
 import com.jcabi.github.Github;
 import com.jcabi.github.Repo;
@@ -67,10 +69,14 @@ public class CLICommandRunner {
 		Coordinates coords = new Coordinates.Simple(this.username, repoName);
 		Repo repo = repos.get(coords);
 		for (String collabToAdd : cmd.getAddColabs()) {
-			repo.collaborators().add(collabToAdd);
+			if (!repo.collaborators().isCollaborator(collabToAdd)) {
+				repo.collaborators().add(collabToAdd);
+			}
 		}
 		for (String collabToRemove : cmd.getRemoveColabs()) {
-			repo.collaborators().remove(collabToRemove);
+			if (repo.collaborators().isCollaborator(collabToRemove)) {
+				repo.collaborators().remove(collabToRemove);
+			}
 		}
 		
 		if (cmd.isDeleteRepo()) {
@@ -84,13 +90,18 @@ public class CLICommandRunner {
 		
 		if (cmd.isCloneRepo()) {
 			File cloneLocation = cmd.getCloneLocation();
-			String cloneUrl = repo.json().getString("clone_url");
+			String cloneUrl = repoURLAbstractor(cmd.getUser(), cmd.getRepoName());
+			Git.cloneRepository().setURI(cloneUrl).setDirectory(cloneLocation).call();
 			
 		}
 		
 		
 		
 		
+	}
+	
+	private String repoURLAbstractor(String ownerName, String repoName) {
+		return "https://github.com/" + ownerName + "/" + repoName + ".git";
 	}
 	
 	
