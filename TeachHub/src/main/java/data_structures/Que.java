@@ -53,7 +53,7 @@ public class Que<T> {
 	}
 	
 	
-	@SuppressWarnings("hiding")
+	@SuppressWarnings({"hiding", "unused"})
 	private class Node<T>{
 		private Node<T> next;	
 		private Node<T> prev;
