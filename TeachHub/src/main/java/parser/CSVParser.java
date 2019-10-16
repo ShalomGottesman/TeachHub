@@ -16,7 +16,7 @@ public class CSVParser {
 	
 	public ExecuteCommand parseLine(String line) throws IllegalDataException {
 		if (this.format == null) {
-			throw new IllegalStateException();
+			throw new IllegalStateException("no header was passed in to format the input!");
 		}
 		String[] info = line.split(",");
 		if (info.length != format.getNumberOfColumns()) {
@@ -116,23 +116,6 @@ public class CSVParser {
 			this.numberOfColumns = tokens.length;
 			for (int x = 0; x < tokens.length; x++) {//for each token
 				tokens[x] = tokens[x].trim();
-				if (tokens[x].toLowerCase().equals("Git_Clone_To_Computer?".toLowerCase())) {
-					if(this.cloneRepo != -1) {
-						String msg = "there can only be one column defined with the \"Git_Clone_To_Computer?\" header!";
-						throw new IllegalArgumentException(msg);
-					}
-					this.createRepoColumn = x;
-					continue;
-				}
-				if (tokens[x].toLowerCase().equals("repoCloneLocation".toLowerCase())) {
-					if(this.repoCloneLocation != -1) {
-						String msg = "there can only be one column defined with the \"repoCloneLocation?\" header!";
-						throw new IllegalArgumentException(msg);
-					}
-					this.repoCloneLocation = x;
-					continue;
-				}
-				
 				if (tokens[x].toLowerCase().equals("User".toLowerCase())){
 					if (this.userColumn != -1) {
 						String msg = "there can only be one column defined with the \"User\" header!";
@@ -179,6 +162,22 @@ public class CSVParser {
 				}
 				if (tokens[x].toLowerCase().equals("Student_Remove_Collab".toLowerCase())){
 					this.Student_Remove_Collab.add(x);
+					continue;
+				}
+				if (tokens[x].toLowerCase().equals("Git_Clone_To_Computer?".toLowerCase())) {
+					if(this.cloneRepo != -1) {
+						String msg = "there can only be one column defined with the \"Git_Clone_To_Computer?\" header!";
+						throw new IllegalArgumentException(msg);
+					}
+					this.createRepoColumn = x;
+					continue;
+				}
+				if (tokens[x].toLowerCase().equals("repoCloneLocation".toLowerCase())) {
+					if(this.repoCloneLocation != -1) {
+						String msg = "there can only be one column defined with the \"repoCloneLocation?\" header!";
+						throw new IllegalArgumentException(msg);
+					}
+					this.repoCloneLocation = x;
 					continue;
 				}
 				//if none of the if statments are triggered, then there is a header that is not recognized...
