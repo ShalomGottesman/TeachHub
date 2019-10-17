@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 
 import com.jcabi.github.Coordinates;
 import com.jcabi.github.Github;
@@ -24,6 +25,7 @@ public class CLICommandRunner {
 	private String defaultTestMessege = "this is a repository generated as a test of TeachHub";
 	private boolean useTestMessege;
 	private String username;
+	private Scanner sc;
 	
 	/**
 	 * 
@@ -31,11 +33,30 @@ public class CLICommandRunner {
 	 * @param testing true for the repository init message (found in the ReadMe.md file) should be the testing message. false for default
 	 * @param userName the username of the current user
 	 */
-	public CLICommandRunner(Github github, boolean testing, String userName) {
+	public CLICommandRunner(Github github, boolean testing, String userName, Scanner sc) {
 		this.github = github;
 		this.repos = github.repos();
 		this.useTestMessege = testing;
 		this.username = userName;
+		this.sc = sc;
+	}
+	
+	/**
+	 * updates the Repos object this class is holding onto
+	 */
+	private void updateRepos() {
+		this.repos = github.repos();
+	}
+	
+	/**
+	 * updates the given repo from the Repos object this class is holding onto, note that the Repos abject should be updated before use unless determined otherwise by calling the updateRepos() 
+	 * @param repo the repo to be updated
+	 * @return the updated repo
+	 */
+	private Repo updateRepo(Repo repo) {
+		Coordinates coords = repo.coordinates();
+		Repo updatedRepo = this.repos.get(coords);
+		return updatedRepo;
 	}
 	
 	/**
@@ -50,6 +71,11 @@ public class CLICommandRunner {
 		}
 	}
 	
+	/**
+	 * executes a single instance of an ExecuteCommand
+	 * @param cmd the command to be executed
+	 * @throws IOException when any action taken on a repository is done, this is possible (create, add collaborator, remove collaborator, deleting a repository)
+	 */
 	public void executeSingle(ExecuteCommand cmd) throws IOException {
 		this.repos = this.github.repos();
 		String initMsg = "";
@@ -62,84 +88,118 @@ public class CLICommandRunner {
 		String repoName = cmd.getRepoName();
 		
 		if (cmd.isCreateRepo()) {
-			boolean makePrivate = cmd.isMakeRepoPrivate();
-			RepoCreate createRepo = new RepoCreate(repoName, makePrivate)
-					.withDescription(initMsg)
-					.withAutoInit(true);
-			this.repos.create(createRepo);
+			try {
+				boolean makePrivate = cmd.isMakeRepoPrivate();
+				RepoCreate createRepo = new RepoCreate(repoName, makePrivate)
+						.withDescription(initMsg)
+						.withAutoInit(true);
+				this.repos.create(createRepo);
+			} catch (AssertionError e) {
+				Alert alert = new Alert(MessageType.WARNING);
+				alert.setMessege("TeachHub", "couldn't generate repository [" + cmd.getRepoName() + "] becuase it already exists, skipping feature");
+				alert.execute();
+			}
+			updateRepos();
 		}
 		
 		Coordinates coords = new Coordinates.Simple(this.username, repoName);
 		Repo repo = repos.get(coords);
-		for (String collabToAdd : cmd.getAddColabs()) {
+		for (String collabToAdd : cmd.getAddCollabs()) {
 			if (!repo.collaborators().isCollaborator(collabToAdd)) {
-				repo.collaborators().add(collabToAdd);
+				System.out.println("adding: " + collabToAdd);
+				try {
+					repo.collaborators().add(collabToAdd);
+				} catch (AssertionError e) {
+					continue;
+				}
 			}
 		}
-		for (String collabToRemove : cmd.getRemoveColabs()) {
+		updateRepos();
+		repo = updateRepo(repo);
+		for (String collabToRemove : cmd.getRemoveCollabs()) {
 			if (repo.collaborators().isCollaborator(collabToRemove)) {
-				repo.collaborators().remove(collabToRemove);
+				System.out.println("removing: " + collabToRemove);
+				try {
+					repo.collaborators().remove(collabToRemove);
+				} catch (AssertionError e) {
+					continue;
+				}
 			}
 		}
-		
+		updateRepos();
+		repo = updateRepo(repo);
 		if (cmd.isDeleteRepo()) {
-			boolean verify = verifyDelete(this.username, repoName);
+			System.out.println();
+			boolean verify = verifyDelete(this.username, repoName, this.sc);
 			if (verify) {
-				repos.remove(coords);
+				try {
+					repos.remove(coords);
+				} catch (AssertionError e) {
+					Alert alert = new Alert(MessageType.WARNING);
+					alert.setMessege("TeachHub", "couldn't delete repository [" + cmd.getRepoName() + "]");
+					alert.execute();
+				}
 			} else {
 				System.out.println("deletion verification returned false, not deleting this repo!");
 			}
 		}
 		
 		if (cmd.isCloneRepo()) {
-			File cloneLocation = cmd.getCloneLocation();
+			System.out.println("cloning repo");
+			File cloneLocation = new File(cmd.getCloneLocation().toString() + File.separator + cmd.getRepoName());
 			String cloneUrl = repoURLAbstractor(cmd.getUser(), cmd.getRepoName());
 			try {
 				Git.cloneRepository().setURI(cloneUrl).setDirectory(cloneLocation).call();
-			} catch (GitAPIException e) {
+			} catch (GitAPIException | JGitInternalException e) {
 				Alert alert = new Alert(MessageType.ERROR);
 				alert.setMessege("TeachHub", "couldn't clone repository [" + cmd.getRepoName() + "] to desired location, skipping feature");
 				alert.execute();
 				e.printStackTrace();
-			}	
+			}
 		}
 	}
 	
+	/**
+	 * abstracts the cloning URL of repository based on the owner name and the repo name
+	 * @param ownerName user name of the owner fo the repository
+	 * @param repoName name of the repository
+	 * @return The cloning url, in String form
+	 */
 	private String repoURLAbstractor(String ownerName, String repoName) {
 		return "https://github.com/" + ownerName + "/" + repoName + ".git";
 	}
 	
 	
-	private boolean verifyDelete(String userName, String repoName) {
+	/**
+	 * process to verify from user if a repo should be deleted
+	 * @param userName owner of the repo
+	 * @param repoName name of the repo
+	 * @return boolean if user confirmed to have the repo deleted
+	 */
+	private boolean verifyDelete(String userName, String repoName, Scanner sc) {
 		String completeRepoName = userName + "/" + repoName;
-		Scanner sc = new Scanner(System.in);
 		System.out.println("trying to delete repository [" + completeRepoName + "]. This CANNOT be undone! Are you sure you want to do this? [Yes/No]");
-		String str = sc.next();
+		String str = sc.nextLine();
 		if (str.toLowerCase().equals("yes")) {
 			System.out.println("then please type the name of the repository (no need to say JohnDoe/ThisRepo, just ThisRepo is fine)");
 			System.out.println("or type \"cancel\" to cancel his request");
-			String str2 = sc.next();
+			String str2 = sc.nextLine();
 			if (str2.equals(repoName)) {
-				System.out.println("ok then, here we go, deleteing " + completeRepoName);
-				sc.close();
+				System.out.println("ok then, here we go, deleting " + completeRepoName);
 				return true;
-			} else if (str.toLowerCase().equals("cancel")){
+			} else if (str2.toLowerCase().equals("cancel")){
 				System.out.println("ok, canceling this request");
-				sc.close();
 				return false;
 			} else {
 				System.out.println("that was not a valid response, please either type in the correct repository name (case specific!) or cancel. Lets try this again");
-				sc.close();
-				return verifyDelete(userName, repoName);
+				return verifyDelete(userName, repoName, sc);
 			}
 		} else if (str.toLowerCase().equals("no")){
 			System.out.println("ok, I will not delete this Repo then");
-			sc.close();
 			return false;
 		} else {
 			System.out.println("That was not a recognized response, valid responses are: \"Yes\" and \"No\", lets try this again");
-			sc.close();
-			return verifyDelete(userName, repoName);
+			return verifyDelete(userName, repoName, sc);
 		}
 	}
 }

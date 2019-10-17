@@ -15,8 +15,8 @@ public class UndoCommand {
 		this.createRepo = !exeCmd.isCreateRepo();
 		this.repoDescription = exeCmd.getRepoDescription();
 		this.repoName = exeCmd.getRepoName();
-		this.addColabs = exeCmd.getRemoveColabs();
-		this.removeColabs = exeCmd.getAddColabs();
+		this.addColabs = exeCmd.getRemoveCollabs();
+		this.removeColabs = exeCmd.getAddCollabs();
 	}
 
 	public String getUser() {
