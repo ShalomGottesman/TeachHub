@@ -2,6 +2,7 @@ package parser;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import command.ExecuteCommand;
 
@@ -33,48 +34,68 @@ public class CSVParser {
 		
 		//create repo
 		int createRepoColumn = format.getCreateRepoColumn();
-		String createRepo = info[createRepoColumn];
-		if (createRepo.toLowerCase().equals("yes")) {
-			cmd.setCreateRepo(true);
-		} else if (createRepo.toLowerCase().equals("no")) {
-			cmd.setCreateRepo(false);
-		} else {
-			throw new IllegalDataException (createRepoColumn, info[createRepoColumn], "the data at this entry does not conform to a boolean type!");
+		if (createRepoColumn != -1) {
+			String createRepo = info[createRepoColumn];
+			if (createRepo.toLowerCase().equals("yes")) {
+				cmd.setCreateRepo(true);
+			} else if (createRepo.toLowerCase().equals("no")) {
+				cmd.setCreateRepo(false);
+			} else {
+				throw new IllegalDataException (createRepoColumn, info[createRepoColumn], "the data at this entry does not conform to a boolean type!");
+			}
 		}
 		//add collaborators-data cannot be empirically invalid
 		ArrayList<Integer> columnsOfColabsToAdd = format.getAllAddsColabs();
 		for (int columnNum : columnsOfColabsToAdd) {
-			ArrayList<String> temp = cmd.getAddColabs();
+			ArrayList<String> temp = cmd.getAddCollabs();
 			temp.add(info[columnNum]);
 			cmd.setAddColabs(temp);
 		}
 		//remove collaborators-data cannot be empirically invalid
 		ArrayList<Integer> columnsOfColabsToRemove = format.getAllRemovesColabs();
 		for (int columnNum : columnsOfColabsToRemove) {
-			ArrayList<String> temp = cmd.getRemoveColabs();
+			ArrayList<String> temp = cmd.getRemoveCollabs();
 			temp.add(info[columnNum]);
 			cmd.setRemoveColabs(temp);
 		}
 		
 		//clone repo? -data can be empirically invalid
 		int cloneRepoBooleanColumn = format.getCloneRepo();
-		String cloneRepo = info[cloneRepoBooleanColumn];
-		if (cloneRepo.toLowerCase().equals("yes")) {
-			cmd.setCloneRepo(true);
-		} else if (cloneRepo.toLowerCase().equals("no")) {
-			cmd.setCloneRepo(false);
-		} else {
-			throw new IllegalDataException (cloneRepoBooleanColumn, info[cloneRepoBooleanColumn], "the data at this entry does not conform to a boolean type!");
+		if (cloneRepoBooleanColumn != -1) {
+			String cloneRepo = info[cloneRepoBooleanColumn];
+			if (cloneRepo.toLowerCase().equals("yes")) {
+				cmd.setCloneRepo(true);
+			} else if (cloneRepo.toLowerCase().equals("no")) {
+				cmd.setCloneRepo(false);
+			} else {
+				throw new IllegalDataException (cloneRepoBooleanColumn, info[cloneRepoBooleanColumn], "the data at this entry does not conform to a boolean type!");
+			}
 		}
 		
 		//clone location -data can be empirically invalid
 		int cloneLocationColumn = format.getRepoCloneLocation();
-		String location = info[cloneLocationColumn];
-		File file = new File(location);
-		if (!file.isDirectory()) {
-			throw new IllegalDataException(cloneLocationColumn, info[cloneLocationColumn], "this does not represent a valid path!");
+		if (cloneLocationColumn != -1) {
+			String location = info[cloneLocationColumn];
+			File file = new File(location);
+			file.mkdirs();
+			if (!file.isDirectory()) {
+				throw new IllegalDataException(cloneLocationColumn, info[cloneLocationColumn], "this does not represent a valid path!");
+			}
+			cmd.setCloneLocation(file);
 		}
-		cmd.setCloneLocation(file);
+		
+		//delete repo -data can be empircally invalid
+		int deleteRepoColumn = format.getDeleteRepoColumn();
+		if (deleteRepoColumn != -1) {
+			String deleteRepoData = info[deleteRepoColumn];
+			if (deleteRepoData.toLowerCase().equals("yes")) {
+				cmd.setDeleteRepo(true);
+			} else if (deleteRepoData.toLowerCase().equals("no")) {
+				cmd.setDeleteRepo(false);
+			} else {
+				throw new IllegalDataException (deleteRepoColumn, info[deleteRepoColumn], "the data at this entry does not conform to a boolean type!");
+			}
+		}
 		
 		return cmd;
 	}
@@ -95,6 +116,7 @@ public class CSVParser {
 		private int numberOfColumns = -1;
 		private int cloneRepo = -1;
 		private int repoCloneLocation = -1;
+		private int deleteRepoColumn = -1;
 		
 		/*
 		 * 
@@ -110,9 +132,11 @@ public class CSVParser {
 		 * Student_Remove_Collab
 		 * Git_Clone_To_Computer?
 		 * Git_Clone_Location
+		 * Delete_Repo
 		 */
 		CSVHeaderParse(String header) throws IllegalHeaderException{
 			String[] tokens = header.split(",");
+			System.out.println(Arrays.toString(tokens));
 			this.numberOfColumns = tokens.length;
 			for (int x = 0; x < tokens.length; x++) {//for each token
 				tokens[x] = tokens[x].trim();
@@ -169,10 +193,10 @@ public class CSVParser {
 						String msg = "there can only be one column defined with the \"Git_Clone_To_Computer?\" header!";
 						throw new IllegalArgumentException(msg);
 					}
-					this.createRepoColumn = x;
+					this.cloneRepo = x;
 					continue;
 				}
-				if (tokens[x].toLowerCase().equals("repoCloneLocation".toLowerCase())) {
+				if (tokens[x].toLowerCase().equals("Git_Clone_Location".toLowerCase())) {
 					if(this.repoCloneLocation != -1) {
 						String msg = "there can only be one column defined with the \"repoCloneLocation?\" header!";
 						throw new IllegalArgumentException(msg);
@@ -180,7 +204,15 @@ public class CSVParser {
 					this.repoCloneLocation = x;
 					continue;
 				}
-				//if none of the if statments are triggered, then there is a header that is not recognized...
+				if (tokens[x].toLowerCase().equals("Delete_Repo".toLowerCase())){
+					if (this.deleteRepoColumn != -1) {
+						String msg = "there can only be one column defined with the \"Delete_Repo\" header!";
+						throw new IllegalHeaderException(x, tokens[x], msg);
+					}
+					this.deleteRepoColumn = x;
+					continue;
+				}
+				//if none of the if statements are triggered, then there is a header that is not recognized...
 				throw new IllegalHeaderException(x, tokens[x], "there is an unrecognized token in the header!");
 			}
 			allAddColabs.addAll(this.prof_Add_Columns);
@@ -191,20 +223,20 @@ public class CSVParser {
 			allRemoveColabs.addAll(this.TA_Remove_Collab);
 			allRemoveColabs.addAll(this.Student_Remove_Collab);
 			
+			if (this.userColumn == -1 || this.RepoNameColumn == -1) {
+				throw new IllegalHeaderException(-1, "N/A", "both the \"User\" and \"Repo_Name\" headers must be present in the top line of the CSV file!");
+			}
+			
 		}
-		
 		public ArrayList<Integer> getAllAddsColabs(){
 			return this.allAddColabs;
 		}
-		
 		public ArrayList<Integer> getAllRemovesColabs(){
 			return this.allRemoveColabs;
 		}
-		
 		public int getNumberOfColumns() {
 			return this.numberOfColumns;
 		}
-
 		public int getUserColumn() {
 			return userColumn;
 		}
@@ -213,6 +245,9 @@ public class CSVParser {
 		}
 		public int getCreateRepoColumn() {
 			return createRepoColumn;
+		}
+		public int getDeleteRepoColumn() {
+			return deleteRepoColumn;
 		}
 		@SuppressWarnings("unused")
 		public ArrayList<Integer> getProfAddColumns() {
@@ -233,11 +268,9 @@ public class CSVParser {
 		public int getCloneRepo() {
 			return cloneRepo;
 		}
-
 		public int getRepoCloneLocation() {
 			return repoCloneLocation;
 		}
-
 		@SuppressWarnings("unused")
 		public ArrayList<Integer> getStudent_Add_Collab() {
 			return Student_Add_Collab;
