@@ -9,6 +9,7 @@ import com.jcabi.github.Github;
 
 import authentication.Authentication;
 import authentication.Credential;
+import authentication.InvalidCredentialException;
 import command.CLICommandRunner;
 import command.ExecuteCommand;
 import data_structures.Que;
@@ -18,17 +19,17 @@ import parser.IllegalHeaderException;
 
 
 public class Main {
-	private static String currentDir = System.getProperty("user.dir");
-	@SuppressWarnings("unused")
-	private static String pathToFile = currentDir + "\\src\\main\\resources\\testing_CSVs\\Book1.csv";
-	private static String pathToFile2 = currentDir + "\\src\\main\\resources\\testing_CSVs\\Book1-inverse2.csv";
 	//the formating of the file does matter, not all CSV files are the same. i had issues when it was formatted as a UTF-8 by excel, but regular .CSV works now
 	
 	
 	
 	public static void main(String[] args) throws IOException, IllegalDataException {
+		if (args.length != 1) {
+			throw new IllegalArgumentException("have to pass in a single file to run off of");
+		}
+		File file = new File(args[0]);
 		//File file = new File(pathToFile);
-		File file = new File(pathToFile2);
+		//File file = new File(pathToFile2);
 		Scanner sc = new Scanner(file);
 		String topLine = sc.nextLine();
 		CSVParser csvp = new CSVParser();
@@ -52,17 +53,34 @@ public class Main {
 			commandQue2.enque(cmd);
 			System.out.println(cmd.getCommandInfo());
 		}
+		Scanner sc2 = new Scanner(System.in);
 		
-		Authentication auth = new Credential("", "");
+		Authentication auth = readCredential(sc2);
+		
 		Github github = auth.authenticate();
 		
+		String username = github.users().self().login();
 		
-		Scanner sc2 = new Scanner(System.in);
-		CLICommandRunner clir = new CLICommandRunner(github, false, "", sc2);
+		CLICommandRunner clir = new CLICommandRunner(github, false, username, sc2);
 		clir.executeStack(commandQue2);
 		sc2.close();
 			
 		
 	}
-
+	
+	private static Authentication readCredential(Scanner sc) {
+		System.out.print("user name: ");
+		String username = sc.nextLine();
+		java.io.Console console = System.console();
+		char[] pwd = console.readPassword("password: ");
+		String password = new String(pwd);
+		Credential cred = null;
+		try {
+			cred = new Credential(username, password);
+			return cred;
+		} catch (InvalidCredentialException e) {
+			System.out.println("credentials were invalid, try again");
+			return readCredential(sc);
+		}
+	}
 }
