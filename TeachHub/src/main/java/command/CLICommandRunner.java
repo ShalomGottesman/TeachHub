@@ -77,6 +77,7 @@ public class CLICommandRunner {
 	 * @throws IOException when any action taken on a repository is done, this is possible (create, add collaborator, remove collaborator, deleting a repository)
 	 */
 	public void executeSingle(ExecuteCommand cmd) throws IOException {
+		System.out.println();
 		this.repos = this.github.repos();
 		String initMsg = "";
 		if (this.useTestMessege) {
@@ -86,9 +87,11 @@ public class CLICommandRunner {
 		}
 		
 		String repoName = cmd.getRepoName();
+		System.out.println("working on repository: " + repoName);
 		
 		if (cmd.isCreateRepo()) {
 			try {
+				System.out.println("creating repo");
 				boolean makePrivate = cmd.isMakeRepoPrivate();
 				RepoCreate createRepo = new RepoCreate(repoName, makePrivate)
 						.withDescription(initMsg)
@@ -145,7 +148,7 @@ public class CLICommandRunner {
 		}
 		
 		if (cmd.isCloneRepo()) {
-			System.out.println("cloning repo");
+			System.out.println("cloning repo to: " + cmd.getCloneLocation().toString());
 			File cloneLocation = new File(cmd.getCloneLocation().toString() + File.separator + cmd.getRepoName());
 			String cloneUrl = repoURLAbstractor(cmd.getUser(), cmd.getRepoName());
 			try {
