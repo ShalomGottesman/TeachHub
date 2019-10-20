@@ -109,7 +109,7 @@ public class CLICommandRunner {
 		
 		Coordinates coords = new Coordinates.Simple(this.username, repoName);
 		Repo repo = repos.get(coords);
-		for (String collabToAdd : cmd.getAddCollabs()) {
+		for (String collabToAdd : cmd.getAllAddCollabs()) {
 			if (!repo.collaborators().isCollaborator(collabToAdd)) {
 				System.out.println("adding: " + collabToAdd);
 				try {
@@ -121,7 +121,7 @@ public class CLICommandRunner {
 		}
 		updateRepos();
 		repo = updateRepo(repo);
-		for (String collabToRemove : cmd.getRemoveCollabs()) {
+		for (String collabToRemove : cmd.getAllRemoveCollabs()) {
 			if (repo.collaborators().isCollaborator(collabToRemove)) {
 				System.out.println("removing: " + collabToRemove);
 				try {
