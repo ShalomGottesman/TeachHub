@@ -67,11 +67,11 @@ public class Main {
 		Credential cloneCreds = null;
 		
 		if (isAnyCommandClone) {
-			boolean needCredsForClone = userChooseYesNo("\nDetected that you are trying to clone at least one repository to the provided \n" +
+			boolean needCredsForClone = userChooseYesNo(	  "\nDetected that you are trying to clone at least one repository to a provided \n" +
 															  "location. Note that this command will call the already cached credentials of \n" +
 															  "your LOCAL GIT CONTROLLER, not the credentials you have already provided for the \n" +
-															  "execution of the commands. If your controller does not have cached credentials, or \n" +
-															  "other credentials are needed to clone with your local git controller please \n" +
+															  "execution of the commands. If your controller does not have cached credentials, \n" +
+															  "or other credentials are needed to clone with your local git controller please \n" +
 															  "provide them. Do credentils have to be provided?", sc2);
 			if (needCredsForClone) {
 				boolean useAlreadyProvided = userChooseYesNo("do these credentials happen to be the same as the ones already provided to \n" + 

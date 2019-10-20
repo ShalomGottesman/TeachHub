@@ -44,19 +44,50 @@ public class CSVParser {
 				throw new IllegalDataException (createRepoColumn, info[createRepoColumn], "the data at this entry does not conform to a boolean type!");
 			}
 		}
-		//add collaborators-data cannot be empirically invalid
-		ArrayList<Integer> columnsOfColabsToAdd = format.getAllAddsColabs();
-		for (int columnNum : columnsOfColabsToAdd) {
-			ArrayList<String> temp = cmd.getAddCollabs();
+		//add collaborators_Profs-data cannot be empirically invalid
+		ArrayList<Integer> columnsOfColabs_ProfsToAdd = format.getProf_Add_Columns();
+		for (int columnNum : columnsOfColabs_ProfsToAdd) {
+			ArrayList<String> temp = cmd.getAddCollabs_Profs();
 			temp.add(info[columnNum]);
-			cmd.setAddColabs(temp);
+			cmd.setAddCollabs_Profs(temp);
 		}
-		//remove collaborators-data cannot be empirically invalid
-		ArrayList<Integer> columnsOfColabsToRemove = format.getAllRemovesColabs();
-		for (int columnNum : columnsOfColabsToRemove) {
-			ArrayList<String> temp = cmd.getRemoveCollabs();
+		
+		//add collaborators_TAs-data cannot be empirically invalid
+		ArrayList<Integer> columnsOfColabs_TAsToAdd = format.getTA_Add_Columns();
+		for (int columnNum : columnsOfColabs_TAsToAdd) {
+			ArrayList<String> temp = cmd.getAddCollabs_TAs();
 			temp.add(info[columnNum]);
-			cmd.setRemoveColabs(temp);
+			cmd.setAddCollabs_TAs(temp);
+		}
+		
+		//add collaborators_Studs-data cannot be empirically invalid
+		ArrayList<Integer> columnsOfColabs_StudsToAdd = format.getStudent_Add_Columns();
+		for (int columnNum : columnsOfColabs_StudsToAdd) {
+			ArrayList<String> temp = cmd.getAddCollabs_Studs();
+			temp.add(info[columnNum]);
+			cmd.setAddCollabs_Studs(temp);
+		}
+		
+		//remove collaborators_Profs-data cannot be empirically invalid
+		ArrayList<Integer> columnsOfColabs_ProfsToRemove = format.getProf_Remove_Columns();
+		for (int columnNum : columnsOfColabs_ProfsToRemove) {
+			ArrayList<String> temp = cmd.getRemoveCollabs_Profs();
+			temp.add(info[columnNum]);
+			cmd.setRemoveCollabs_Profs(temp);
+		}
+		//remove collaborators_TAs-data cannot be empirically invalid
+		ArrayList<Integer> columnsOfColabs_TAsToRemove = format.getTA_Remove_Columns();
+		for (int columnNum : columnsOfColabs_TAsToRemove) {
+			ArrayList<String> temp = cmd.getRemoveCollabs_TAs();
+			temp.add(info[columnNum]);
+			cmd.setRemoveCollabs_TAs(temp);
+		}
+		//remove collaborators_Studs-data cannot be empirically invalid
+		ArrayList<Integer> columnsOfColabs_StudsToRemove = format.getStudent_Remove_Columns();
+		for (int columnNum : columnsOfColabs_StudsToRemove) {
+			ArrayList<String> temp = cmd.getRemoveCollabs_Studs();
+			temp.add(info[columnNum]);
+			cmd.setRemoveCollabs_Studs(temp);
 		}
 		
 		//clone repo? -data can be empirically invalid
@@ -84,7 +115,7 @@ public class CSVParser {
 			cmd.setCloneLocation(file);
 		}
 		
-		//delete repo -data can be empircally invalid
+		//delete repo -data can be empirically invalid
 		int deleteRepoColumn = format.getDeleteRepoColumn();
 		if (deleteRepoColumn != -1) {
 			String deleteRepoData = info[deleteRepoColumn];
@@ -105,14 +136,12 @@ public class CSVParser {
 		private int userColumn = -1;
 		private int RepoNameColumn = -1;
 		private int createRepoColumn = -1;
-		private ArrayList<Integer> prof_Add_Columns = new ArrayList<Integer>();
-		private ArrayList<Integer> prof_Remove_Columns = new ArrayList<Integer>();
-		private ArrayList<Integer> TA_Add_Collab = new ArrayList<Integer>();
-		private ArrayList<Integer> TA_Remove_Collab = new ArrayList<Integer>();
-		private ArrayList<Integer> Student_Add_Collab = new ArrayList<Integer>();
-		private ArrayList<Integer> Student_Remove_Collab = new ArrayList<Integer>();
-		private ArrayList<Integer> allAddColabs = new ArrayList<Integer>();
-		private ArrayList<Integer> allRemoveColabs = new ArrayList<Integer>();
+		private ArrayList<Integer> Prof_Add_Columns = new ArrayList<Integer>();
+		private ArrayList<Integer> Prof_Remove_Columns = new ArrayList<Integer>();
+		private ArrayList<Integer> TA_Add_Columns = new ArrayList<Integer>();
+		private ArrayList<Integer> TA_Remove_Columns = new ArrayList<Integer>();
+		private ArrayList<Integer> Student_Add_Columns = new ArrayList<Integer>();
+		private ArrayList<Integer> Student_Remove_Columns = new ArrayList<Integer>();
 		private int numberOfColumns = -1;
 		private int cloneRepo = -1;
 		private int repoCloneLocation = -1;
@@ -165,27 +194,27 @@ public class CSVParser {
 					continue;
 				}
 				if (tokens[x].toLowerCase().equals("Prof_Add_Collab".toLowerCase())){
-					this.prof_Add_Columns.add(x);
+					this.Prof_Add_Columns.add(x);
 					continue;
 				}
 				if (tokens[x].toLowerCase().equals("Prof_Remove_Collab".toLowerCase())){
-					this.prof_Remove_Columns.add(x);
+					this.Prof_Remove_Columns.add(x);
 					continue;
 				}
 				if (tokens[x].toLowerCase().equals("TA_Add_Collab".toLowerCase())){
-					this.TA_Add_Collab.add(x);
+					this.TA_Add_Columns.add(x);
 					continue;
 				}
 				if (tokens[x].toLowerCase().equals("TA_Remove_Collab".toLowerCase())){
-					this.TA_Remove_Collab.add(x);
+					this.TA_Remove_Columns.add(x);
 					continue;
 				}
 				if (tokens[x].toLowerCase().equals("Student_Add_Collab".toLowerCase())){
-					this.Student_Add_Collab.add(x);
+					this.Student_Add_Columns.add(x);
 					continue;
 				}
 				if (tokens[x].toLowerCase().equals("Student_Remove_Collab".toLowerCase())){
-					this.Student_Remove_Collab.add(x);
+					this.Student_Remove_Columns.add(x);
 					continue;
 				}
 				if (tokens[x].toLowerCase().equals("Git_Clone_To_Computer?".toLowerCase())) {
@@ -215,70 +244,119 @@ public class CSVParser {
 				//if none of the if statements are triggered, then there is a header that is not recognized...
 				throw new IllegalHeaderException(x, tokens[x], "there is an unrecognized token in the header!");
 			}
-			allAddColabs.addAll(this.prof_Add_Columns);
-			allAddColabs.addAll(this.TA_Add_Collab);
-			allAddColabs.addAll(this.Student_Add_Collab);
-			
-			allRemoveColabs.addAll(this.prof_Remove_Columns);
-			allRemoveColabs.addAll(this.TA_Remove_Collab);
-			allRemoveColabs.addAll(this.Student_Remove_Collab);
 			
 			if (this.userColumn == -1 || this.RepoNameColumn == -1) {
 				throw new IllegalHeaderException(-1, "N/A", "both the \"User\" and \"Repo_Name\" headers must be present in the top line of the CSV file!");
 			}
 			
 		}
-		public ArrayList<Integer> getAllAddsColabs(){
-			return this.allAddColabs;
-		}
-		public ArrayList<Integer> getAllRemovesColabs(){
-			return this.allRemoveColabs;
-		}
-		public int getNumberOfColumns() {
-			return this.numberOfColumns;
-		}
+
 		public int getUserColumn() {
 			return userColumn;
 		}
+
+		public void setUserColumn(int userColumn) {
+			this.userColumn = userColumn;
+		}
+
 		public int getRepoNameColumn() {
 			return RepoNameColumn;
 		}
+
+		public void setRepoNameColumn(int repoNameColumn) {
+			RepoNameColumn = repoNameColumn;
+		}
+
 		public int getCreateRepoColumn() {
 			return createRepoColumn;
 		}
-		public int getDeleteRepoColumn() {
-			return deleteRepoColumn;
+
+		public void setCreateRepoColumn(int createRepoColumn) {
+			this.createRepoColumn = createRepoColumn;
 		}
-		@SuppressWarnings("unused")
-		public ArrayList<Integer> getProfAddColumns() {
-			return prof_Add_Columns;
+
+		public ArrayList<Integer> getProf_Add_Columns() {
+			return Prof_Add_Columns;
 		}
-		@SuppressWarnings("unused")
-		public ArrayList<Integer> getProfRemoveColumns() {
-			return prof_Remove_Columns;
+
+		public void setProf_Add_Columns(ArrayList<Integer> prof_Add_Columns) {
+			Prof_Add_Columns = prof_Add_Columns;
 		}
-		@SuppressWarnings("unused")
-		public ArrayList<Integer> getTA_Add_Collab() {
-			return TA_Add_Collab;
+
+		public ArrayList<Integer> getProf_Remove_Columns() {
+			return Prof_Remove_Columns;
 		}
-		@SuppressWarnings("unused")
-		public ArrayList<Integer> getTA_Remove_Collab() {
-			return TA_Remove_Collab;
+
+		public void setProf_Remove_Columns(ArrayList<Integer> prof_Remove_Columns) {
+			Prof_Remove_Columns = prof_Remove_Columns;
 		}
+
+		public ArrayList<Integer> getTA_Add_Columns() {
+			return TA_Add_Columns;
+		}
+
+		public void setTA_Add_Columns(ArrayList<Integer> tA_Add_Columns) {
+			TA_Add_Columns = tA_Add_Columns;
+		}
+
+		public ArrayList<Integer> getTA_Remove_Columns() {
+			return TA_Remove_Columns;
+		}
+
+		public void setTA_Remove_Columns(ArrayList<Integer> tA_Remove_Columns) {
+			TA_Remove_Columns = tA_Remove_Columns;
+		}
+
+		public ArrayList<Integer> getStudent_Add_Columns() {
+			return Student_Add_Columns;
+		}
+
+		public void setStudent_Add_Columns(ArrayList<Integer> student_Add_Columns) {
+			Student_Add_Columns = student_Add_Columns;
+		}
+
+		public ArrayList<Integer> getStudent_Remove_Columns() {
+			return Student_Remove_Columns;
+		}
+
+		public void setStudent_Remove_Columns(ArrayList<Integer> student_Remove_Columns) {
+			Student_Remove_Columns = student_Remove_Columns;
+		}
+
+		public int getNumberOfColumns() {
+			return numberOfColumns;
+		}
+
+		public void setNumberOfColumns(int numberOfColumns) {
+			this.numberOfColumns = numberOfColumns;
+		}
+
 		public int getCloneRepo() {
 			return cloneRepo;
 		}
+
+		public void setCloneRepo(int cloneRepo) {
+			this.cloneRepo = cloneRepo;
+		}
+
 		public int getRepoCloneLocation() {
 			return repoCloneLocation;
 		}
-		@SuppressWarnings("unused")
-		public ArrayList<Integer> getStudent_Add_Collab() {
-			return Student_Add_Collab;
+
+		public void setRepoCloneLocation(int repoCloneLocation) {
+			this.repoCloneLocation = repoCloneLocation;
 		}
-		@SuppressWarnings("unused")
-		public ArrayList<Integer> getStudent_Remove_Collab() {
-			return Student_Remove_Collab;
+
+		public int getDeleteRepoColumn() {
+			return deleteRepoColumn;
 		}
+
+		public void setDeleteRepoColumn(int deleteRepoColumn) {
+			this.deleteRepoColumn = deleteRepoColumn;
+		}
+		
+		
+		
 	}
 
 }
