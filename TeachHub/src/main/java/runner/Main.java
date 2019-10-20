@@ -48,27 +48,70 @@ public class Main {
 		sc.close();
 		
 		Que<ExecuteCommand> commandQue2 = new Que<ExecuteCommand>();
+		boolean isAnyCommandClone = false;
 		while (commandQue.size() != 0) {
 			ExecuteCommand cmd = commandQue.deque();
 			commandQue2.enque(cmd);
+			if (cmd.isCloneRepo()) {
+				isAnyCommandClone = true;
+			}
 			System.out.println(cmd.getCommandInfo());
 		}
 		Scanner sc2 = new Scanner(System.in);
-		
-		Authentication auth = readCredential(sc2);
+		Credential auth = readCredential("please provide username and password for the main user of these commands", sc2);
 		
 		Github github = auth.authenticate();
 		
 		String username = github.users().self().login();
 		
+		Credential cloneCreds = null;
+		
+		if (isAnyCommandClone) {
+			boolean needCredsForClone = userChooseYesNo("detected that you are trying to clone at least one repository to the provided \n" +
+															  "location. Note that this command will call the already cached credentials of \n" +
+															  "your LOCAL GIT CONTROLLER, not the credentials you have already provided for the \n " +
+															  "execution of the commands. If your controller does not have cached credentials, or \n" +
+															  "other credentials are needed to clone with your local git controller please \n " +
+															  "provide them. do credentils have to be provided?", sc2);
+			if (needCredsForClone) {
+				boolean useAlreadyProvided = userChooseYesNo("do these credentials happen to be the same as the ones already provided to \n" + 
+															 "execute the commands?", sc2);
+				if (useAlreadyProvided) {
+					cloneCreds = auth;
+				} else {
+					cloneCreds = readCredential("user name and password to clone the repositories", sc2);
+				}
+			}
+		}
+		
 		CLICommandRunner clir = new CLICommandRunner(github, false, username, sc2);
-		clir.executeStack(commandQue2);
+		clir.executeStack(commandQue2, isAnyCommandClone, cloneCreds);
 		sc2.close();
 			
 		
 	}
 	
-	private static Authentication readCredential(Scanner sc) {
+	/**
+	 * Derive boolean value from user. Note the input is not case sensitive
+	 * @param msg the prompt (method will append [Yes/No] to message, no need to include it)
+	 * @param sc the scanner to scan the response from
+	 * @return boolean if user says yes or no
+	 */
+	private static boolean userChooseYesNo(String msg, Scanner sc) {
+		System.out.println(msg + " [Yes/No]");
+		String response = sc.nextLine();
+		if (response.toLowerCase().trim().equals("yes")) {
+			return true;
+		} 
+		if (response.toLowerCase().trim().equals("no")) {
+			return false;
+		} 
+		//no valid response
+		System.out.println("invalid response, please only input Yes or No");
+		return userChooseYesNo(msg, sc);
+	}
+	
+	private static Credential readCredential(String msg, Scanner sc) {
 		System.out.print("user name: ");
 		String username = sc.nextLine();
 		java.io.Console console = System.console();
@@ -80,7 +123,7 @@ public class Main {
 			return cred;
 		} catch (InvalidCredentialException e) {
 			System.out.println("credentials were invalid, try again");
-			return readCredential(sc);
+			return readCredential(msg, sc);
 		}
 	}
 }
