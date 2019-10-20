@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
+import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
@@ -15,6 +16,7 @@ import com.jcabi.github.Repo;
 import com.jcabi.github.Repos;
 import com.jcabi.github.Repos.RepoCreate;
 
+import authentication.Credential;
 import data_structures.Que;
 import notification.Alert;
 
@@ -64,10 +66,10 @@ public class CLICommandRunner {
 	 * @param que the que of commands to be executed. Calls CommandRunner.executeSingle on each one
 	 * @throws IOException 
 	 */
-	public void executeStack(Que<ExecuteCommand> que) throws IOException {
+	public void executeStack(Que<ExecuteCommand> que, boolean haveToAuthenticateClone, Credential creds) throws IOException {
 		while (que.size() != 0) {
 			ExecuteCommand cmd = que.deque();
-			executeSingle(cmd);
+			executeSingle(cmd, haveToAuthenticateClone, creds);
 		}
 	}
 	
@@ -76,7 +78,7 @@ public class CLICommandRunner {
 	 * @param cmd the command to be executed
 	 * @throws IOException when any action taken on a repository is done, this is possible (create, add collaborator, remove collaborator, deleting a repository)
 	 */
-	public void executeSingle(ExecuteCommand cmd) throws IOException {
+	public void executeSingle(ExecuteCommand cmd, boolean haveToAuthenticateClone, Credential creds) throws IOException {
 		System.out.println();
 		this.repos = this.github.repos();
 		String initMsg = "";
@@ -152,7 +154,12 @@ public class CLICommandRunner {
 			File cloneLocation = new File(cmd.getCloneLocation().toString() + File.separator + cmd.getRepoName());
 			String cloneUrl = repoURLAbstractor(cmd.getUser(), cmd.getRepoName());
 			try {
-				Git.cloneRepository().setURI(cloneUrl).setDirectory(cloneLocation).call();
+				CloneCommand cloneCommand = Git.cloneRepository().setURI(cloneUrl).setDirectory(cloneLocation);
+				if(haveToAuthenticateClone) {
+					
+					cloneCommand.setCredentialsProvider(creds.getUsernamePasswordCredentialsProvider());
+				}
+				cloneCommand.call();
 			} catch (GitAPIException | JGitInternalException e) {
 				Alert alert = new Alert(MessageType.ERROR);
 				alert.setMessege("TeachHub", "couldn't clone repository [" + cmd.getRepoName() + "] to desired location, skipping feature");
