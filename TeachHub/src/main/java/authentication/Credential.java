@@ -2,6 +2,8 @@ package authentication;
 
 import java.io.IOException;
 
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+
 import com.jcabi.github.Github;
 import com.jcabi.github.RtGithub;
 
@@ -27,6 +29,11 @@ public class Credential implements Authentication {
 	public Github authenticate() {
 		Github github = new RtGithub(userName, password);
 		return github;
+	}
+	
+	public UsernamePasswordCredentialsProvider getUsernamePasswordCredentialsProvider() {
+		UsernamePasswordCredentialsProvider credsProvider = new UsernamePasswordCredentialsProvider(this.userName, this.password);
+		return credsProvider;
 	}
 	
 }
