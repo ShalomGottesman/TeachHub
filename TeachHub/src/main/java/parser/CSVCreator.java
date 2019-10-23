@@ -17,7 +17,7 @@ public class CSVCreator {
 	public File parseSingle(Command cmd) {
 		return null;}
 	
-	public File parseQue(Que<ExecuteCommand> commandQue) {
+	public String parseQue(Que<Command> commandQue) {
 		Que<Command> que2 = new Que<Command>();
 		//first derive all tags required
 		while(commandQue.size() != 0) {
@@ -35,7 +35,7 @@ public class CSVCreator {
 		
 		String fileBody = generateFileTextBody(allLines);
 		
-		return null;
+		return fileBody;
 		}
 	
 	private String generateFileTextBody(Que<String[]> infoQue) {
