@@ -1,4 +1,4 @@
-User,Repo_name,Create_Repo,Prof_Add_Collab,TA_Add_Collab,Student_Add_Collab,Git_Clone_To_Computer?,Git_Clone_Location
-ShalomGottesman,TH-test1,yes,TeachHubProf,TeachHubTA,TeachHubStudent,Yes,C:\Users\Administrator\Desktop\teachhubDest
-ShalomGottesman,TH-test2,yes,TeachHubProf,TeachHubTA,TeachHubStudent,Yes,C:\Users\Administrator\Desktop\teachhubDest
-ShalomGottesman,TH-test3,yes,TeachHubProf,TeachHubTA,TeachHubStudent,Yes,C:\Users\Administrator\Desktop\teachhubDest
+User,Repo_name,Create_Repo,Git_Clone_To_Computer?,Git_Clone_Location
+ShalomGottesman,TH-test1,yes,Yes,C:\Users\Administrator\Desktop\teachhubDest
+ShalomGottesman,TH-test2,yes,Yes,C:\Users\Administrator\Desktop\teachhubDest
+ShalomGottesman,TH-test3,yes,Yes,C:\Users\Administrator\Desktop\teachhubDest
