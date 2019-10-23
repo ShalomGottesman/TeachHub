@@ -62,6 +62,10 @@ public class Main2 {
 			creds = ReadCredentials.readCredential("user name and password to use to execute the file", sc);
 		}
 		Que<ExecuteCommand> commandQue = null;
+		Que<ExecuteCommand> commandQue2 = new Que<ExecuteCommand>();
+		Que<Command> commandQue3 = new Que<Command>();
+		Que<Command> undoQue = new Que<Command>();
+		boolean isAnyCommandClone = false;
 		if (analyze | file) {
 			//parse file and print out command information
 			int filePath = 0;
@@ -85,16 +89,10 @@ public class Main2 {
 				System.exit(0);
 			}
 			
-		}
-		if (file) {
-			//pass the returned stack from the parsing and the credentials to the execution class
-			Que<ExecuteCommand> commandQue2 = new Que<ExecuteCommand>();
-			Que<Command> commandQue3 = new Que<Command>();
-			Que<Command> undoQue = new Que<Command>();
-			boolean isAnyCommandClone = false;
 			while (commandQue.size() != 0) {
 				ExecuteCommand cmd = commandQue.deque();
 				UndoCommand undoCmd = new UndoCommand(cmd);
+				
 				commandQue2.enque(cmd);
 				commandQue3.enque((Command) cmd);
 				undoQue.enque((Command) undoCmd);
@@ -102,7 +100,17 @@ public class Main2 {
 					isAnyCommandClone = true;
 				}
 			}
+			CSVCreator csvc = new CSVCreator();
+			String commandCSV = csvc.parseQue(commandQue3);
+			csvc.resetTags();
+			String undoCSV = csvc.parseQue(undoQue);
 			
+			System.out.println("redo csv info: \n" + commandCSV);
+			System.out.println("undo csv info: \n" + undoCSV);
+			
+		}
+		if (file) {
+			//pass the returned stack from the parsing and the credentials to the execution class			
 			if (creds == null) {
 				creds = ReadCredentials.readCredential("please provide username and password for the main user of these commands", sc);
 			}
@@ -120,18 +128,14 @@ public class Main2 {
 					} else {
 						cloneCreds = ReadCredentials.readCredential("user name and password to clone the repositories", sc);
 					}
+				} else {
+					cloneCreds = creds;
 				}
 			}
 			
 			CLICommandRunner clir = new CLICommandRunner(github, false, username, sc);
 			clir.executeStack(commandQue2, isAnyCommandClone, cloneCreds);
 			//now use que3 to create an undo/redo file set
-			CSVCreator csvc = new CSVCreator();
-			String commandCSV = csvc.parseQue(commandQue3);
-			String undoCSV = csvc.parseQue(undoQue);
-			
-			System.out.println("redo csv info: " + commandCSV);
-			System.out.println("undo csv info: " + undoCSV);
 		}
 		if (history) {
 			System.out.println("this feature has not yet been implemented");
