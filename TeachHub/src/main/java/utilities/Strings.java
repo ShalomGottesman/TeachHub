@@ -14,7 +14,7 @@ public class Strings {
 			"********\n"; 
 	
 	public static String optionsMsg = 
-			"usage : [-l  | --login]                  -> enter login credentials for the file you want to execute \n" +
+			"Usage : [-l  | --login]                  -> enter login credentials for the file you want to execute \n" +
 			"        [-a  | --analyze <path-to-file>] -> analyze a file without executing it \n" +
 			"        [-f  | --file <path-to-file>]    -> a file to execute (implicitly calls -a on the file also) \n" +
 			"        [-h  | --history]                -> open log file \n" +
