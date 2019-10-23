@@ -9,9 +9,16 @@ public class ReadCredentials {
 	public static Credential readCredential(String msg, Scanner sc) {
 		System.out.print("user name: ");
 		String username = sc.nextLine();
+		String password = "";
 		java.io.Console console = System.console();
-		char[] pwd = console.readPassword("password: ");
-		String password = new String(pwd);
+		if (console != null) {
+			char[] pwd = console.readPassword("password: ");
+			password = new String(pwd);
+		} else {
+			System.out.println("could not get instance of System console, password will be printed");
+			System.out.print("password: ");
+			password = sc.nextLine();
+		}
 		Credential cred = null;
 		try {
 			cred = new Credential(username, password);
