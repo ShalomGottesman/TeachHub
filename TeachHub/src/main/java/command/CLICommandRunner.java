@@ -9,6 +9,7 @@ import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 import com.jcabi.github.Coordinates;
 import com.jcabi.github.Github;
@@ -157,8 +158,11 @@ public class CLICommandRunner {
 			try {
 				CloneCommand cloneCommand = Git.cloneRepository().setURI(cloneUrl).setDirectory(cloneLocation);
 				if(haveToAuthenticateClone) {
-					
-					cloneCommand.setCredentialsProvider(creds.getUsernamePasswordCredentialsProvider());
+					UsernamePasswordCredentialsProvider userpass = creds.getUsernamePasswordCredentialsProvider();
+					if (userpass == null) {
+						System.out.println("userpass is null");
+					}
+					cloneCommand.setCredentialsProvider(userpass);
 				}
 				cloneCommand.call();
 			} catch (GitAPIException | JGitInternalException e) {

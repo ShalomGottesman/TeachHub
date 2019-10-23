@@ -14,6 +14,10 @@ public class CSVCreator {
 		this.tags = new CSVHeaderTags();
 	}
 	
+	public void resetTags() {
+		this.tags = new CSVHeaderTags(); 
+	}
+	
 	public File parseSingle(Command cmd) {
 		return null;}
 	
@@ -34,8 +38,9 @@ public class CSVCreator {
 		}
 		
 		String fileBody = generateFileTextBody(allLines);
-		
-		return fileBody;
+		String header = tags.generateCSVHeader();
+		String wholeText = header + "\n" + fileBody;
+		return wholeText;
 		}
 	
 	private String generateFileTextBody(Que<String[]> infoQue) {
@@ -45,7 +50,6 @@ public class CSVCreator {
 			String line = arrayToCSV(thisLineArray);
 			fullText += line + "\n";
 		}
-		System.out.println(fullText);
 		return fullText;
 	}
 	
@@ -205,6 +209,46 @@ public class CSVCreator {
 		
 		public CSVHeaderTags() {}
 
+		public String generateCSVHeader() {
+			String header = "User,RepoName";
+			if (createRepo) {
+				header = header + ",Create_Repo";
+			}
+			if (privateColumn) {
+				header = header + ",Make_Private";
+			}
+			if (deleteRepo) {
+				header = header + ",Delete_Repo";
+			}
+			if (!deleteRepo) {//We only care about the adds/deletes if we are not deleting the repo
+				header = addRepeated(header, "Prof_Add_Collab", numToAdd_Profs, true);
+				header = addRepeated(header, "TA_Add_Collab", numToAdd_TAs, true);
+				header = addRepeated(header, "Student_Add_Collab", numToAdd_Studs, true);
+				header = addRepeated(header, "Prof_Remove_Collab", numToRemove_Profs, true);
+				header = addRepeated(header, "TA_Remove_Collab", numToRemove_TAs, true);
+				header = addRepeated(header, "Student_Remove_Collab", numToRemove_Studs, true);
+			}
+			return header;
+		}
+		
+		/**
+		 * 
+		 * @param base the base string on which to add 
+		 * @param add the string to append onto the base
+		 * @param numberOfTimes how many times the add parameter should be added
+		 * @param addComma if a command should be inserted between all the components being added and after the origional base string
+		 * @return the fully concatenated string
+		 */
+		private String addRepeated(String base, String add, int numberOfTimes, boolean addComma) {
+			for (int x = 0; x < numberOfTimes; x++) {
+				if (addComma) {
+					add = "," + add;
+				}
+				base = base + add;
+			}
+			return base;
+		}
+		
 		public int totalColumnsRequired() {
 			int total = 0;
 			if (user) {
@@ -216,12 +260,14 @@ public class CSVCreator {
 			if (repoName) {
 				total++;
 			}
-			total += numToAdd_Profs
-					+ numToAdd_TAs
-					+ numToAdd_Studs
-					+ numToRemove_Profs
-					+ numToRemove_TAs
-					+ numToRemove_Studs;
+			if (!deleteRepo) {//again, we only care about add/removes if we are not deleting
+				total += numToAdd_Profs
+						+ numToAdd_TAs
+						+ numToAdd_Studs
+						+ numToRemove_Profs
+						+ numToRemove_TAs
+						+ numToRemove_Studs;
+			}
 			if (privateColumn) {
 				total++;
 			}
