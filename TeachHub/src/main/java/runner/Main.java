@@ -16,6 +16,7 @@ import data_structures.Que;
 import parser.CSVParser;
 import parser.IllegalDataException;
 import parser.IllegalHeaderException;
+import utilities.ReadCredentials;
 
 
 public class Main {
@@ -58,7 +59,7 @@ public class Main {
 			System.out.println(cmd.getCommandInfo());
 		}
 		Scanner sc2 = new Scanner(System.in);
-		Credential auth = readCredential("please provide username and password for the main user of these commands", sc2);
+		Credential auth = ReadCredentials.readCredential("please provide username and password for the main user of these commands", sc2);
 		
 		Github github = auth.authenticate();
 		
@@ -79,7 +80,7 @@ public class Main {
 				if (useAlreadyProvided) {
 					cloneCreds = auth;
 				} else {
-					cloneCreds = readCredential("user name and password to clone the repositories", sc2);
+					cloneCreds = ReadCredentials.readCredential("user name and password to clone the repositories", sc2);
 				}
 			}
 		}
@@ -91,39 +92,5 @@ public class Main {
 		
 	}
 	
-	/**
-	 * Derive boolean value from user. Note the input is not case sensitive
-	 * @param msg the prompt (method will append [Yes/No] to message, no need to include it)
-	 * @param sc the scanner to scan the response from
-	 * @return boolean if user says yes or no
-	 */
-	private static boolean userChooseYesNo(String msg, Scanner sc) {
-		System.out.println(msg + " [Yes/No]");
-		String response = sc.nextLine();
-		if (response.toLowerCase().trim().equals("yes")) {
-			return true;
-		} 
-		if (response.toLowerCase().trim().equals("no")) {
-			return false;
-		} 
-		//no valid response
-		System.out.println("invalid response, please only input Yes or No");
-		return userChooseYesNo(msg, sc);
-	}
 	
-	private static Credential readCredential(String msg, Scanner sc) {
-		System.out.print("user name: ");
-		String username = sc.nextLine();
-		java.io.Console console = System.console();
-		char[] pwd = console.readPassword("password: ");
-		String password = new String(pwd);
-		Credential cred = null;
-		try {
-			cred = new Credential(username, password);
-			return cred;
-		} catch (InvalidCredentialException e) {
-			System.out.println("credentials were invalid, try again");
-			return readCredential(msg, sc);
-		}
-	}
 }
