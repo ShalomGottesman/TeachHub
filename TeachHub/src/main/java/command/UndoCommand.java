@@ -26,7 +26,7 @@ public class UndoCommand implements Command{
 	 * the repo will be made public.
 	 * @param exeCmd the command to create a near mirror image of.
 	 */
-	UndoCommand(ExecuteCommand exeCmd){
+	public UndoCommand(ExecuteCommand exeCmd){
 		this.user = exeCmd.getUser();
 		this.createRepo = !exeCmd.isCreateRepo();
 		this.repoDescription = exeCmd.getRepoDescription();

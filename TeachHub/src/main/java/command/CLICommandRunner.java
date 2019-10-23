@@ -34,6 +34,7 @@ public class CLICommandRunner {
 	 * @param github already authenticated github object
 	 * @param testing true for the repository init message (found in the ReadMe.md file) should be the testing message. false for default
 	 * @param userName the username of the current user
+	 * @param sc the scanner on which to scan user input (needed to verify if a user wants to delete a repository)
 	 */
 	public CLICommandRunner(Github github, boolean testing, String userName, Scanner sc) {
 		this.github = github;
