@@ -1,10 +1,15 @@
 package runner;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Scanner;
 
+import com.google.common.io.Files;
 import com.jcabi.github.Github;
 
 import authentication.Credential;
@@ -19,6 +24,7 @@ import parser.IllegalDataException;
 import parser.IllegalHeaderException;
 import utilities.EnviormentVariable;
 import utilities.ReadCredentials;
+import utilities.Strings;
 import utilities.UserChoice;
 
 public class Main2 {
@@ -46,16 +52,21 @@ public class Main2 {
 			}
 			System.out.println(utilities.Strings.optionsMsg);
 			Scanner sc = new Scanner(System.in);
-			run(sc);
+			run(new String[0], sc);
 		} else {
 			System.out.println("verification failed, has your license expired?");
 			System.exit(0);
 		}
 	}
 	
-	private static void run(Scanner sc) throws IllegalDataException, IOException {
+	private static void run(String[] args, Scanner sc) throws IllegalDataException, IOException {
 		System.out.print("TeachHub>");
-		String[] input = sc.nextLine().split("\\s");
+		String[] input = null;
+		if (args.length == 0) {
+			input = sc.nextLine().split("\\s");
+		} else {
+			input = args;
+		}
 		parseLine(input);
 		Credential creds = null;
 		if (login) {
@@ -66,6 +77,8 @@ public class Main2 {
 		Que<Command> commandQue3 = new Que<Command>();
 		Que<Command> undoQue = new Que<Command>();
 		boolean isAnyCommandClone = false;
+		String redoCSV = "";
+		String undoCSV = "";
 		if (analyze | file) {
 			//parse file and print out command information
 			int filePath = 0;
@@ -81,11 +94,11 @@ public class Main2 {
 				commandQue = parseFileAndPrintInfo(input, sc);
 			} catch (ArrayIndexOutOfBoundsException e) {
 				System.out.println("there was no input after the tag " + input[filePath-1] + "!");
-				run(sc); //recall the method
+				run(new String[0], sc); //recall the method
 				System.exit(0);
 			} catch (FileNotFoundException e) {
 				System.out.println("The File passed in at " + input[filePath] + " does not exist!");
-				run(sc); //recall the method
+				run(new String[0], sc); //recall the method
 				System.exit(0);
 			}
 			
@@ -101,11 +114,11 @@ public class Main2 {
 				}
 			}
 			CSVCreator csvc = new CSVCreator();
-			String commandCSV = csvc.parseQue(commandQue3);
+			redoCSV = csvc.parseQue(commandQue3);
 			csvc.resetTags();
-			String undoCSV = csvc.parseQue(undoQue);
+			undoCSV = csvc.parseQue(undoQue);
 			
-			System.out.println("redo csv info: \n" + commandCSV);
+			System.out.println("redo csv info: \n" + redoCSV);
 			System.out.println("undo csv info: \n" + undoCSV);
 			
 		}
@@ -136,27 +149,77 @@ public class Main2 {
 			CLICommandRunner clir = new CLICommandRunner(github, false, username, sc);
 			clir.executeStack(commandQue2, isAnyCommandClone, cloneCreds);
 			//now use que3 to create an undo/redo file set
+			setUndoRedoFiles(redoCSV, undoCSV);
 		}
 		if (history) {
 			System.out.println("this feature has not yet been implemented");
 		}
 		if (undo) {
-			System.out.println("this feature has not yet been implemented");
+			//first display the file
+			//ask if file should be executed, if yes, execute
+			File undoFile = new File(new EnviormentVariable().getStorageLocation() + File.separator + "undo_last.csv");
+			displayFileContents(undoFile);
+			boolean execute = new UserChoice().yesNo("do you want to execute this file? Note that it will overwrite the most recent undo/redo file set", sc);
+			String[] argsToRun = {"-f", undoFile.toString()};
+			if (execute) {
+				run(argsToRun, sc);
+			}
 		}
 		if (redo) {
-			System.out.println("this feature has not yet been implemented");
+			File redoFile = new File(new EnviormentVariable().getStorageLocation() + File.separator + "redo_last.csv");
+			displayFileContents(redoFile);
+			boolean execute = new UserChoice().yesNo("do you want to execute this file? Note that it will overwrite the most recent undo/redo file set", sc);
+			String[] argsToRun = {"-f", redoFile.toString()};
+			if (execute) {
+				run(argsToRun, sc);
+			}
 		}
 		if (openRedo) {
-			System.out.println("this feature has not yet been implemented");
+			File redoFile = new File(new EnviormentVariable().getStorageLocation() + File.separator + "redo_last.csv");
+			Desktop.getDesktop().open(redoFile);
 		}
 		if (openUndo) {
-			System.out.println("this feature has not yet been implemented");
+			File undoFile = new File(new EnviormentVariable().getStorageLocation() + File.separator + "undo_last.csv");
+			Desktop.getDesktop().open(undoFile);
 		}
 		if (help) {
-			System.out.println("this feature has not yet been implemented");
+			System.out.println(Strings.optionsMsg);
 		}
 		resetAll();
-		run(sc);
+		run(new String[0], sc);
+	}
+	
+	private static void displayFileContents(File file) throws FileNotFoundException {
+		Scanner sc = new Scanner(file);
+		while(sc.hasNext()) {
+			System.out.println(sc.nextLine());
+		}
+		sc.close();
+	}
+	
+	private static void setUndoRedoFiles(String redoCSVasString, String undoCSVasString) throws IOException {
+		File storageLocation = new EnviormentVariable().getStorageLocation();
+		File redoFile = writeToFileOverwrite(redoCSVasString, storageLocation + File.separator + "redo_last.csv");
+		File undoFile = writeToFileOverwrite(undoCSVasString, storageLocation + File.separator + "undo_last.csv");
+		
+		String formattedTime = getFormattedTime(System.currentTimeMillis());
+		File copyStorage = new File(new EnviormentVariable().getHistoryLocation().toString() + File.separator + "storedAt_" + formattedTime);
+		copyStorage.mkdirs();
+		Files.copy(redoFile, new File(copyStorage + File.separator + "redo.csv"));
+		Files.copy(undoFile, new File(copyStorage + File.separator + "undo.csv"));
+	}
+	
+	private static String getFormattedTime(long timestamp) {
+		DateFormat df = new SimpleDateFormat("yyyy-mm-dd_hh-mm-ss");
+		return df.format(timestamp);
+	}
+	
+	private static File writeToFileOverwrite(String text, String location) throws FileNotFoundException {
+		File file = new File(location);
+		PrintWriter writer = new PrintWriter(file);
+		writer.write(text);
+		writer.close();
+		return file;
 	}
 	
 	private static void  parseLine(String[] inputAry) {
