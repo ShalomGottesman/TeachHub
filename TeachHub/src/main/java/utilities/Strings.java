@@ -1,5 +1,7 @@
 package utilities;
 
+import java.io.File;
+
 public class Strings {
 	public static String openMsg = 
 			"Welcome to TeachHub! An abstraction of the Github api, written by Shalom Gottesman";
@@ -9,7 +11,8 @@ public class Strings {
 			"********\n"+         
 			"Cannot find enviorment variable labled \"TeachHub\", any files this application stores will be \n" +
 			"stored in the <HomeDir>/TeachHub directory. To change this, create an enviorment variable titled \n" +
-			"\"TeachHub\" with the value as the location you would like the files to be stored. To avoid this \n" +
+			"\"TeachHub\" with the value as the location you would like the files to be stored. The application \n" +
+			"will create a sub directory \"" + File.separator + "TeachHub\" to store the application files. To avoid this \n" +
 			"message from being printed, create the enviorment variabl with the value pointing to the Home Directory \n" +
 			"********\n"; 
 	
