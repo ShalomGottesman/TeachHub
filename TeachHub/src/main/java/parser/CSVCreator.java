@@ -175,15 +175,15 @@ public class CSVCreator {
 		}
 		if (cmd.getRemoveCollabs_Profs().size() > this.tags.getNumToRemove_Profs()) {
 			int numToRemove = cmd.getRemoveCollabs_Profs().size();
-			this.tags.setNumToAdd_Profs(numToRemove);
+			this.tags.setNumToRemove_Profs(numToRemove);
 		}
 		if (cmd.getRemoveCollabs_TAs().size() > this.tags.getNumToRemove_TAs()) {
 			int numToRemove = cmd.getRemoveCollabs_TAs().size();
-			this.tags.setNumToAdd_TAs(numToRemove);
+			this.tags.setNumToRemove_TAs(numToRemove);
 		}
 		if (cmd.getRemoveCollabs_Studs().size() > this.tags.getNumToRemove_Studs()) {
 			int numToRemove = cmd.getRemoveCollabs_Studs().size();
-			this.tags.setNumToAdd_Studs(numToRemove);
+			this.tags.setNumToRemove_Studs(numToRemove);
 		}
 		if (cmd.isMakeRepoPrivate()) {
 			this.tags.setPrivateColumn(true);
@@ -200,17 +200,17 @@ public class CSVCreator {
 		private boolean createRepo;
 		private boolean privateColumn;
 		private boolean deleteRepo;
-		private int numToAdd_Profs;
-		private int numToAdd_TAs;
-		private int numToAdd_Studs;
-		private int numToRemove_Profs;
-		private int numToRemove_TAs;
-		private int numToRemove_Studs;
+		private int numToAdd_Profs = 0;
+		private int numToAdd_TAs = 0;
+		private int numToAdd_Studs = 0;
+		private int numToRemove_Profs = 0;
+		private int numToRemove_TAs = 0;
+		private int numToRemove_Studs = 0;
 		
 		public CSVHeaderTags() {}
 
 		public String generateCSVHeader() {
-			String header = "User,RepoName";
+			String header = "User,Repo_Name";
 			if (createRepo) {
 				header = header + ",Create_Repo";
 			}

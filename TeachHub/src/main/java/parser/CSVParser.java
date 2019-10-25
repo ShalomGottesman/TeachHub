@@ -44,6 +44,19 @@ public class CSVParser {
 				throw new IllegalDataException (createRepoColumn, info[createRepoColumn], "the data at this entry does not conform to a boolean type!");
 			}
 		}
+		
+		//make private-can be imperially invalid
+		int makePrivateColumn = format.getMakeRepoPrivate();
+		if(makePrivateColumn != -1) {
+			String makePrivate = info[makePrivateColumn];
+			if (makePrivate.toLowerCase().equals("yes")) {
+				cmd.setMakeRepoPrivate(true);
+			} else if (makePrivate.toLowerCase().equals("no")) {
+				cmd.setMakeRepoPrivate(false);
+			} else {
+				throw new IllegalDataException (createRepoColumn, info[createRepoColumn], "the data at this entry does not conform to a boolean type!");
+			}
+		}
 		//add collaborators_Profs-data cannot be empirically invalid
 		ArrayList<Integer> columnsOfColabs_ProfsToAdd = format.getProf_Add_Columns();
 		for (int columnNum : columnsOfColabs_ProfsToAdd) {
@@ -146,6 +159,7 @@ public class CSVParser {
 		private int cloneRepo = -1;
 		private int repoCloneLocation = -1;
 		private int deleteRepoColumn = -1;
+		private int makeRepoPrivate = -1;
 		
 		/*
 		 * 
@@ -192,6 +206,14 @@ public class CSVParser {
 						throw new IllegalHeaderException(x, tokens[x], msg);
 					}
 					this.createRepoColumn = x;
+					continue;
+				}
+				if(tokens[x].toLowerCase().equals("Make_Private".toLowerCase())) {
+					if(this.makeRepoPrivate != -1) {
+						String msg = "there can only be one column defined with the \"Make_Private\" header!";
+						throw new IllegalHeaderException(x, tokens[x], msg);
+					}
+					this.makeRepoPrivate = x;
 					continue;
 				}
 				if (tokens[x].toLowerCase().equals("Prof_Add_Collab".toLowerCase())){
@@ -247,7 +269,11 @@ public class CSVParser {
 			}
 			
 			if (this.userColumn == -1 || this.RepoNameColumn == -1) {
-				throw new IllegalHeaderException(-1, "N/A", "both the \"User\" and \"Repo_Name\" headers must be present in the top line of the CSV file!");
+				throw new IllegalHeaderException(-1, "N/A", "Both the \"User\" and \"Repo_Name\" headers must be present in the top line of the CSV file!");
+			}
+			
+			if (this.makeRepoPrivate != -1 && !(this.createRepoColumn != -1)) {
+				throw new IllegalHeaderException(-1, "N/A", "If the \"Make_Private\" header is used, then so must \"Create_Repo\" header must be present in the top line of the CSV file!");
 			}
 			
 		}
@@ -354,6 +380,14 @@ public class CSVParser {
 
 		public void setDeleteRepoColumn(int deleteRepoColumn) {
 			this.deleteRepoColumn = deleteRepoColumn;
+		}
+
+		public int getMakeRepoPrivate() {
+			return makeRepoPrivate;
+		}
+
+		public void setMakeRepoPrivate(int makeRepoPrivate) {
+			this.makeRepoPrivate = makeRepoPrivate;
 		}
 		
 		

@@ -31,5 +31,9 @@ public class sandbox {
 		
 		CSVCreator csvc = new CSVCreator();
 		csvc.parseQue(commandQue);
+		
+		
+		
+		CSVTags.CREATEREPO.get;
 	}
 }
