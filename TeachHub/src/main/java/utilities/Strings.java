@@ -25,7 +25,8 @@ public class Strings {
 			"        [-r  | --redo]                   -> redo last execution \n"+
 			"        [-or | --open-redo]              -> open copy of last executed file \n"+
 			"        [-ou | --open-undo]              -> open generated undo file of last executed file \n" +
-			"        [-h  | --help | ? | -?]          -> reprint options message \n" +
+			"        [-H  | --help | ? | -?]          -> reprint options message \n" +
+			"        [-e  | --exit]                   -> exit program \n"+
 			"\n" +
 			"All options are designed to be executed independantly of each other, but they can be \n"+
 			"chained together if desired. The order of execution will be the order printed above. \n"+
