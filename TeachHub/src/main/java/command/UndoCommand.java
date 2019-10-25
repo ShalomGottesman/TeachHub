@@ -28,11 +28,16 @@ public class UndoCommand implements Command{
 	 */
 	public UndoCommand(ExecuteCommand exeCmd){
 		this.user = exeCmd.getUser();
-		this.createRepo = !exeCmd.isCreateRepo();
+		if(exeCmd.isDeleteRepo()) {
+			this.createRepo = true;
+			this.makeRepoPrivate = true;
+		}
 		this.repoDescription = exeCmd.getRepoDescription();
 		this.repoName = exeCmd.getRepoName();
 		
-		this.deleteRepo = !exeCmd.isDeleteRepo();
+		if(exeCmd.isCreateRepo()) {
+			this.deleteRepo = true;
+		}
 		if (!this.deleteRepo) { // if I am deleting the repo, then all add and remove fields remain empty
 			this.addCollabs_Profs = exeCmd.getRemoveCollabs_Profs();
 			this.addCollabs_TAs = exeCmd.getRemoveCollabs_TAs();
@@ -42,8 +47,6 @@ public class UndoCommand implements Command{
 			this.removeCollabs_TAs = exeCmd.getAddCollabs_TAs();
 			this.removeCollabs_Studs = exeCmd.getAddCollabs_Studs();
 		}
-		
-		this.makeRepoPrivate = exeCmd.isMakeRepoPrivate();
 	}
 	
 	public ArrayList<String> getAllAddCollabs(){
