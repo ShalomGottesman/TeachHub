@@ -29,11 +29,11 @@ public class sandbox {
 		sc.close();
 		
 		
-		CSVCreator csvc = new CSVCreator();
-		csvc.parseQue(commandQue);
+		//CSVCreator csvc = new CSVCreator();
+		//csvc.parseQue(commandQue);
 		
 		
 		
-		CSVTags.CREATEREPO.get;
+		//CSVTags.CREATEREPO.get;
 	}
 }

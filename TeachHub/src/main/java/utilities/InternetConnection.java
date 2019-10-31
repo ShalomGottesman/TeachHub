@@ -32,4 +32,8 @@ public class InternetConnection {
 			return false;
 		}
 	}
+	
+	public URL getURL() {
+		return this.urlToTest;
+	}
 }

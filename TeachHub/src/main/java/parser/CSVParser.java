@@ -282,112 +282,56 @@ public class CSVParser {
 			return userColumn;
 		}
 
-		public void setUserColumn(int userColumn) {
-			this.userColumn = userColumn;
-		}
-
 		public int getRepoNameColumn() {
 			return RepoNameColumn;
-		}
-
-		public void setRepoNameColumn(int repoNameColumn) {
-			RepoNameColumn = repoNameColumn;
 		}
 
 		public int getCreateRepoColumn() {
 			return createRepoColumn;
 		}
 
-		public void setCreateRepoColumn(int createRepoColumn) {
-			this.createRepoColumn = createRepoColumn;
-		}
-
 		public ArrayList<Integer> getProf_Add_Columns() {
 			return Prof_Add_Columns;
-		}
-
-		public void setProf_Add_Columns(ArrayList<Integer> prof_Add_Columns) {
-			Prof_Add_Columns = prof_Add_Columns;
 		}
 
 		public ArrayList<Integer> getProf_Remove_Columns() {
 			return Prof_Remove_Columns;
 		}
 
-		public void setProf_Remove_Columns(ArrayList<Integer> prof_Remove_Columns) {
-			Prof_Remove_Columns = prof_Remove_Columns;
-		}
-
 		public ArrayList<Integer> getTA_Add_Columns() {
 			return TA_Add_Columns;
-		}
-
-		public void setTA_Add_Columns(ArrayList<Integer> tA_Add_Columns) {
-			TA_Add_Columns = tA_Add_Columns;
 		}
 
 		public ArrayList<Integer> getTA_Remove_Columns() {
 			return TA_Remove_Columns;
 		}
 
-		public void setTA_Remove_Columns(ArrayList<Integer> tA_Remove_Columns) {
-			TA_Remove_Columns = tA_Remove_Columns;
-		}
-
 		public ArrayList<Integer> getStudent_Add_Columns() {
 			return Student_Add_Columns;
-		}
-
-		public void setStudent_Add_Columns(ArrayList<Integer> student_Add_Columns) {
-			Student_Add_Columns = student_Add_Columns;
 		}
 
 		public ArrayList<Integer> getStudent_Remove_Columns() {
 			return Student_Remove_Columns;
 		}
 
-		public void setStudent_Remove_Columns(ArrayList<Integer> student_Remove_Columns) {
-			Student_Remove_Columns = student_Remove_Columns;
-		}
-
 		public int getNumberOfColumns() {
 			return numberOfColumns;
-		}
-
-		public void setNumberOfColumns(int numberOfColumns) {
-			this.numberOfColumns = numberOfColumns;
 		}
 
 		public int getCloneRepo() {
 			return cloneRepo;
 		}
 
-		public void setCloneRepo(int cloneRepo) {
-			this.cloneRepo = cloneRepo;
-		}
-
 		public int getRepoCloneLocation() {
 			return repoCloneLocation;
-		}
-
-		public void setRepoCloneLocation(int repoCloneLocation) {
-			this.repoCloneLocation = repoCloneLocation;
 		}
 
 		public int getDeleteRepoColumn() {
 			return deleteRepoColumn;
 		}
 
-		public void setDeleteRepoColumn(int deleteRepoColumn) {
-			this.deleteRepoColumn = deleteRepoColumn;
-		}
-
 		public int getMakeRepoPrivate() {
 			return makeRepoPrivate;
-		}
-
-		public void setMakeRepoPrivate(int makeRepoPrivate) {
-			this.makeRepoPrivate = makeRepoPrivate;
 		}
 		
 		
