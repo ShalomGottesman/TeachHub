@@ -69,10 +69,10 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
 
  
  ## FAQ
- Q: What happens when I add someone to a repository via TeachHub?
+ ### Q: What happens when I add someone to a repository via TeachHub?
  
  A: The username you provided will be added to the lsit of collaborators for that repository, at which an invitation will be sent to the email address associated with the username to accept the invitation. Note that the user who is accepting the invitation must be logged into GitHub on the browser where he is clicking the link from! Otherwise they will receive an 404 error.
  
- Q: How do I start TeachHub?
+ ### Q: How do I start TeachHub?
  
  A: With java installed, type the following into the command line: java -jar <Path-to-TeachHub>TeachHub.jar
