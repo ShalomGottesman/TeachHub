@@ -1,4 +1,4 @@
-import data_structures.Que;
+import data_structures.Queue;
 
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 public class QueTest {
 	@Test
 	public void enqueTest() {
-		Que<Integer> que = new Que<Integer>();
+		Queue<Integer> que = new Queue<Integer>();
 		enque15ints(que);
 		System.out.println(que.size());
 		assertTrue(15 == que.size());
@@ -21,7 +21,7 @@ public class QueTest {
 	
 	
 	
-	private void enque15ints(Que<Integer> que) {
+	private void enque15ints(Queue<Integer> que) {
 		for (int x = 0; x < 15; x++) {
 			que.enque(x);
 		}

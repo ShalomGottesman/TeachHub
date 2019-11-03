@@ -17,7 +17,7 @@ import command.CLICommandRunner;
 import command.Command;
 import command.ExecuteCommand;
 import command.UndoCommand;
-import data_structures.Que;
+import data_structures.Queue;
 import parser.CSVCreator;
 import parser.CSVParser;
 import parser.IllegalDataException;
@@ -80,10 +80,10 @@ public class Main {
 				System.out.println("could not connect to " + intCon.getURL().getPath() + ". Do you have an active intenet connection?");
 			}
 		}
-		Que<ExecuteCommand> commandQue = null;
-		Que<ExecuteCommand> commandQue2 = new Que<ExecuteCommand>();
-		Que<Command> commandQue3 = new Que<Command>();
-		Que<Command> undoQue = new Que<Command>();
+		Queue<ExecuteCommand> commandQue = null;
+		Queue<ExecuteCommand> commandQue2 = new Queue<ExecuteCommand>();
+		Queue<Command> commandQue3 = new Queue<Command>();
+		Queue<Command> undoQue = new Queue<Command>();
 		boolean isAnyCommandClone = false;
 		String redoCSV = "";
 		String undoCSV = "";
@@ -125,7 +125,7 @@ public class Main {
 			redoCSV = csvc.parseQue(commandQue3);
 			CSVCreator csvc2 = new CSVCreator();
 			undoCSV = csvc2.parseQue(undoQue);
-			
+			System.out.println();
 			System.out.println("redo csv info: \n" + redoCSV);
 			System.out.println("undo csv info: \n" + undoCSV);
 			
@@ -165,7 +165,6 @@ public class Main {
 			}
 		}
 		if (history) {
-			System.out.println("this feature has not yet been implemented");
 			try {
 				File historyFolder = new File(new EnviormentVariable().getStorageLocation() + File.separator + "History");
 				Desktop.getDesktop().open(historyFolder);
@@ -290,8 +289,8 @@ public class Main {
 		}
 	}
 	
-	private static Que<ExecuteCommand> parseFileAndPrintInfo(String[] input, Scanner sc) throws FileNotFoundException, IllegalDataException {
-		Que<ExecuteCommand> commandQue = new Que<ExecuteCommand>();
+	private static Queue<ExecuteCommand> parseFileAndPrintInfo(String[] input, Scanner sc) throws FileNotFoundException, IllegalDataException {
+		Queue<ExecuteCommand> commandQue = new Queue<ExecuteCommand>();
 		int filePath = 0;
 		for (int x = 0; x < input.length; x++) {
 			if (input[x].equals("-a") ||

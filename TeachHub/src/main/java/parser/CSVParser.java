@@ -2,7 +2,6 @@ package parser;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import command.ExecuteCommand;
 
@@ -180,7 +179,6 @@ public class CSVParser {
 		 */
 		CSVHeaderParse(String header) throws IllegalHeaderException{
 			String[] tokens = header.split(",");
-			System.out.println(Arrays.toString(tokens));
 			this.numberOfColumns = tokens.length;
 			for (int x = 0; x < tokens.length; x++) {//for each token
 				tokens[x] = tokens[x].trim();

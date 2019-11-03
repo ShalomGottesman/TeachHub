@@ -1,6 +1,5 @@
 package command;
 
-import java.awt.TrayIcon.MessageType;
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
@@ -18,8 +17,7 @@ import com.jcabi.github.Repos;
 import com.jcabi.github.Repos.RepoCreate;
 
 import authentication.Credential;
-import data_structures.Que;
-import notification.Alert;
+import data_structures.Queue;
 import utilities.Strings;
 
 public class CLICommandRunner {
@@ -64,12 +62,12 @@ public class CLICommandRunner {
 	
 	/**
 	 * 
-	 * @param que the que of commands to be executed. Calls CommandRunner.executeSingle on each one
+	 * @param queue the queue of commands to be executed. Calls CommandRunner.executeSingle on each one
 	 * @throws IOException 
 	 */
-	public void executeStack(Que<ExecuteCommand> que, boolean haveToAuthenticateClone, Credential creds) throws IOException {
-		while (que.size() != 0) {
-			ExecuteCommand cmd = que.deque();
+	public void executeStack(Queue<ExecuteCommand> queue, boolean haveToAuthenticateClone, Credential creds) throws IOException {
+		while (queue.size() != 0) {
+			ExecuteCommand cmd = queue.deque();
 			executeSingle(cmd, haveToAuthenticateClone, creds);
 		}
 	}
@@ -101,9 +99,7 @@ public class CLICommandRunner {
 						.withAutoInit(true);
 				this.repos.create(createRepo);
 			} catch (AssertionError e) {
-				Alert alert = new Alert(MessageType.WARNING);
-				alert.setMessege("TeachHub", "couldn't generate repository [" + cmd.getRepoName() + "] becuase it already exists, skipping feature");
-				alert.execute();
+				System.out.println("WARNING: couldn't generate repository [" + cmd.getRepoName() + "] becuase it already exists, skipping feature");
 			}
 			updateRepos();
 		}
@@ -141,9 +137,7 @@ public class CLICommandRunner {
 				try {
 					repos.remove(coords);
 				} catch (AssertionError e) {
-					Alert alert = new Alert(MessageType.WARNING);
-					alert.setMessege("TeachHub", "couldn't delete repository [" + cmd.getRepoName() + "]");
-					alert.execute();
+					System.out.println("WARNING: TeachHub couldn't delete repository [" + cmd.getRepoName() + "]");
 				}
 			} else {
 				System.out.println("deletion verification returned false, not deleting this repo!");
@@ -165,9 +159,7 @@ public class CLICommandRunner {
 				}
 				cloneCommand.call();
 			} catch (GitAPIException | JGitInternalException e) {
-				Alert alert = new Alert(MessageType.ERROR);
-				alert.setMessege("TeachHub", "couldn't clone repository [" + cmd.getRepoName() + "] to desired location, skipping feature");
-				alert.execute();
+				System.out.println("ERROR: TeachHub couldn't clone repository [" + cmd.getRepoName() + "] to desired location (does the folder already exist?), skipping feature");
 				e.printStackTrace();
 			}
 		}

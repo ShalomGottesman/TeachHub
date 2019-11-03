@@ -1,10 +1,10 @@
 package data_structures;
-public class Que<T> {
+public class Queue<T> {
 	private int counter;
 	private Node<T> head;
 	private Node<T> tail;
 	
-	public Que() {
+	public Queue() {
 		this.counter = 0;
 		this.tail = null;
 		this.head = null;

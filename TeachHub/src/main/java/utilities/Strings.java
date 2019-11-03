@@ -30,7 +30,7 @@ public class Strings {
 			"\n" +
 			"All options are designed to be executed independantly of each other, but they can be \n"+
 			"chained together if desired. The order of execution will be the order printed above. \n"+
-			"note that both -a and -f cannot be called in the same execution!";
+			"Note that both -a and -f cannot be called in the same execution!";
 	
 	public static String cloneDetectMsg = 
 			"\nDetected that you are trying to clone at least one repository to a provided \n" +

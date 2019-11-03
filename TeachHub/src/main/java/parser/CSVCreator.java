@@ -2,7 +2,7 @@ package parser;
 
 import java.io.File;
 import command.Command;
-import data_structures.Que;
+import data_structures.Queue;
 
 public class CSVCreator {
 	private CSVHeaderTags tags;
@@ -18,8 +18,8 @@ public class CSVCreator {
 	public File parseSingle(Command cmd) {
 		return null;}
 	
-	public String parseQue(Que<Command> commandQue) {
-		Que<Command> que2 = new Que<Command>();
+	public String parseQue(Queue<Command> commandQue) {
+		Queue<Command> que2 = new Queue<Command>();
 		//first derive all tags required
 		while(commandQue.size() != 0) {
 			Command cmd = commandQue.deque();
@@ -27,7 +27,7 @@ public class CSVCreator {
 			que2.enque(cmd);
 		}
 		//parse each cmd into a CSV line
-		Que<String[]> allLines = new Que<String[]>();
+		Queue<String[]> allLines = new Queue<String[]>();
 		while (que2.size() != 0) {
 			Command cmd = que2.deque();
 			String[] lineInfo = analyzeCommandForInfo(cmd);
@@ -40,7 +40,7 @@ public class CSVCreator {
 		return wholeText;
 		}
 	
-	private String generateFileTextBody(Que<String[]> infoQue) {
+	private String generateFileTextBody(Queue<String[]> infoQue) {
 		String fullText = "";
 		while (infoQue.size() != 0) {
 			String[] thisLineArray = infoQue.deque();

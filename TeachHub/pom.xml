@@ -5,6 +5,12 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>TeachHub- an abstraction of the GitHub API</name>
   <description>API designed to assist teachers in creating github repos for new students in classes programically with added use of adding/removing TAs as seen fit</description>
+  
+  <properties>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
+  </properties>
+  
   <dependencies>
   	<dependency>
   		<groupId>com.jcabi</groupId>
