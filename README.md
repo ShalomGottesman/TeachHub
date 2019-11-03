@@ -1,5 +1,3 @@
-README
-
 # TeachHub
 
 An ease-of-use application based on an abstraction of the GitHub REST API designed to assist professors in generating and cloning many git repositories for students. Additional usage allows user to add/remove many collaborators to repositories (specifically TAs and other Professors)
@@ -19,7 +17,7 @@ This guide is broken down into three section: Setup, File Syntax, Execution.
 To change this, create an enviorment variable called "TeachHub" (without quotes) with the value being the location you would like the application to create the sub directory "/TeachHub" to store the files.
 
 
-##File Syntax
+## File Syntax
 Currently, TeachHub can only operate on .CSV files (possible update for excel files coming). That being said, the CSV files must be formatted correctly for the application to work correctly. These are the proper headers that the first line of the CSV must have. It does not have to have all the heads, just the ones applicable.
      * User
 		 * Repo_Name
