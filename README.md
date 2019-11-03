@@ -41,9 +41,11 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  
  Sample 1
  ![GitHub Logo](/README_src/TeachHub_CSV-ex1.png)
-  Sample 2
+ 
+ Sample 2
  ![GitHub Logo](/README_src/TeachHub_CSV-ex2.png)
-  Sample 3
+ 
+ Sample 3
  ![GitHub Logo](/README_src/TeachHub_CSV-ex3.png)
  
  Once you have a file ready to execute, save the file in any location of your computer that you know the path to.
