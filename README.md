@@ -65,7 +65,7 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  
  Note that for all undo/redo purposes, the Cloneing information from the execution file is left out, this is to prevent trying to clone again to the same location or accidentaly deleting files from the local computer.
  
- ![GitHub Logo](/README_src/ TeachHub_ExecutionEx.png)
+ ![GitHub Logo](/README_src/TeachHub_ExecutionEx.png)
 
  
  ## FAQ
