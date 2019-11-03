@@ -76,3 +76,7 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  ### Q: How do I start TeachHub?
  
  A: With java installed, type the following into the command line: java -jar <Path-to-TeachHub>TeachHub.jar
+ 
+ ### Q: How to export to a csv from excel?
+ 
+ A: This is very important, when dealing with excel to format your table and then exporting out to a csv file you must make sure you export in the correct format. Excel has many options for how to export to a CSV, there is UTF-8, for Mac, ect. just select Comma Deliminated and it should work. If it does not work try exporting the file again and rerun the application.
