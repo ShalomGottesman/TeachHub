@@ -1,5 +1,8 @@
+README
+
 # TeachHub
 
-An abstraction of the already existing GitHub API to automate process of professors having to create git repositories for each individual student at the start of each year.
+An ease-of-use application based on an abstraction of the GitHub REST API designed to assist professors in generating and cloning many git repositories for students. Additional usage allows user to add/remove many collaborators to repositories (specifically TAs and other Professors)
 
-Based on com.jcabi.github library
+![image info](.\README_src\TeachHub_openMsg.png)
+
