@@ -18,7 +18,7 @@ To change this, create an enviorment variable called "TeachHub" (without quotes)
 
 
 ## File Syntax
-Currently, TeachHub can only operate on .CSV files (possible update for excel files coming). That being said, the CSV files must be formatted correctly for the application to work correctly. These are the proper headers that the first line of the CSV must have. It does not have to have all the heads, just the ones applicable.
+Currently, TeachHub can only operate on .CSV files (possible update for excel files coming). That being said, the CSV files must be formatted properly for the application to work correctly. These are the proper headers that the first line of the CSV must have. It does not have to have all the heads, just the ones applicable.
  * User
  * Repo_Name
  * Create_Repo
