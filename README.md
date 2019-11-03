@@ -60,13 +60,14 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  When executing a file, the application will first analyze the file passed in and present: a summer of what is about to be executed, and samples of the undo/redo files that will be generated and saved in the "/TeachHub" folder as discussed in the first section.
  Also when executing a file, there will be some user dialoge to complete with the command line:
  1. User credentials for the application to use with the github API
- 2. verification to delete a repo (if applicable)
- 3. user credentials for cloneing the repo to the local computer (if applicable)
+ 2. Verification to delete a repo (if applicable)
+ 3. User credentials for cloneing the repo to the local computer (if applicable)
  
+ Note that for all undo/redo purposes, the Cloneing information from the execution file is left out, this is to prevent trying to clone again to the same location or accidentaly deleting files from the local computer.
  
+ ![GitHub Logo](/README_src/ TeachHub_ExecutionEx.png)
+
  
- 
-
-
-
-
+ ## FAQ
+ Q: What happens when I add someone to a repository via TeachHub?
+ A: The username you provided will be added to the lsit of collaborators for that repository, at which an invitation will be sent to the email address associated with the username to accept the invitation. Note that the user who is accepting the invitation must be logged into GitHub on the browser where he is clicking the link from! Otherwise they will receive an 404 error.
