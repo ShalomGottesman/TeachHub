@@ -1,6 +1,6 @@
 # TeachHub
 
-An ease-of-use application based on an abstraction of the GitHub REST API designed to assist professors in generating and cloning many git repositories for students. Additional usage allows user to add/remove many collaborators to repositories (specifically TAs and other Professors)
+An ease-of-use application based on an abstraction of the GitHub REST API designed to assist professors in generating and cloning many git repositories for students. Additional usage allows user to add/remove many collaborators to repositories (specifically TAs and other Professors).
 
 
 ![GitHub Logo](/README_src/TeachHub_openMsg.png)
@@ -40,10 +40,17 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  Sample CSVs are shown beloew:
  
  Sample 1
+ 
  ![GitHub Logo](/README_src/TeachHub_CSV-ex1.png)
-  Sample 2
+ 
+ 
+ Sample 2
+ 
  ![GitHub Logo](/README_src/TeachHub_CSV-ex2.png)
-  Sample 3
+ 
+ 
+ Sample 3
+ 
  ![GitHub Logo](/README_src/TeachHub_CSV-ex3.png)
  
  Once you have a file ready to execute, save the file in any location of your computer that you know the path to.
