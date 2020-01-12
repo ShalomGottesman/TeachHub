@@ -15,7 +15,8 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<outputDirectory>${project.build.directory}</outputDirectory>
-		<my.baseJarFileName>base</my.baseJarFileName>
+		<my.baseJarFileName>base</my.baseJarFileName> <!-- objective name for temporary file to be deleted later -->
+		<my.endAppName>TeachHub</my.endAppName> <!-- do not include ".jar" in this name! it will be added later -->
 	</properties>
   
 	<dependencies>
@@ -113,7 +114,7 @@
 				<configuration>
 					<outputDirectory>${outputDirectory}</outputDirectory>
 					<mainJarFilename>${my.baseJarFileName}.jar</mainJarFilename>
-					<filename>TeachHub.jar</filename>
+					<filename>${my.endAppName}.jar</filename>
 				</configuration>
 				<executions>
 				  <execution>
@@ -136,6 +137,7 @@
 						</goals>
 						<configuration>
 							<target>
+								<echo>Deleting ${outputDirectory}/${my.baseJarFileName}.jar</echo>
 								<delete>
 									<fileset file="${outputDirectory}/${my.baseJarFileName}.jar"/>
 								</delete>
