@@ -156,8 +156,8 @@ public class Main {
 					}
 				}
 				
-				CLICommandRunner clir = new CLICommandRunner(github, false, username, sc);
-				clir.executeStack(commandQue2, isAnyCommandClone, cloneCreds);
+				CLICommandRunner cliCR = new CLICommandRunner(github, false, username, sc);
+				cliCR.executeStack(commandQue2, isAnyCommandClone, cloneCreds);
 				//now use que3 to create an undo/redo file set
 				setUndoRedoFiles(redoCSV, undoCSV);
 			} else {
