@@ -104,11 +104,12 @@ public class CLICommandRunner {
 			updateRepos();
 		}
 		
-		Coordinates coords = new Coordinates.Simple(this.username, repoName);
-		Repo repo = repos.get(coords);
+		//Coordinates coords = new Coordinates.Simple(this.username, repoName); //this style gives errors when the user owns the repo, but under a different name
+		Coordinates coords = new Coordinates.Simple(cmd.getUser(), cmd.getRepoName());//proposed change to solve issue mentioned above. must be tested
+		Repo repo = this.repos.get(coords);
 		for (String collabToAdd : cmd.getAllAddCollabs()) {
 			if (!repo.collaborators().isCollaborator(collabToAdd)) {
-				System.out.println("adding: " + collabToAdd);
+				System.out.println("adding: " + collabToAdd + " for: " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()));
 				try {
 					repo.collaborators().add(collabToAdd);
 				} catch (AssertionError e) {
