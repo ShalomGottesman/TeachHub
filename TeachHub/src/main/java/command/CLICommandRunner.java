@@ -2,6 +2,7 @@ package command;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.Scanner;
 
 import org.eclipse.jgit.api.CloneCommand;
@@ -15,6 +16,9 @@ import com.jcabi.github.Github;
 import com.jcabi.github.Repo;
 import com.jcabi.github.Repos;
 import com.jcabi.github.Repos.RepoCreate;
+import com.jcabi.http.Request;
+import com.jcabi.http.response.JsonResponse;
+import com.jcabi.http.response.RestResponse;
 
 import authentication.Credential;
 import data_structures.Queue;
@@ -87,19 +91,37 @@ public class CLICommandRunner {
 			initMsg = Strings.defaultRepoInitMsg;
 		}
 		
-		String repoName = cmd.getRepoName();
-		System.out.println("working on repository: " + repoName);
+		System.out.println("working on repository: " + cmd.getRepoName());
+		
 		
 		if (cmd.isCreateRepo()) {
 			try {
 				System.out.println("creating repo");
 				boolean makePrivate = cmd.isMakeRepoPrivate();
-				RepoCreate createRepo = new RepoCreate(repoName, makePrivate)
+				String apiUriPath = "";
+				//derive where the repo goes in this users account, either in the organization or the regular repos
+				if (!cmd.getUser().equals(this.username)) {
+					apiUriPath = "/orgs/"+ cmd.getUser() + "/repos";
+				} else {
+					apiUriPath = "user/repos";
+				}
+				//generate basic settings
+				RepoCreate createRepoSettings = new RepoCreate(cmd.getRepoName(), makePrivate)
 						.withDescription(initMsg)
 						.withAutoInit(true);
-				this.repos.create(createRepo);
+				
+				//use settings to generate repo under specified path
+				this.github.entry().uri().path(apiUriPath)
+				.back().method(Request.POST)
+		        .body().set(createRepoSettings.json()).back()
+		        .fetch().as(RestResponse.class)
+		        .assertStatus(HttpURLConnection.HTTP_CREATED)
+		        .as(JsonResponse.class)
+		        // @checkstyle MultipleStringLiterals (1 line)
+		        .json().readObject().getString("full_name");
+
 			} catch (AssertionError e) {
-				System.out.println("WARNING: couldn't generate repository [" + cmd.getRepoName() + "] becuase it already exists, skipping feature");
+				System.out.println("WARNING: couldn't generate repository [" + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()) + "] becuase it already exists, skipping feature");
 			}
 			updateRepos();
 		}
@@ -133,7 +155,7 @@ public class CLICommandRunner {
 		repo = updateRepo(repo);
 		if (cmd.isDeleteRepo()) {
 			System.out.println();
-			boolean verify = verifyDelete(this.username, repoName, this.sc);
+			boolean verify = verifyDelete(cmd.getUser(), cmd.getRepoName(), this.sc);
 			if (verify) {
 				try {
 					repos.remove(coords);
