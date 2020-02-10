@@ -3,7 +3,13 @@ package command;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Scanner;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonValue;
 
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
@@ -30,6 +36,55 @@ public class CLICommandRunner {
 	private boolean useTestMessege;
 	private String username;
 	private Scanner sc;
+	
+	Queue<String> messegeQueue = new Queue<String>();
+	//stats
+	int totalCreates = 0;
+	int succesfulCreates = 0;
+	int totalDeletes = 0;
+	int succesfulDeletes = 0;
+	int totalInvites = 0;
+	int succesfulInvites = 0;
+	int totalRemoves = 0;
+	int succesfulRemoves = 0;
+	int totalClones = 0;
+	int succesfulClones = 0;
+	
+	HashSet<myCoordinates> creatingRepoCoordSet = new HashSet<myCoordinates>(); 
+	HashSet<myCoordinates> ModifyingRepoCoordSet = new HashSet<myCoordinates>(); 
+	
+	private void printStats() {
+		System.out.println("MESSEGES:");
+		while(this.messegeQueue.size() != 0) {
+			String msg = messegeQueue.deque();
+			System.out.println(msg);
+		}
+		if (totalCreates != 0) {
+			System.out.println("Succesful Creates: " + succesfulCreates +"/"+ totalCreates);
+			totalCreates = 0;
+			succesfulCreates = 0;
+		}
+		if (totalDeletes != 0) {
+			System.out.println("Succesful Creates: " + succesfulDeletes +"/"+ totalDeletes);
+			totalDeletes = 0;
+			succesfulDeletes = 0;
+		}
+		if (totalInvites != 0) {
+			System.out.println("Succesful Creates: " + succesfulInvites +"/"+ totalInvites);
+			totalInvites = 0;
+			succesfulInvites = 0;
+		}
+		if (totalRemoves != 0) {
+			System.out.println("Succesful Creates: " + succesfulRemoves +"/"+ totalRemoves);
+			totalRemoves = 0;
+			succesfulRemoves = 0;
+		}
+		if (totalClones != 0) {
+			System.out.println("Succesful Creates: " + succesfulClones +"/"+ totalClones);
+			totalClones = 0;
+			succesfulClones = 0;
+		}
+	}
 	
 	/**
 	 * 
@@ -70,10 +125,53 @@ public class CLICommandRunner {
 	 * @throws IOException 
 	 */
 	public void executeStack(Queue<ExecuteCommand> queue, boolean haveToAuthenticateClone, Credential creds) throws IOException {
+		Queue<ExecuteCommand> temp = new Queue<ExecuteCommand>();
 		while (queue.size() != 0) {
 			ExecuteCommand cmd = queue.deque();
-			executeSingle(cmd, haveToAuthenticateClone, creds);
+			updateStats(cmd);
+			temp.enque(cmd);
 		}
+		queue = temp;
+		
+		while (queue.size() != 0) {
+			ExecuteCommand cmd = queue.deque();
+			executeSinglePrivate(cmd, haveToAuthenticateClone, creds);
+		}
+		printStats();
+	}
+	
+	private void updateStats(ExecuteCommand cmd) {
+		myCoordinates thisCord = new myCoordinates(cmd.getUser(), cmd.getRepoName());
+		boolean isCreate = false;
+		boolean isAnythingElse = false;
+		if (cmd.isCreateRepo()) {
+			this.totalCreates++;
+			this.creatingRepoCoordSet.add(thisCord);
+			isCreate = true;
+		}
+		if(cmd.isDeleteRepo()) {
+			isAnythingElse = true;
+			this.totalDeletes++;
+		}
+		if(cmd.isCloneRepo()) {
+			isAnythingElse = true;
+			this.totalClones++;
+		}
+		this.totalInvites += cmd.getAllAddCollabs().size();
+		this.totalRemoves += cmd.getAllRemoveCollabs().size();
+		if (cmd.getAllAddCollabs().size() != 0 || cmd.getAllRemoveCollabs().size() != 0) {
+			isAnythingElse = true;
+		}
+		if (isAnythingElse && !isCreate) {
+			this.ModifyingRepoCoordSet.add(thisCord);
+		}
+		
+	}
+	
+	public void executeSingle(ExecuteCommand cmd, boolean haveToAuthenticateClone, Credential creds) throws IOException {
+		updateStats(cmd);
+		executeSinglePrivate(cmd, haveToAuthenticateClone, creds);
+		printStats();
 	}
 	
 	/**
@@ -81,7 +179,7 @@ public class CLICommandRunner {
 	 * @param cmd the command to be executed
 	 * @throws IOException when any action taken on a repository is done, this is possible (create, add collaborator, remove collaborator, deleting a repository)
 	 */
-	public void executeSingle(ExecuteCommand cmd, boolean haveToAuthenticateClone, Credential creds) throws IOException {
+	private void executeSinglePrivate(ExecuteCommand cmd, boolean haveToAuthenticateClone, Credential creds) throws IOException {
 		System.out.println();
 		this.repos = this.github.repos();
 		String initMsg = "";
@@ -130,6 +228,10 @@ public class CLICommandRunner {
 		Coordinates coords = new Coordinates.Simple(cmd.getUser(), cmd.getRepoName());//proposed change to solve issue mentioned above. must be tested
 		Repo repo = this.repos.get(coords);
 		for (String collabToAdd : cmd.getAllAddCollabs()) {
+			if (isInvitee(repo, collabToAdd)) {
+				System.out.println(collabToAdd + " is already invited to " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()));
+				continue;
+			}
 			if (!repo.collaborators().isCollaborator(collabToAdd)) {
 				System.out.println("adding: " + collabToAdd + " for: " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()));
 				try {
@@ -137,6 +239,8 @@ public class CLICommandRunner {
 				} catch (AssertionError e) {
 					continue;
 				}
+			} else {
+				System.out.println(collabToAdd + " is already a collaborator for " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()));
 			}
 		}
 		updateRepos();
@@ -149,6 +253,8 @@ public class CLICommandRunner {
 				} catch (AssertionError e) {
 					continue;
 				}
+			} else {
+				System.out.println(collabToRemove + " is not a collaborator for " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()));
 			}
 		}
 		updateRepos();
@@ -165,6 +271,9 @@ public class CLICommandRunner {
 			} else {
 				System.out.println("deletion verification returned false, not deleting this repo!");
 			}
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {}
 		}
 		
 		if (cmd.isCloneRepo()) {
@@ -229,6 +338,65 @@ public class CLICommandRunner {
 		} else {
 			System.out.println("That was not a recognized response, valid responses are: \"Yes\" and \"No\", lets try this again");
 			return verifyDelete(userName, repoName, sc);
+		}
+	}
+	
+	private boolean isInvitee(Repo repo, String user) throws IOException {
+		Iterator<JsonValue> iter;
+		try{
+			iter = repo.github().entry().uri()
+				.path("/repos")
+				.path(repo.coordinates().user())
+				.path(repo.coordinates().repo())
+				.path("/invitations")
+				.back().method(Request.GET)
+				.body().set(Json.createArrayBuilder().build()).back()
+				.fetch().as(RestResponse.class)
+		        .assertStatus(HttpURLConnection.HTTP_OK)
+		        .as(JsonResponse.class)
+		        .json().readArray().iterator();
+		} catch (AssertionError e) {
+			System.out.println("COuld not contact github to see if user is already invited to collaborate, assuming he is not a collaborator");
+			return false;
+		}
+				
+		while (iter.hasNext()) {
+			JsonObject val = (JsonObject) iter.next();
+			if (val.getJsonObject("invitee").getString("login").equals(user)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private class myCoordinates{
+		String username;
+		String reponame;
+		
+		myCoordinates(String user, String repo){
+			username = user;
+			reponame = repo;
+		}
+		
+		@Override
+		public boolean equals(Object that) {
+			if (that == null) {
+				return false;
+			}
+			if (that.getClass() != this.getClass()) {
+				return false;
+			}
+			that = (myCoordinates) that;
+			if (((myCoordinates) that).reponame.equals(this.reponame) && ((myCoordinates) that).username.equals(this.username)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
+		@SuppressWarnings("unused")
+		public int hashcode() {
+			return this.username.hashCode() * this.reponame.hashCode();
 		}
 	}
 }
