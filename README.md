@@ -57,7 +57,7 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  
  ## Execution
  Once you have called the application to begin, the options will appear, they are all self explanatory in their prupose. 
- When executing a file, the application will first analyze the file passed in and present: a summer of what is about to be executed, and samples of the undo/redo files that will be generated and saved in the "/TeachHub" folder as discussed in the first section.
+ When executing a file, the application will first analyze the file passed in and present: a summery of what is about to be executed, and samples of the undo/redo files that will be generated and saved in the "/TeachHub" folder as discussed in the first section.
  Also when executing a file, there will be some user dialoge to complete with the command line:
  1. User credentials for the application to use with the github API
  2. Verification to delete a repo (if applicable)
