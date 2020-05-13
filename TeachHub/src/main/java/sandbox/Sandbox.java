@@ -84,17 +84,16 @@ public class Sandbox {
 		        .as(JsonResponse.class)
 		        .json().readArray().iterator();
 		int idToAccept = 0;
-		boolean match = false;
 		String thisCoord = coords.user() +"/"+ coords.repo();
-		while (iter.hasNext() && !match) {
+		while (iter.hasNext()) {
 			JsonObject obj = (JsonObject) iter.next();
 			JsonObject repository = obj.getJsonObject("repository");
 			String fullRepoName = repository.getString("full_name");
 			System.out.println(thisCoord +":"+ fullRepoName);
 			if (fullRepoName.equals(thisCoord)) {
 				System.out.println("match");
-				match = true;
 				idToAccept = obj.getInt("id");
+				break;
 			}
 		}
 		RestResponse resp = github.entry().uri().path("/user/repository_invitations/" + idToAccept).back().method(Request.PATCH)
