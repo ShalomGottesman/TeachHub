@@ -1,6 +1,5 @@
 package command;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.HashSet;
@@ -10,12 +9,6 @@ import java.util.Scanner;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
-
-import org.eclipse.jgit.api.CloneCommand;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.JGitInternalException;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 import com.jcabi.github.Coordinates;
 import com.jcabi.github.Github;
@@ -28,6 +21,7 @@ import com.jcabi.http.response.RestResponse;
 
 import authentication.Credential;
 import data_structures.Queue;
+import githubAction.Cloning;
 import utilities.Strings;
 
 public class CLICommandRunner {
@@ -217,9 +211,12 @@ public class CLICommandRunner {
 		        .as(JsonResponse.class)
 		        // @checkstyle MultipleStringLiterals (1 line)
 		        .json().readObject().getString("full_name");
+				succesfulCreates++;
 
 			} catch (AssertionError e) {
-				System.out.println("WARNING: couldn't generate repository [" + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()) + "] becuase it already exists, skipping feature");
+				String msg = "WARNING: couldn't generate repository [" + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()) + "] becuase it already exists, skipping feature";
+				System.out.println(msg);
+				messegeQueue.enque(msg);
 			}
 			updateRepos();
 		}
@@ -233,14 +230,29 @@ public class CLICommandRunner {
 				continue;
 			}
 			if (!repo.collaborators().isCollaborator(collabToAdd)) {
-				System.out.println("adding: " + collabToAdd + " for: " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()));
 				try {
-					repo.collaborators().add(collabToAdd);
+					if(cmd.isInvitesReadonly()) {
+						System.out.println("adding: " + collabToAdd + " Read Only for: " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()));
+						String path = "/repos/" + coords.user() +"/"+ coords.repo() +"/collaborators/"+ collabToAdd;
+						github.entry().uri().queryParam("permission", "read").path(path).back().method(Request.PUT)
+						.body().back()
+						.fetch().as(RestResponse.class)
+						.assertStatus(HttpURLConnection.HTTP_CREATED);
+					} else {
+						System.out.println("adding: " + collabToAdd + " for: " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()));
+						repo.collaborators().add(collabToAdd);
+					}
+					succesfulInvites++;
 				} catch (AssertionError e) {
+					String msg = "unsecessful add of user ["+collabToAdd+"] to repo["+repoURLAbstractor(cmd.getUser(), cmd.getRepoName())+"]";
+					System.out.println(msg);
+					messegeQueue.enque(msg);
 					continue;
 				}
 			} else {
-				System.out.println(collabToAdd + " is already a collaborator for " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()));
+				String msg = collabToAdd + " is already a collaborator for " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName());
+				System.out.println(msg);
+				messegeQueue.enque(msg);
 			}
 		}
 		updateRepos();
@@ -250,50 +262,64 @@ public class CLICommandRunner {
 				System.out.println("removing: " + collabToRemove);
 				try {
 					repo.collaborators().remove(collabToRemove);
+					succesfulRemoves++;
 				} catch (AssertionError e) {
+					String msg = "unsecessful remove of user ["+collabToRemove+"] to repo["+repoURLAbstractor(cmd.getUser(), cmd.getRepoName())+"]";
+					messegeQueue.enque(msg);
 					continue;
 				}
 			} else {
-				System.out.println(collabToRemove + " is not a collaborator for " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()));
+				String msg = collabToRemove + " is not a collaborator for " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName());
+				System.out.println(msg);
+				messegeQueue.enque(msg);
 			}
 		}
 		updateRepos();
 		repo = updateRepo(repo);
 		if (cmd.isDeleteRepo()) {
-			System.out.println();
-			boolean verify = verifyDelete(cmd.getUser(), cmd.getRepoName(), this.sc);
-			if (verify) {
-				try {
-					repos.remove(coords);
-				} catch (AssertionError e) {
-					System.out.println("WARNING: TeachHub couldn't delete repository [" + cmd.getRepoName() + "]");
-				}
+			boolean ret = deleteProcess(cmd);
+			String msg = "";
+			if (ret) {
+				succesfulDeletes++;
+				msg = "Deleted repository [" + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()) +"]";
 			} else {
-				System.out.println("deletion verification returned false, not deleting this repo!");
+				msg = "Did not delete repository [" + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()) +"]";
 			}
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {}
+			System.out.println(msg);
+			messegeQueue.enque(msg);
+			//use ret for statistics
 		}
 		
 		if (cmd.isCloneRepo()) {
-			System.out.println("cloning repo to: " + cmd.getCloneLocation().toString());
-			File cloneLocation = new File(cmd.getCloneLocation().toString() + File.separator + cmd.getRepoName());
+			Cloning cloner = new Cloning(cmd);
 			String cloneUrl = repoURLAbstractor(cmd.getUser(), cmd.getRepoName());
-			try {
-				CloneCommand cloneCommand = Git.cloneRepository().setURI(cloneUrl).setDirectory(cloneLocation);
-				if(haveToAuthenticateClone) {
-					UsernamePasswordCredentialsProvider userpass = creds.getUsernamePasswordCredentialsProvider();
-					if (userpass == null) {
-						System.out.println("userpass is null");
-					}
-					cloneCommand.setCredentialsProvider(userpass);
-				}
-				cloneCommand.call();
-			} catch (GitAPIException | JGitInternalException e) {
-				System.out.println("ERROR: TeachHub couldn't clone repository [" + cmd.getRepoName() + "] to desired location (does the folder already exist?), skipping feature");
-				e.printStackTrace();
+			boolean ret = cloner.clone(haveToAuthenticateClone, creds, cloneUrl);
+			if(ret) {
+				succesfulClones++;
+			} else {
+				String msg = "ERROR: TeachHub couldn't clone repository [" + cmd.getRepoName() + "] to desired location (does the folder already exist?), skipping feature";
+				System.out.println(msg);
+				messegeQueue.enque(msg);
 			}
+			//use ret value to determine succes for stats
+		}
+	}
+	
+	private boolean deleteProcess(ExecuteCommand cmd) throws IOException {
+		Coordinates coords = new Coordinates.Simple(cmd.getUser(), cmd.getRepoName());
+		System.out.println();
+		boolean verify = verifyDelete(cmd.getUser(), cmd.getRepoName(), this.sc);
+		if (verify) {
+			try {
+				repos.remove(coords);
+				return true;
+			} catch (AssertionError e) {
+				System.out.println("WARNING: TeachHub couldn't delete repository [" + cmd.getRepoName() + "]");
+				return false;
+			}
+		} else {
+			System.out.println("deletion verification returned false, not deleting this repo!");
+			return false;
 		}
 	}
 	

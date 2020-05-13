@@ -16,6 +16,7 @@ public class UndoCommand implements Command{
 	private ArrayList<String> removeCollabs_Studs = new ArrayList<String>();
 	private boolean makeRepoPrivate;
 	private boolean deleteRepo;
+	private boolean invitesReadonly;
 	
 	/**
 	 * The constructor of the command is to create a near mirror image of the command passed in,
@@ -184,5 +185,17 @@ public class UndoCommand implements Command{
 
 	public void setRemoveCollabs_Studs(ArrayList<String> removeCollabs_Studs) {
 		this.removeCollabs_Studs = removeCollabs_Studs;
+	}
+
+	@Override
+	public boolean isInvitesReadonly() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setInvitesReadOnly(boolean bool) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -19,6 +19,7 @@ public class ExecuteCommand implements Command{
 	private File cloneLocation;
 	private boolean makeRepoPrivate;
 	private boolean deleteRepo;
+	private boolean invitesReadonly;
 	
 	public ExecuteCommand(){}
 	
@@ -182,6 +183,14 @@ public class ExecuteCommand implements Command{
 
 	public void setCloneLocation(File cloneLocation) {
 		this.cloneLocation = cloneLocation;
+	}
+
+	public boolean isInvitesReadonly() {
+		return invitesReadonly;
+	}
+
+	public void setInvitesReadOnly(boolean bool) {
+		this.invitesReadonly = bool;
 	}
 	
 }
