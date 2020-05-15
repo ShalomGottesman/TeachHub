@@ -19,7 +19,7 @@ import com.jcabi.http.Request;
 import com.jcabi.http.response.JsonResponse;
 import com.jcabi.http.response.RestResponse;
 
-import authentication.Credential;
+import authentication.Authentication;
 import data_structures.Queue;
 import githubAction.Cloning;
 import utilities.Strings;
@@ -118,7 +118,7 @@ public class CLICommandRunner {
 	 * @param queue the queue of commands to be executed. Calls CommandRunner.executeSingle on each one
 	 * @throws IOException 
 	 */
-	public void executeStack(Queue<ExecuteCommand> queue, boolean haveToAuthenticateClone, Credential creds) throws IOException {
+	public void executeStack(Queue<ExecuteCommand> queue, boolean haveToAuthenticateClone, Authentication creds) throws IOException {
 		Queue<ExecuteCommand> temp = new Queue<ExecuteCommand>();
 		while (queue.size() != 0) {
 			ExecuteCommand cmd = queue.deque();
@@ -162,7 +162,7 @@ public class CLICommandRunner {
 		
 	}
 	
-	public void executeSingle(ExecuteCommand cmd, boolean haveToAuthenticateClone, Credential creds) throws IOException {
+	public void executeSingle(ExecuteCommand cmd, boolean haveToAuthenticateClone, Authentication creds) throws IOException {
 		updateStats(cmd);
 		executeSinglePrivate(cmd, haveToAuthenticateClone, creds);
 		printStats();
@@ -173,7 +173,7 @@ public class CLICommandRunner {
 	 * @param cmd the command to be executed
 	 * @throws IOException when any action taken on a repository is done, this is possible (create, add collaborator, remove collaborator, deleting a repository)
 	 */
-	private void executeSinglePrivate(ExecuteCommand cmd, boolean haveToAuthenticateClone, Credential creds) throws IOException {
+	private void executeSinglePrivate(ExecuteCommand cmd, boolean haveToAuthenticateClone, Authentication creds) throws IOException {
 		System.out.println();
 		this.repos = this.github.repos();
 		String initMsg = "";

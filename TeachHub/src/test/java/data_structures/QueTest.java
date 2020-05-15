@@ -1,3 +1,4 @@
+package data_structures;
 import data_structures.Queue;
 
 import org.junit.Test;

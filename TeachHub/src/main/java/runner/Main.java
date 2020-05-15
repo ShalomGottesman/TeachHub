@@ -12,7 +12,7 @@ import java.util.Scanner;
 import com.google.common.io.Files;
 import com.jcabi.github.Github;
 
-import authentication.Credential;
+import authentication.Authentication;
 import command.CLICommandRunner;
 import command.Command;
 import command.ExecuteCommand;
@@ -22,6 +22,7 @@ import parser.CSVCreator;
 import parser.CSVParser;
 import parser.IllegalDataException;
 import parser.IllegalHeaderException;
+import pat_manager.PAT_Manager;
 import utilities.EnviormentVariable;
 import utilities.InternetConnection;
 import utilities.ReadCredentials;
@@ -36,6 +37,7 @@ public class Main {
 	private static boolean login;
 	private static boolean analyze;
 	private static boolean file;
+	private static boolean openManager;
 	private static boolean history;
 	private static boolean undo;
 	private static boolean redo;
@@ -54,6 +56,9 @@ public class Main {
 			}
 			System.out.println(utilities.Strings.optionsMsg);
 			Scanner sc = new Scanner(System.in);
+			if (new PAT_Manager().numberOfPatFiles() == 0) {
+				System.out.println(utilities.Strings.PAT_MangerInfo);
+			}
 			run(new String[0], sc);
 		} else {
 			System.out.println("verification failed, has your license expired?");
@@ -72,10 +77,18 @@ public class Main {
 			input = args;
 		}
 		parseLine(input);
-		Credential creds = null;
+		Authentication creds = null;
+		if(openManager) {
+			new PAT_Manager().commandLoop(sc);
+			resetAll();
+		}
 		if (login) {
 			if (intCon.isConnectionAvailable()) {
-				creds = ReadCredentials.readCredential("user name and password to use to execute the file", sc);
+				if(new UserChoice().yesNo(utilities.Strings.StoredPAT_OrUserInput, sc)) {
+					creds = new PAT_Manager().retreiveToken(sc);
+				} else {
+					creds = ReadCredentials.readCredential("user name and password to use to execute the file", sc);
+				}
 			} else {
 				System.out.println("could not connect to " + intCon.getURL().getPath() + ". Do you have an active intenet connection?");
 			}
@@ -139,7 +152,7 @@ public class Main {
 				
 				Github github = creds.authenticate();
 				String username = github.users().self().login();
-				Credential cloneCreds = null;
+				Authentication cloneCreds = null;
 				
 				if (isAnyCommandClone) {
 					boolean needCredsForClone = new UserChoice().yesNo(utilities.Strings.cloneDetectMsg, sc);
@@ -264,6 +277,9 @@ public class Main {
 			if (str.equals("-f")  || str.equals("--file")) {
 				file = true;
 			}
+			if (str.equals("-p")  || str.equals("-m")  || str.equals("--pat-manager")) {
+				openManager = true;
+			}
 			if (str.equals("-h")  || str.equals("--history")) {
 				history = true;
 			}
@@ -326,6 +342,7 @@ public class Main {
 		login = false;
 		analyze  = false;
 		file = false;
+		openManager = false;
 		history = false;
 		undo = false;
 		redo = false;

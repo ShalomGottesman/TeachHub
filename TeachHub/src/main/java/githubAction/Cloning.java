@@ -8,7 +8,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
-import authentication.Credential;
+import authentication.Authentication;
 import command.ExecuteCommand;
 
 public class Cloning {
@@ -17,7 +17,7 @@ public class Cloning {
 		this.cmd = cmd;
 	}
 	
-	public boolean clone(boolean haveToAuthenticateClone, Credential creds, String cloneUrl) {
+	public boolean clone(boolean haveToAuthenticateClone, Authentication creds, String cloneUrl) {
 		System.out.println("cloning repo to: " + cmd.getCloneLocation().toString());
 		File cloneLocation = new File(cmd.getCloneLocation().toString() + File.separator + cmd.getRepoName());
 		//String cloneUrl = repoURLAbstractor(cmd.getUser(), cmd.getRepoName());

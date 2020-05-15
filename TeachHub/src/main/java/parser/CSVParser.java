@@ -103,7 +103,9 @@ public class CSVParser {
 		}
 		//set cmd invite to read only if applicable
 		if(format.readOnlyInvites != -1) {
-			cmd.setInvitesReadOnly(true);
+			if(info[format.readOnlyInvites].toLowerCase().equals("yes")) {
+				cmd.setInvitesReadOnly(true);
+			}
 		}
 		//clone repo? -data can be empirically invalid
 		int cloneRepoBooleanColumn = format.getCloneRepo();
