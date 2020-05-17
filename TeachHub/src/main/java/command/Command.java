@@ -57,4 +57,8 @@ public interface Command {
 	public ArrayList<String> getRemoveCollabs_Studs();
 
 	public void setRemoveCollabs_Studs(ArrayList<String> removeCollabs_Studs);
+	
+	public boolean isInvitesReadonly();
+	
+	public void setInvitesReadOnly(boolean bool);
 }

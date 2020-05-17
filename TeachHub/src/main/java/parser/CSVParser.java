@@ -101,7 +101,12 @@ public class CSVParser {
 			temp.add(info[columnNum]);
 			cmd.setRemoveCollabs_Studs(temp);
 		}
-		
+		//set cmd invite to read only if applicable
+		if(format.readOnlyInvitesColumn != -1) {
+			if(info[format.readOnlyInvitesColumn].toLowerCase().equals("yes")) {
+				cmd.setInvitesReadOnly(true);
+			}
+		}
 		//clone repo? -data can be empirically invalid
 		int cloneRepoBooleanColumn = format.getCloneRepo();
 		if (cloneRepoBooleanColumn != -1) {
@@ -140,39 +145,51 @@ public class CSVParser {
 			}
 		}
 		
+		//Accept Invites - yes no
+		if(format.acceptInviteColumn != -1) {
+			String userResponse = info[format.acceptInviteColumn];
+			if(userResponse.toLowerCase().equals("yes")) {
+				cmd.setAcceptInvite(true);
+			}
+		}
+		
 		return cmd;
 	}
 	
 	
 	private class CSVHeaderParse{	
-		private int userColumn = -1;
-		private int RepoNameColumn = -1;
-		private int createRepoColumn = -1;
-		private ArrayList<Integer> Prof_Add_Columns = new ArrayList<Integer>();
-		private ArrayList<Integer> Prof_Remove_Columns = new ArrayList<Integer>();
-		private ArrayList<Integer> TA_Add_Columns = new ArrayList<Integer>();
-		private ArrayList<Integer> TA_Remove_Columns = new ArrayList<Integer>();
-		private ArrayList<Integer> Student_Add_Columns = new ArrayList<Integer>();
-		private ArrayList<Integer> Student_Remove_Columns = new ArrayList<Integer>();
-		private int numberOfColumns = -1;
-		private int cloneRepo = -1;
-		private int repoCloneLocation = -1;
-		private int deleteRepoColumn = -1;
-		private int makeRepoPrivate = -1;
+		public int userColumn = -1;
+		public int RepoNameColumn = -1;
+		public int createRepoColumn = -1;
+		public ArrayList<Integer> Prof_Add_Columns = new ArrayList<Integer>();
+		public ArrayList<Integer> Prof_Remove_Columns = new ArrayList<Integer>();
+		public ArrayList<Integer> TA_Add_Columns = new ArrayList<Integer>();
+		public ArrayList<Integer> TA_Remove_Columns = new ArrayList<Integer>();
+		public ArrayList<Integer> Student_Add_Columns = new ArrayList<Integer>();
+		public ArrayList<Integer> Student_Remove_Columns = new ArrayList<Integer>();
+		public int numberOfColumns = -1;
+		public int cloneRepo = -1;
+		public int repoCloneLocation = -1;
+		public int deleteRepoColumn = -1;
+		public int makeRepoPrivate = -1;
+		public int readOnlyInvitesColumn = -1;
+		public int acceptInviteColumn = -1;
 		
 		/*
 		 * 
 		 * all column headers must conform to one of the following (Case Insensitive), not all headers must be used, 
-		 * User
+		 * Owner
 		 * Repo_Name
 		 * Create_Repo
-		 * Make_Private         ->needs to be implemented
+		 * Make_Private
 		 * Prof_Add_Collab
 		 * Prof_Remove_Collab
 		 * TA_Add_Collab
 		 * TA_Remove_Collab
 		 * Student_Add_Collab
 		 * Student_Remove_Collab
+		 * Read_Only
+		 * Accept_Invite
 		 * Git_Clone_To_Computer?
 		 * Git_Clone_Location
 		 * Delete_Repo
@@ -182,9 +199,9 @@ public class CSVParser {
 			this.numberOfColumns = tokens.length;
 			for (int x = 0; x < tokens.length; x++) {//for each token
 				tokens[x] = tokens[x].trim();
-				if (tokens[x].toLowerCase().equals("User".toLowerCase())){
+				if (tokens[x].toLowerCase().equals("Owner".toLowerCase())){
 					if (this.userColumn != -1) {
-						String msg = "there can only be one column defined with the \"User\" header!";
+						String msg = "there can only be one column defined with the \"Owner\" header!";
 						throw new IllegalHeaderException(x, tokens[x], msg);
 					}
 					this.userColumn = x;
@@ -238,6 +255,14 @@ public class CSVParser {
 					this.Student_Remove_Columns.add(x);
 					continue;
 				}
+				if (tokens[x].toLowerCase().equals("Read_Only".toLowerCase())) {
+					this.readOnlyInvitesColumn = x;
+					continue;
+				}
+				if(tokens[x].toLowerCase().equals("Accept_Invite".toLowerCase())) {
+					this.acceptInviteColumn = x;
+					continue;
+				}
 				if (tokens[x].toLowerCase().equals("Git_Clone_To_Computer?".toLowerCase())) {
 					if(this.cloneRepo != -1) {
 						String msg = "there can only be one column defined with the \"Git_Clone_To_Computer?\" header!";
@@ -267,7 +292,7 @@ public class CSVParser {
 			}
 			
 			if (this.userColumn == -1 || this.RepoNameColumn == -1) {
-				throw new IllegalHeaderException(-1, "N/A", "Both the \"User\" and \"Repo_Name\" headers must be present in the top line of the CSV file!");
+				throw new IllegalHeaderException(-1, "N/A", "Both the \"Owner\" and \"Repo_Name\" headers must be present in the top line of the CSV file!");
 			}
 			
 			if (this.makeRepoPrivate != -1 && !(this.createRepoColumn != -1)) {

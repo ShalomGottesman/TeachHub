@@ -19,7 +19,7 @@ To change this, create an enviorment variable called "TeachHub" (without quotes)
 
 ## File Syntax
 Currently, TeachHub can only operate on .CSV files (possible update for excel files coming). That being said, the CSV files must be formatted properly for the application to work correctly. These are the proper headers that the first line of the CSV must have. It does not have to have all the heads, just the ones applicable.
- * User
+ * Owner
  * Repo_Name
  * Create_Repo
  * Make_Private
@@ -29,11 +29,14 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  * TA_Remove_Collab
  * Student_Add_Collab
  * Student_Remove_Collab
+ * Read_Only          <- Currently bugged, only invites regularly
  * Git_Clone_To_Computer?
  * Git_Clone_Location
  * Delete_Repo
  
  Each line under the header line will be parsed into its own command to be executed. Note that each command must be "reletively complete" to each other command in the file. This means that if one line uses a tag, so must all the rest. There cannot be empty slots in the CSV file.
+
+ When it comes to defining a repository's "absolute" location, the URL of a repository shows the relevant information. For example, this repository is ShalomGottesman/TeachHub, ShalomGottesman is the owner of the repository, and TeachHub is the repository's name. It could be however that I am the owner, but the repository is under a guthub organization(ie. TeachHubOrg/TeachHub). In this case the organization's name is the owner field in defining the absolute location of the repository, not the person who owns the organization.
  
  It is recommended that at max one of Create_Repo and Delete_Repo be used per file to be executed, as it has not been tested if the logic will compute fully when trying to deal with both.
  

@@ -19,6 +19,8 @@ public class ExecuteCommand implements Command{
 	private File cloneLocation;
 	private boolean makeRepoPrivate;
 	private boolean deleteRepo;
+	private boolean invitesReadonly;
+	private boolean acceptInvite;
 	
 	public ExecuteCommand(){}
 	
@@ -39,34 +41,27 @@ public class ExecuteCommand implements Command{
 	}
 	
 	public String getCommandInfo() {
-		String user = String.format("user: %20s", this.user);
-		String name = String.format("repo name: %20s", this.repoName);
-		String instantiation = "init repo: ";
+		StringBuilder builder = new StringBuilder();
+		builder.append(String.format("owner: %15s | ", this.user));
+		builder.append(String.format("repo name: %15s | ", this.repoName));
 		if (createRepo) {
-			instantiation = instantiation + "yes";
-		} else {
-			instantiation = instantiation + "no";
+			builder.append("Create Repo | ");
 		}
-		String addCollabs = Arrays.toString(this.getAllAddCollabs().toArray(new String[1]));
-		String removeCollabs = Arrays.toString(this.getAllRemoveCollabs().toArray(new String[1]));
-		addCollabs = "adding: " + addCollabs;
-		removeCollabs = "removing: " + removeCollabs;
-		String makePrivate = String.format("make private: %5s", this.makeRepoPrivate);
-		
-		String concatinated = user + " | " + name + " | " + instantiation + " | " + addCollabs + " | " + removeCollabs+ " | " + makePrivate + " | ";
-		
-		String clone = "clone: ";
-		if (cloneRepo) {
-			clone = clone + "yes, location: " + cloneLocation.toString();
-		} else {
-			clone = clone + "no";
+		if (this.isAcceptInvite()) {
+			builder.append("Accept Invite | ");
 		}
-		concatinated = concatinated + clone;
+		builder.append("Adding: " + Arrays.toString(this.getAllAddCollabs().toArray(new String[1])) + " | ");
+		builder.append("Removing: " + Arrays.toString(this.getAllRemoveCollabs().toArray(new String[1])) + " | ");
+		if (this.isMakeRepoPrivate()) {
+			builder.append("Make private | ");
+		}
+		if (this.isCloneRepo()) {
+			builder.append("clone repo to " + cloneLocation.toString() + " | ");
+		}
 		if (deleteRepo) {
-			return user + " | " + name + " | " + "DELETE REPO";
-		} else {
-			return concatinated;
-		}
+			builder.append(" DELETE REPO | ");
+		} 
+		return builder.toString();
 		
 	}
 	
@@ -182,6 +177,22 @@ public class ExecuteCommand implements Command{
 
 	public void setCloneLocation(File cloneLocation) {
 		this.cloneLocation = cloneLocation;
+	}
+
+	public boolean isInvitesReadonly() {
+		return invitesReadonly;
+	}
+
+	public void setInvitesReadOnly(boolean bool) {
+		this.invitesReadonly = bool;
+	}
+	
+	public boolean isAcceptInvite() {
+		return acceptInvite;
+	}
+	
+	public void setAcceptInvite(boolean bool) {
+		this.acceptInvite = bool;
 	}
 	
 }
