@@ -29,7 +29,7 @@ public class PAT_Manager {
 		return new File(patVault).list();
 	}
 	
-	public boolean nameTypeMatch(String fileName) {
+	protected boolean nameTypeMatch(String fileName) {
 		if(fileName.charAt(0) == '[' && getExtention(fileName)!= null && getExtention(fileName).equals(".json")) {
 			String strippedName = fileName.substring(1, fileName.length()-6);//strip "].json" from name
 			String[] parts = strippedName.split("\\]-\\[");//should split over "]-["
@@ -57,7 +57,7 @@ public class PAT_Manager {
 		return getAllValidFileNames().length;
 	}
 	
-	public String[] breakDownName(String fileName) {
+	private String[] breakDownName(String fileName) {
 		if(nameTypeMatch(fileName)) {
 			String strippedName = fileName.substring(1, fileName.length()-6);
 			return strippedName.split("\\]-\\[");
@@ -65,7 +65,7 @@ public class PAT_Manager {
 		return null;
 	}
 	
-	public String compileName(String[] parts) {
+	private String compileName(String[] parts) {
 		if(parts.length == 3 && (
 				parts[2].equals(securityLevel.NONE.toString()) ||
 				parts[2].equals(securityLevel.LOW.toString()) ||
@@ -245,6 +245,79 @@ public class PAT_Manager {
 				return;
 			}
 		}
+	}
+	
+	public PAT_Token retreiveToken(String request, String password) {
+		String[] valids = getAllValidFileNames();
+		String fileName = null;
+		for (int x = 0; x < valids.length; x++) {
+			if(valids.equals(request)) {
+				fileName = valids[x];
+			}
+		}
+		if(fileName == null) {
+			System.out.println("request did not match");
+			return null;
+		}
+		PAT_Token token;
+		try {
+			token = serializer.deserialize(fileName);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("unable to read PAT [" + fileName+"] into memory, please try again");
+			return null;
+		}
+		if(token.getSecLevel() == PAT.securityLevel.NONE) {
+			System.out.println("decrypting PAT with default encrpytion");
+			token.decryptToken(defaultPassword);
+			return token;
+		} else {
+			System.out.println("PAT "+fileName+" has a "+ token.getSecLevel().toString() + " level of security, please provide the password");
+			if(token.hashCompare(password.hashCode())) {
+				token.decryptToken(password);
+				if (token.isDecrypted()) {
+					return token;
+				}
+				System.out.println("Password did not decrypt the token to match the username");
+				return null;
+			}
+			System.out.println("password does not match, plese try again");
+			return null;
+		}			
+	}
+	
+	public PAT_Token retreiveToken(int index, String password) {
+		String[] valids = getAllValidFileNames();
+		if(index >= valids.length || index < 0) {
+			System.out.println("please provide a number within the range of 0 and " + (valids.length -1) + " inclusive");
+			return null;
+		}
+		String fileName = valids[index];
+		PAT_Token token;
+		try {
+			token = serializer.deserialize(fileName);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("unable to read PAT [" + fileName+"] into memory, please try again");
+			return null;
+		}
+		if(token.getSecLevel() == PAT.securityLevel.NONE) {
+			System.out.println("decrypting PAT with default encrpytion");
+			token.decryptToken(defaultPassword);
+			return token;
+		} else {
+			System.out.println("PAT "+fileName+" has a "+ token.getSecLevel().toString() + " level of security, please provide the password");
+			if(token.hashCompare(password.hashCode())) {
+				token.decryptToken(password);
+				if (token.isDecrypted()) {
+					return token;
+				}
+				System.out.println("Password did not decrypt the token to match the username");
+				return null;
+			}
+			System.out.println("password does not match, plese try again");
+			return null;
+		}			
 	}
 		
 	public PAT_Token retreiveToken(Scanner sc) {

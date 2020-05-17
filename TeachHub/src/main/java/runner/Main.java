@@ -46,27 +46,47 @@ public class Main {
 	private static boolean help;
 	private static boolean exit;
 	
-	
-	
-	public static void main(String[] args) throws IllegalDataException, IOException {
+	private static void precheck() {
 		if (verify()) {
 			System.out.println(utilities.Strings.openMsg);
 			if (!new EnviormentVariable().doesSysVarExist()) {
 				System.out.println(utilities.Strings.noTeachHubVar);
 			}
 			System.out.println(utilities.Strings.optionsMsg);
-			Scanner sc = new Scanner(System.in);
 			if (new PAT_Manager().numberOfPatFiles() == 0) {
 				System.out.println(utilities.Strings.PAT_MangerInfo);
 			}
-			run(new String[0], sc);
 		} else {
 			System.out.println("verification failed, has your license expired?");
 			System.exit(0);
 		}
 	}
 	
-	private static void run(String[] args, Scanner sc) throws IllegalDataException, IOException {
+	public static void main(String[] args) throws IllegalDataException, IOException {
+		precheck();
+		Scanner sc = new Scanner(System.in);
+		run(new String[0], sc, null);
+	}
+	
+	public static void mainW_File(File file) throws IllegalDataException, IOException {
+		precheck();
+		Scanner sc = new Scanner(System.in);
+		String[] args = new String[2];
+		args[0] = "-f";
+		args[1] = file.toString();
+		run(args, sc, null);
+	}
+	
+	public static void mainW_FileW_Creds(File file, Authentication creds) throws IllegalDataException, IOException {
+		precheck();
+		Scanner sc = new Scanner(System.in);
+		String[] args = new String[2];
+		args[0] = "-f";
+		args[1] = file.toString();
+		run(args, sc, creds);
+	}
+	
+	private static void run(String[] args, Scanner sc, Authentication creds) throws IllegalDataException, IOException {
 		resetAll();
 		InternetConnection intCon = new InternetConnection();
 		System.out.print("TeachHub> ");
@@ -77,7 +97,6 @@ public class Main {
 			input = args;
 		}
 		parseLine(input);
-		Authentication creds = null;
 		if(openManager) {
 			new PAT_Manager().commandLoop(sc);
 			resetAll();
@@ -115,11 +134,11 @@ public class Main {
 				commandQue = parseFileAndPrintInfo(input, sc);
 			} catch (ArrayIndexOutOfBoundsException e) {
 				System.out.println("there was no input after the tag " + input[filePath-1] + "!");
-				run(new String[0], sc); //recall the method
+				run(new String[0], sc, null); //recall the method
 				System.exit(0);
 			} catch (FileNotFoundException e) {
 				System.out.println("The File passed in at " + input[filePath] + " does not exist!");
-				run(new String[0], sc); //recall the method
+				run(new String[0], sc, null); //recall the method
 				System.exit(0);
 			}
 			
@@ -197,7 +216,7 @@ public class Main {
 			String[] argsToRun = {"-f", undoFile.toString()};
 			if (execute) {
 				resetAll();
-				run(argsToRun, sc);
+				run(argsToRun, sc, null);
 			}
 		}
 		if (redo) {
@@ -207,7 +226,7 @@ public class Main {
 			String[] argsToRun = {"-f", redoFile.toString()};
 			if (execute) {
 				resetAll();
-				run(argsToRun, sc);
+				run(argsToRun, sc, null);
 			}
 		}
 		if (openRedo) {
@@ -233,7 +252,7 @@ public class Main {
 			System.exit(0);
 		}
 		resetAll();
-		run(new String[0], sc);
+		run(new String[0], sc, null);
 	}
 	
 	private static void displayFileContents(File file) throws FileNotFoundException {
