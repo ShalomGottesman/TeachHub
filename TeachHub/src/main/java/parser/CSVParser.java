@@ -102,8 +102,8 @@ public class CSVParser {
 			cmd.setRemoveCollabs_Studs(temp);
 		}
 		//set cmd invite to read only if applicable
-		if(format.readOnlyInvites != -1) {
-			if(info[format.readOnlyInvites].toLowerCase().equals("yes")) {
+		if(format.readOnlyInvitesColumn != -1) {
+			if(info[format.readOnlyInvitesColumn].toLowerCase().equals("yes")) {
 				cmd.setInvitesReadOnly(true);
 			}
 		}
@@ -145,6 +145,14 @@ public class CSVParser {
 			}
 		}
 		
+		//Accept Invites - yes no
+		if(format.acceptInviteColumn != -1) {
+			String userResponse = info[format.acceptInviteColumn];
+			if(userResponse.toLowerCase().equals("yes")) {
+				cmd.setAcceptInvite(true);
+			}
+		}
+		
 		return cmd;
 	}
 	
@@ -164,7 +172,8 @@ public class CSVParser {
 		public int repoCloneLocation = -1;
 		public int deleteRepoColumn = -1;
 		public int makeRepoPrivate = -1;
-		public int readOnlyInvites = -1;
+		public int readOnlyInvitesColumn = -1;
+		public int acceptInviteColumn = -1;
 		
 		/*
 		 * 
@@ -180,6 +189,7 @@ public class CSVParser {
 		 * Student_Add_Collab
 		 * Student_Remove_Collab
 		 * Read_Only
+		 * Accept_Invite
 		 * Git_Clone_To_Computer?
 		 * Git_Clone_Location
 		 * Delete_Repo
@@ -246,7 +256,12 @@ public class CSVParser {
 					continue;
 				}
 				if (tokens[x].toLowerCase().equals("Read_Only".toLowerCase())) {
-					this.readOnlyInvites = x;
+					this.readOnlyInvitesColumn = x;
+					continue;
+				}
+				if(tokens[x].toLowerCase().equals("Accept_Invite".toLowerCase())) {
+					this.acceptInviteColumn = x;
+					continue;
 				}
 				if (tokens[x].toLowerCase().equals("Git_Clone_To_Computer?".toLowerCase())) {
 					if(this.cloneRepo != -1) {

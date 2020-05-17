@@ -101,7 +101,6 @@ public class Sandbox {
 				.fetch().as(RestResponse.class);
 				
 		return resp.status() == HttpURLConnection.HTTP_NO_CONTENT;
-		
 	}
 	
 	public static boolean contains(Github github, Coordinates coords) throws IOException {

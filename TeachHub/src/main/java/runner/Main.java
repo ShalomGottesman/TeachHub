@@ -146,8 +146,12 @@ public class Main {
 		if (file) {
 			//pass the returned stack from the parsing and the credentials to the execution class			
 			if (intCon.isConnectionAvailable()) {
-				if (creds == null) {
-					creds = ReadCredentials.readCredential("please provide username and password for the main user of these commands", sc);
+				if(creds == null) {
+					if(new UserChoice().yesNo(utilities.Strings.StoredPAT_OrUserInput, sc)) {
+						creds = new PAT_Manager().retreiveToken(sc);
+					} else {
+						creds = ReadCredentials.readCredential("user name and password to use to execute the file", sc);
+					}
 				}
 				
 				Github github = creds.authenticate();
@@ -168,7 +172,6 @@ public class Main {
 						cloneCreds = creds;
 					}
 				}
-				
 				CLICommandRunner cliCR = new CLICommandRunner(github, false, username, sc);
 				cliCR.executeStack(commandQue2, isAnyCommandClone, cloneCreds);
 				//now use que3 to create an undo/redo file set
@@ -316,10 +319,10 @@ public class Main {
 				filePath = x+1;
 			}
 		}
-		File file = null;
-		file = new File(input[filePath]);
-		Scanner fileSc = null;
-		fileSc = new Scanner(file);
+		//File file = null;
+		File file = new File(input[filePath]);
+		//Scanner fileSc = null;
+		Scanner fileSc = new Scanner(file);
 		String topLine = fileSc.nextLine();
 		CSVParser csvp = new CSVParser();
 		try {
