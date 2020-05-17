@@ -29,6 +29,7 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  * TA_Remove_Collab
  * Student_Add_Collab
  * Student_Remove_Collab
+ * Accept_Invite
  * Read_Only          <- Currently bugged, only invites regularly
  * Git_Clone_To_Computer?
  * Git_Clone_Location
