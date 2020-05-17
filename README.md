@@ -9,7 +9,7 @@ An ease-of-use application based on an abstraction of the GitHub REST API design
 This guide is broken down into three section: Setup, File Syntax, Execution.
 
 ## Setup
-1. For this application to run correctly, you should have Java 7 or later installed on you computer. 
+1. For this application to run correctly, you should have Java 8 or later installed on you computer. 
 2. This application stores .CSV files on your computer for undo/redo purposes. By default, this application will create a folder called "TeachHub" in your home directory and will output a message on startup declaring this. 
 
 ![GitHub Logo](/README_src/TeachHub_envrVar.png)
