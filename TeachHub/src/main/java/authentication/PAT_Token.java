@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.util.Arrays;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -146,11 +145,9 @@ public class PAT_Token implements PAT{
 		if (OS.isWindows()) {
 			json = "{\\\"permission\\\":\\\"pull\\\"}";
 		} else {
-			//json = "{\\\"permission\\\":\\\"pull\\\"}";
 			json = "{\"permission\":\"pull\"}";
 		}
 		String[] commandArgs = {"curl", "-u", this.userName +":"+this.token, "-X", "PUT", "-d", json, url};
-		System.out.println(Arrays.toString(commandArgs));
 		ProcessBuilder process = new ProcessBuilder(commandArgs); 
 	    Process p = process.start();
         BufferedReader reader =  new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -161,7 +158,6 @@ public class PAT_Token implements PAT{
                 builder.append(System.getProperty("line.separator"));
         }
         String result = builder.toString();
-        System.out.println(result);
         JsonReader jr = Json.createReader(new StringReader(result));
         JsonObject jobj = jr.readObject();
         if(jobj.containsKey("permissions") && jobj.getString("permissions").equals("read")) {
