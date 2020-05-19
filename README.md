@@ -15,6 +15,7 @@ This guide is broken down into three section: Setup, File Syntax, Execution. Als
 ![GitHub Logo](/README_src/TeachHub_envrVar.png)
 
 To change this, create an enviorment variable called "TeachHub" (without quotes) with the value being the location you would like the application to create the sub directory "/TeachHub" to store the files.
+
 3. GitHub is no longer allowing the use of ones regular password to be used at the API interface, rather the user must create a Personal Access Token (PAT). TeachHub has built in a PAT manger that securly stores the token on the file system to be reused between different sessions. Please see https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line for more info. Below is a picture of the PAT Manger. There is also a demo video in the main folder of this repository demonstrating the use of the PAT Manger. Accessing the PAT Manger can be done with a -p command of the main TeachHub UI.
 
 ![GitHub_Logo](README_src/PAT_Manger_Main.png)
