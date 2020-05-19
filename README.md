@@ -45,7 +45,7 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  
  It is recommended that at max one of Create_Repo and Delete_Repo be used per file to be executed, as it has not been tested if the logic will compute fully when trying to deal with both.
  
- Please note that the Read_Only invite tag is only available for Organization repositories, it will not work for personal ones. Also note that the Read_Only tag will make all the invites on that line read only!
+ Please note that the Read_Only invite tag is only available for Organization repositories, it will not work for personal ones. Also note that the Read_Only tag will make all the invites on that line read only! Lastly, read only commands are sent via cURL, many operating systems have this preinstalled, please check before useing this tag.
  
  Sample CSVs are shown beloew:
  
