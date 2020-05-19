@@ -16,7 +16,6 @@ import com.jcabi.github.Repo;
 import com.jcabi.github.Repos;
 import com.jcabi.github.Repos.RepoCreate;
 import com.jcabi.http.Request;
-import com.jcabi.http.RequestURI;
 import com.jcabi.http.response.JsonResponse;
 import com.jcabi.http.response.RestResponse;
 
@@ -26,6 +25,7 @@ import githubAction.Cloning;
 import utilities.Strings;
 
 public class CLICommandRunner {
+	private Authentication creds;
 	private Github github;
 	private Repos repos;
 	private boolean useTestMessege;
@@ -93,13 +93,14 @@ public class CLICommandRunner {
 	
 	/**
 	 * 
-	 * @param github already authenticated github object
+	 * @param creds Authentication object with stored credentials/token
 	 * @param testing true for the repository init message (found in the ReadMe.md file) should be the testing message. false for default
 	 * @param userName the username of the current user
 	 * @param sc the scanner on which to scan user input (needed to verify if a user wants to delete a repository)
 	 */
-	public CLICommandRunner(Github github, boolean testing, String userName, Scanner sc) {
-		this.github = github;
+	public CLICommandRunner(Authentication creds, boolean testing, String userName, Scanner sc) {
+		this.creds = creds;
+		this.github = creds.authenticate();
 		this.repos = github.repos();
 		this.useTestMessege = testing;
 		this.username = userName;
@@ -197,26 +198,41 @@ public class CLICommandRunner {
 				continue;
 			}
 			if (!repo.collaborators().isCollaborator(collabToAdd)) {
-				try {
-					System.out.print("adding: " + collabToAdd + " for: " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()));
-					String path = "/repos/" + coords.user() +"/"+ coords.repo() +"/collaborators/"+ collabToAdd;
-					RequestURI req = github.entry().uri();
-					if(cmd.isInvitesReadonly()) {
-						System.out.println(" as read only");
-						req = req.queryParam("permission", "read");
-					} else {
-						System.out.println();
+				System.out.print("adding: " + collabToAdd + " for: " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()));
+				if(cmd.isInvitesReadonly()) {
+					System.out.println(" as read only");
+					try {
+						int ret = this.creds.issueCurlInviteReadOnly(coords.user(), coords.repo(), collabToAdd);
+						if (ret == 0 || ret == 1) {succesfulInvites++;}
+						if (ret == 1) {
+							String msg = "sucessful invite to" + collabToAdd + "for repo " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName())+ " but with write permissions, please go to UI to fix permission settings";
+							System.out.println(msg);
+							messegeQueue.enque(msg);
+						}
+						if (ret == -1) {
+							String msg = "invite to "+ collabToAdd + "for repo " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName())+ "failed";
+							System.out.println(msg);
+							messegeQueue.enque(msg);
+						}
+					} catch (IOException e) {
+						String msg = "Error occured building curl process. Unknown is invite was succesful";
+						System.out.println(msg);
+						messegeQueue.enque(msg);
 					}
-					req.path(path).back().method(Request.PUT)
-					.body().back()
-					.fetch().as(RestResponse.class)
-					.assertStatus(HttpURLConnection.HTTP_CREATED);
-					succesfulInvites++;
-				} catch (AssertionError e) {
-					String msg = "unsecessful add of user ["+collabToAdd+"] to repo["+repoURLAbstractor(cmd.getUser(), cmd.getRepoName())+"]";
-					System.out.println(msg);
-					messegeQueue.enque(msg);
-					continue;
+				} else {
+					System.out.println();
+					String path = "/repos/" + coords.user() +"/"+ coords.repo() +"/collaborators/"+ collabToAdd;
+					try {
+						github.entry().uri().path(path).back().method(Request.PUT)
+						.body().back()
+						.fetch().as(RestResponse.class)
+						.assertStatus(HttpURLConnection.HTTP_CREATED);
+						succesfulInvites++;
+					} catch(AssertionError e) {
+						String msg = "unsecessful add of user ["+collabToAdd+"] to repo["+repoURLAbstractor(cmd.getUser(), cmd.getRepoName())+"]";
+						System.out.println(msg);
+						messegeQueue.enque(msg);
+					}
 				}
 			} else {
 				String msg = collabToAdd + " is already a collaborator for " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName());
@@ -254,6 +270,7 @@ public class CLICommandRunner {
 			msg = "Deleted repository [" + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()) +"]";
 		} else {
 			msg = "Did not delete repository [" + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()) +"]";
+			messegeQueue.enque(msg);
 		}
 		System.out.println(msg);
 		messegeQueue.enque(msg);
@@ -402,10 +419,12 @@ public class CLICommandRunner {
 	private boolean verifyDelete(String userName, String repoName, Scanner sc) {
 		String completeRepoName = userName + "/" + repoName;
 		System.out.println("trying to delete repository [" + completeRepoName + "]. This CANNOT be undone! Are you sure you want to do this? [Yes/No]");
+		System.out.print("TeachHub>");
 		String str = sc.nextLine();
 		if (str.toLowerCase().equals("yes")) {
 			System.out.println("then please type the name of the repository (no need to say JohnDoe/ThisRepo, just ThisRepo is fine)");
 			System.out.println("or type \"cancel\" to cancel his request");
+			System.out.print("TeachHub>");
 			String str2 = sc.nextLine();
 			if (str2.equals(repoName)) {
 				System.out.println("ok then, here we go, deleting " + completeRepoName);

@@ -68,18 +68,31 @@ public class Main {
 		run(new String[0], sc, null);
 	}
 	
-	public static void mainW_File(File file) throws IllegalDataException, IOException {
+	/**
+	 * Run main program with file already passed in
+	 * @param file the file to run
+	 * @param sc a scanner for any user input (should probably be Scanner(System.in)
+	 * @throws IllegalDataException
+	 * @throws IOException
+	 */
+	public static void mainW_File(File file, Scanner sc) throws IllegalDataException, IOException {
 		precheck();
-		Scanner sc = new Scanner(System.in);
 		String[] args = new String[2];
 		args[0] = "-f";
 		args[1] = file.toString();
 		run(args, sc, null);
 	}
 	
-	public static void mainW_FileW_Creds(File file, Authentication creds) throws IllegalDataException, IOException {
+	/**
+	 * Run mian program with file and authentication object (likely retreived earlier from the PAT Manger)
+	 * @param file The file to run
+	 * @param creds The authentication object
+	 * @param sc A scanner for any user input (should probably be Scanner(System.in)
+	 * @throws IllegalDataException
+	 * @throws IOException
+	 */
+	public static void mainW_FileW_Creds(File file, Authentication creds, Scanner sc) throws IllegalDataException, IOException {
 		precheck();
-		Scanner sc = new Scanner(System.in);
 		String[] args = new String[2];
 		args[0] = "-f";
 		args[1] = file.toString();
@@ -191,7 +204,8 @@ public class Main {
 						cloneCreds = creds;
 					}
 				}
-				CLICommandRunner cliCR = new CLICommandRunner(github, false, username, sc);
+				CLICommandRunner cliCR = new CLICommandRunner(creds, false, username, sc);
+				//CLICommandRunner cliCR = new CLICommandRunner(github, false, username, sc);
 				cliCR.executeStack(commandQue2, isAnyCommandClone, cloneCreds);
 				//now use que3 to create an undo/redo file set
 				setUndoRedoFiles(redoCSV, undoCSV);

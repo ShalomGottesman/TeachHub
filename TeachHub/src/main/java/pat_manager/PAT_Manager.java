@@ -247,11 +247,17 @@ public class PAT_Manager {
 		}
 	}
 	
+	/**
+	 * API usage to retrieve a PAT token on file.
+	 * @param request The name of the file that holds the serialized PAT token (ex: [ShalomGottesman]-[temp]-[NONE].json)
+	 * @param password The password (if any) used to decrypt the token. If the security level is NONE then this can be left blank
+	 * @return The PAT token with the token decrypted, or null if verification was unsuccessful.
+	 */
 	public PAT_Token retreiveToken(String request, String password) {
 		String[] valids = getAllValidFileNames();
 		String fileName = null;
 		for (int x = 0; x < valids.length; x++) {
-			if(valids.equals(request)) {
+			if(valids[x].equals(request)) {
 				fileName = valids[x];
 			}
 		}
@@ -286,6 +292,12 @@ public class PAT_Manager {
 		}			
 	}
 	
+	/**
+	 * API usage to retrieve a PAT token on file.
+	 * @param index The index number of the PAT, this should be known before hand by the user
+	 * @param password The password (if any) used to decrypt the token. If the security level is NONE then this can be left blank
+	 * @return The PAT token with the token decrypted, or null if verification was unsuccessful.
+	 */
 	public PAT_Token retreiveToken(int index, String password) {
 		String[] valids = getAllValidFileNames();
 		if(index >= valids.length || index < 0) {
@@ -324,7 +336,7 @@ public class PAT_Manager {
 		System.out.println("All PATs on file:");
 		formatPrintAllPATs();
 		while(true) {
-			System.out.println("PAT number to retreive: ");
+			System.out.print("PAT number to retreive: ");
 			int index;
 			try {
 				index = Integer.parseInt(sc.nextLine().trim());
