@@ -146,7 +146,8 @@ public class PAT_Token implements PAT{
 		if (OS.isWindows()) {
 			json = "{\\\"permission\\\":\\\"pull\\\"}";
 		} else {
-			json = "'{\"permission\":\"pull\"}'";
+			//json = "{\\\"permission\\\":\\\"pull\\\"}";
+			json = "{\"permission\":\"pull\"}";
 		}
 		String[] commandArgs = {"curl", "-u", this.userName +":"+this.token, "-X", "PUT", "-d", json, url};
 		System.out.println(Arrays.toString(commandArgs));
@@ -163,10 +164,10 @@ public class PAT_Token implements PAT{
         System.out.println(result);
         JsonReader jr = Json.createReader(new StringReader(result));
         JsonObject jobj = jr.readObject();
-        if(jobj.getString("permissions").equals("read")) {
+        if(jobj.containsKey("permissions") && jobj.getString("permissions").equals("read")) {
         	return 0;
         }
-        if(jobj.getString("permissions").equals("write")) {
+        if(jobj.containsKey("permissions") && jobj.getString("permissions").equals("write")) {
         	return 1;
         }
         return -1;
