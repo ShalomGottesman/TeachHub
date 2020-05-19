@@ -158,6 +158,7 @@ public class PAT_Token implements PAT{
                 builder.append(System.getProperty("line.separator"));
         }
         String result = builder.toString();
+        System.out.println(result);
         JsonReader jr = Json.createReader(new StringReader(result));
         JsonObject jobj = jr.readObject();
         if(jobj.getString("permissions").equals("read")) {
