@@ -2,13 +2,14 @@ package command;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Scanner;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonReader;
 import javax.json.JsonValue;
+import javax.net.ssl.HttpsURLConnection;
 
 import com.jcabi.github.Coordinates;
 import com.jcabi.github.Github;
@@ -16,6 +17,7 @@ import com.jcabi.github.Repo;
 import com.jcabi.github.Repos;
 import com.jcabi.github.Repos.RepoCreate;
 import com.jcabi.http.Request;
+import com.jcabi.http.RequestBody;
 import com.jcabi.http.response.JsonResponse;
 import com.jcabi.http.response.RestResponse;
 
@@ -25,13 +27,14 @@ import githubAction.Cloning;
 import utilities.Strings;
 
 public class CLICommandRunner {
-	private Authentication creds;
 	private Github github;
 	private Repos repos;
 	private boolean useTestMessege;
 	private String username;
 	private Scanner sc;
 	private String initMsg;
+	
+	static enum Permissions {PULL, PUSH, ADMIN, MAINTAIN, TRIAGE};
 	
 	Queue<String> messegeQueue = new Queue<String>();
 	//stats
@@ -47,9 +50,6 @@ public class CLICommandRunner {
 	int succesfulClones = 0;
 	int totalInvitesToAccept = 0;
 	int succesfulInvitesAccepted = 0;
-	
-	HashSet<myCoordinates> creatingRepoCoordSet = new HashSet<myCoordinates>(); 
-	HashSet<myCoordinates> ModifyingRepoCoordSet = new HashSet<myCoordinates>(); 
 	
 	private void printStats() {
 		System.out.println("\n****************");
@@ -99,7 +99,6 @@ public class CLICommandRunner {
 	 * @param sc the scanner on which to scan user input (needed to verify if a user wants to delete a repository)
 	 */
 	public CLICommandRunner(Authentication creds, boolean testing, String userName, Scanner sc) {
-		this.creds = creds;
 		this.github = creds.authenticate();
 		this.repos = github.repos();
 		this.useTestMessege = testing;
@@ -108,7 +107,7 @@ public class CLICommandRunner {
 		if (this.useTestMessege) {
 			initMsg = Strings.testRepoinitMsg;
 		} else {
-			initMsg = Strings.defaultRepoInitMsg;
+			initMsg = Strings.defaultRepoInitMsg; 
 		}
 	}
 	
@@ -132,63 +131,69 @@ public class CLICommandRunner {
 	
 	private boolean acceptInvitation(Coordinates coords) throws IOException {
 		System.out.println("Accepting invitation");
-		Iterator<JsonValue> iter = github.entry().uri().path("/user/repository_invitations").back().method(Request.GET)
-				.body().back()
-				.fetch().as(RestResponse.class)
-		        .assertStatus(HttpURLConnection.HTTP_OK)
-		        .as(JsonResponse.class)
-		        .json().readArray().iterator();
+		String url = "/user/repository_invitations";
+		Iterator<JsonValue> iter = genericRequest(url, Request.GET, HttpURLConnection.HTTP_OK, null).readArray().iterator();
 		int idToAccept = 0;
 		String thisCoord = coords.user() +"/"+ coords.repo();
 		while (iter.hasNext()) {
 			JsonObject obj = (JsonObject) iter.next();
-			JsonObject repository = obj.getJsonObject("repository");
-			String fullRepoName = repository.getString("full_name");
+			String fullRepoName = obj.getJsonObject("repository").getString("full_name");
 			if (fullRepoName.equals(thisCoord)) {
 				idToAccept = obj.getInt("id");
 				break;
 			}
 		}
-		RestResponse resp = github.entry().uri().path("/user/repository_invitations/" + idToAccept).back().method(Request.PATCH)
-				.body().back()
-				.fetch().as(RestResponse.class);
-		if (resp.status() == HttpURLConnection.HTTP_NO_CONTENT) {
+		String path = "/user/repository_invitations/" + idToAccept;
+		try {
+			genericRequest(path, Request.PATCH, HttpURLConnection.HTTP_NO_CONTENT, null);
 			succesfulInvitesAccepted++;
 			return true;
+		} catch (AssertionError e) {
+			return false;
 		}
-		return false;
 	}
 	
 	private void createRepository(ExecuteCommand cmd) throws IOException {
 		try {
-			System.out.println("creating repo");
-			boolean makePrivate = cmd.isMakeRepoPrivate();
-			String apiUriPath = "";
-			//derive where the repo goes in this users account, either in the organization or the regular repos
-			if (!cmd.getUser().equals(this.username)) {
-				apiUriPath = "/orgs/"+ cmd.getUser() + "/repos";
-			} else {
-				apiUriPath = "user/repos";
-			}
 			//generate basic settings
-			RepoCreate createRepoSettings = new RepoCreate(cmd.getRepoName(), makePrivate)
+			RepoCreate createRepoSettings = new RepoCreate(cmd.getRepoName(), cmd.isMakeRepoPrivate())
 					.withDescription(initMsg)
 					.withAutoInit(true);
-			
-			//use settings to generate repo under specified path
-			this.github.entry().uri().path(apiUriPath)
-			.back().method(Request.POST)
-	        .body().set(createRepoSettings.json()).back()
-	        .fetch().as(RestResponse.class)
-	        .assertStatus(HttpURLConnection.HTTP_CREATED);
+			if (!cmd.getUser().equals(this.username)) {//implies creation of an organization repository
+				createRepoSettings = createRepoSettings.withOrganization(cmd.getUser());
+			}
+			this.github.repos().create(createRepoSettings);
 			succesfulCreates++;
-
 		} catch (AssertionError e) {
 			String msg = "WARNING: couldn't generate repository [" + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()) + "] becuase it already exists, skipping feature";
-			System.out.println(msg);
-			messegeQueue.enque(msg);
+			printMessegeAndAddToQue(msg);
 		}
 		updateRepos();
+	}
+	
+	private void addCollaboratorWithPermission(Coordinates coords, String userToAdd, Permissions permission) throws IOException {
+		try {
+			JsonObject obj = Json.createObjectBuilder().add("permission", permission.toString().toLowerCase()).build();
+			String url = "/repos/"+coords.user()+"/"+coords.repo()+"/collaborators/"+userToAdd;
+			JsonObject ret = genericRequest(url, Request.PUT, HttpsURLConnection.HTTP_CREATED, obj).readObject();
+			if ((permission.equals(Permissions.PULL)    && ret.containsKey("permissions") && ret.getString("permissions").equals("read")) ||
+			   (permission.equals(Permissions.PUSH)     && ret.containsKey("permissions") && ret.getString("permissions").equals("write"))||
+			   (permission.equals(Permissions.ADMIN)    && ret.containsKey("permissions") && ret.getString("permissions").equals("admin"))||
+			   (permission.equals(Permissions.MAINTAIN) && ret.containsKey("permissions") && ret.getString("permissions").equals("maintain")) ||
+			   (permission.equals(Permissions.TRIAGE)   && ret.containsKey("permissions") && ret.getString("permissions").equals("triage"))
+			   ) {
+					succesfulInvites++;
+					return;
+			} else {
+				String msg = "Invite of " + userToAdd+ " tried with permission " + permission.toString().toLowerCase() +
+						"but came back with permission: " + ret.getString("permissions");
+				System.out.println(msg);
+				messegeQueue.enque(msg);
+			}
+		} catch (AssertionError e) {
+			String msg = "invite of "+ userToAdd+ " failed.";
+			printMessegeAndAddToQue(msg);
+		}
 	}
 	
 	private void addCollaborators(ExecuteCommand cmd, Coordinates coords, Repo repo) throws IOException {
@@ -201,43 +206,21 @@ public class CLICommandRunner {
 				System.out.print("adding: " + collabToAdd + " for: " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()));
 				if(cmd.isInvitesReadonly()) {
 					System.out.println(" as read only");
-					try {
-						int ret = this.creds.issueCurlInviteReadOnly(coords.user(), coords.repo(), collabToAdd);
-						if (ret == 0 || ret == 1) {succesfulInvites++;}
-						if (ret == 1) {
-							String msg = "sucessful invite to" + collabToAdd + "for repo " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName())+ " but with write permissions, please go to UI to fix permission settings";
-							System.out.println(msg);
-							messegeQueue.enque(msg);
-						}
-						if (ret == -1) {
-							String msg = "invite to "+ collabToAdd + "for repo " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName())+ "failed";
-							System.out.println(msg);
-							messegeQueue.enque(msg);
-						}
-					} catch (IOException e) {
-						String msg = "Error occured building curl process. Unknown is invite was succesful";
-						System.out.println(msg);
-						messegeQueue.enque(msg);
-					}
+					addCollaboratorWithPermission(coords, collabToAdd, Permissions.PULL);
 				} else {
 					System.out.println();
 					String path = "/repos/" + coords.user() +"/"+ coords.repo() +"/collaborators/"+ collabToAdd;
 					try {
-						github.entry().uri().path(path).back().method(Request.PUT)
-						.body().back()
-						.fetch().as(RestResponse.class)
-						.assertStatus(HttpURLConnection.HTTP_CREATED);
+						genericRequest(path, Request.PUT, HttpURLConnection.HTTP_CREATED, null);
 						succesfulInvites++;
 					} catch(AssertionError e) {
 						String msg = "unsecessful add of user ["+collabToAdd+"] to repo["+repoURLAbstractor(cmd.getUser(), cmd.getRepoName())+"]";
-						System.out.println(msg);
-						messegeQueue.enque(msg);
+						printMessegeAndAddToQue(msg);
 					}
 				}
 			} else {
 				String msg = collabToAdd + " is already a collaborator for " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName());
-				System.out.println(msg);
-				messegeQueue.enque(msg);
+				printMessegeAndAddToQue(msg);
 			}
 		}
 	}
@@ -251,13 +234,12 @@ public class CLICommandRunner {
 					succesfulRemoves++;
 				} catch (AssertionError e) {
 					String msg = "unsecessful remove of user ["+collabToRemove+"] to repo["+repoURLAbstractor(cmd.getUser(), cmd.getRepoName())+"]";
-					messegeQueue.enque(msg);
+					printMessegeAndAddToQue(msg);
 					continue;
 				}
 			} else {
 				String msg = collabToRemove + " is not a collaborator for " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName());
-				System.out.println(msg);
-				messegeQueue.enque(msg);
+				printMessegeAndAddToQue(msg);
 			}
 		}
 	}
@@ -272,8 +254,7 @@ public class CLICommandRunner {
 			msg = "Did not delete repository [" + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()) +"]";
 			messegeQueue.enque(msg);
 		}
-		System.out.println(msg);
-		messegeQueue.enque(msg);
+		printMessegeAndAddToQue(msg);
 	}
 	
 	private void cloneRepo(ExecuteCommand cmd, Authentication creds, boolean haveToAuthenticateClone) {
@@ -284,8 +265,7 @@ public class CLICommandRunner {
 			succesfulClones++;
 		} else {
 			String msg = "ERROR: TeachHub couldn't clone repository [" + cmd.getRepoName() + "] to desired location (does the folder already exist?), skipping feature";
-			System.out.println(msg);
-			messegeQueue.enque(msg);
+			printMessegeAndAddToQue(msg);
 		}
 	}
 	
@@ -311,34 +291,20 @@ public class CLICommandRunner {
 	}
 	
 	private void updateStats(ExecuteCommand cmd) {
-		myCoordinates thisCord = new myCoordinates(cmd.getUser(), cmd.getRepoName());
-		boolean isCreate = false;
-		boolean isAnythingElse = false;
 		if(cmd.isAcceptInvite()) {
 			totalInvitesToAccept++;
 		}
 		if (cmd.isCreateRepo()) {
 			this.totalCreates++;
-			this.creatingRepoCoordSet.add(thisCord);
-			isCreate = true;
 		}
 		if(cmd.isDeleteRepo()) {
-			isAnythingElse = true;
 			this.totalDeletes++;
 		}
 		if(cmd.isCloneRepo()) {
-			isAnythingElse = true;
 			this.totalClones++;
 		}
 		this.totalInvites += cmd.getAllAddCollabs().size();
 		this.totalRemoves += cmd.getAllRemoveCollabs().size();
-		if (cmd.getAllAddCollabs().size() != 0 || cmd.getAllRemoveCollabs().size() != 0) {
-			isAnythingElse = true;
-		}
-		if (isAnythingElse && !isCreate) {
-			this.ModifyingRepoCoordSet.add(thisCord);
-		}
-		
 	}
 	
 	public void executeSingle(ExecuteCommand cmd, boolean haveToAuthenticateClone, Authentication creds) throws IOException {
@@ -447,18 +413,9 @@ public class CLICommandRunner {
 	
 	private boolean isInvitee(Repo repo, String user) throws IOException {
 		Iterator<JsonValue> iter;
+		String path = "/repos/" + repo.coordinates().user() + "/" + repo.coordinates().repo() + "/invitations";
 		try{
-			iter = repo.github().entry().uri()
-				.path("/repos")
-				.path(repo.coordinates().user())
-				.path(repo.coordinates().repo())
-				.path("/invitations")
-				.back().method(Request.GET)
-				.body().set(Json.createArrayBuilder().build()).back()
-				.fetch().as(RestResponse.class)
-		        .assertStatus(HttpURLConnection.HTTP_OK)
-		        .as(JsonResponse.class)
-		        .json().readArray().iterator();
+			iter = genericRequest(path, Request.GET, HttpURLConnection.HTTP_OK, null).readArray().iterator();
 		} catch (AssertionError e) {
 			System.out.println("Could not contact github to see if user is already invited to collaborate, assuming he is not a collaborator");
 			return false;
@@ -473,34 +430,20 @@ public class CLICommandRunner {
 		return false;
 	}
 	
-	private class myCoordinates{
-		String username;
-		String reponame;
-		
-		myCoordinates(String user, String repo){
-			username = user;
-			reponame = repo;
+	private JsonReader genericRequest(String url, String type, int statusAssertion, JsonObject requestObj) throws IOException {
+		RequestBody bd = github.entry().uri().path(url).back().method(type).body();
+		if(requestObj != null) {
+			bd = bd.set(requestObj);
 		}
+		return bd.back()
+				.fetch().as(RestResponse.class)
+				.assertStatus(statusAssertion)
+				.as(JsonResponse.class).json();
 		
-		@Override
-		public boolean equals(Object that) {
-			if (that == null) {
-				return false;
-			}
-			if (that.getClass() != this.getClass()) {
-				return false;
-			}
-			that = (myCoordinates) that;
-			if (((myCoordinates) that).reponame.equals(this.reponame) && ((myCoordinates) that).username.equals(this.username)) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-		
-		@SuppressWarnings("unused")
-		public int hashcode() {
-			return this.username.hashCode() * this.reponame.hashCode();
-		}
+	}
+	
+	private void printMessegeAndAddToQue(String msg) {
+		System.out.println(msg);
+		messegeQueue.enque(msg);
 	}
 }

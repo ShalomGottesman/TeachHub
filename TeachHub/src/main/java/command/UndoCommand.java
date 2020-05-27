@@ -16,7 +16,6 @@ public class UndoCommand implements Command{
 	private ArrayList<String> removeCollabs_Studs = new ArrayList<String>();
 	private boolean makeRepoPrivate;
 	private boolean deleteRepo;
-	private boolean invitesReadonly;
 	
 	/**
 	 * The constructor of the command is to create a near mirror image of the command passed in,

@@ -65,17 +65,6 @@ public class PAT_Manager {
 		return null;
 	}
 	
-	private String compileName(String[] parts) {
-		if(parts.length == 3 && (
-				parts[2].equals(securityLevel.NONE.toString()) ||
-				parts[2].equals(securityLevel.LOW.toString()) ||
-				parts[2].equals(securityLevel.HIGH.toString())
-				)){
-			return "["+parts[0]+"]-["+parts[1]+"]-["+parts[2]+"].json";
-		}
-		return null;		
-	}
-	
 	public String[] getAllValidFileNames() {
 		String[] files = new File(patVault).list();
 		int validCount = 0;

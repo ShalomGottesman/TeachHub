@@ -50,7 +50,11 @@ public class ExecuteCommand implements Command{
 		if (this.isAcceptInvite()) {
 			builder.append("Accept Invite | ");
 		}
-		builder.append("Adding: " + Arrays.toString(this.getAllAddCollabs().toArray(new String[1])) + " | ");
+		builder.append("Adding: " + Arrays.toString(this.getAllAddCollabs().toArray(new String[1])));
+		if (this.isInvitesReadonly()) {
+			builder.append(" as READ ONLY ");
+		}
+		builder.append(" | ");
 		builder.append("Removing: " + Arrays.toString(this.getAllRemoveCollabs().toArray(new String[1])) + " | ");
 		if (this.isMakeRepoPrivate()) {
 			builder.append("Make private | ");
