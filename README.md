@@ -5,6 +5,21 @@ An ease-of-use application based on an abstraction of the GitHub REST API design
 
 ![GitHub Logo](README_src/TeachHub_openMsg.png)
 
+## Capabilities
+TeachHub has the following uses:
+1. Create repositories at wiil (either personally owned or under an organization)
+2. Add/Remove collaborators to respositories (that either existed beforehand or that were created by TeachHub)
+3. For organization repositories: can add collaborators with read-only access
+4. Delete repositories
+5. Clone repositories to a given location on user's computer
+
+## Case Uses
+1. Professor wants to generate GitHub repositories for each student in his class and does not want to go though the repetitive process of creating them from the GitHub UI. (See tags: Create_Repo, Make_Private)
+2. Professor wants to add the same people to many different repositories (such as one or more Teach Assistants, or other professors). From the GitHub UI this is a highly repetitive process. (See tags: all Add_Collab tags, all Remove_Collab tags, Read_Only)
+3. Professor wants to add many students to one repository that contains starter code for an assignment.
+4. A TA or proffesor who was just invited to many repositories can accept invitations to specified repositories, something that can also be highly repetitive (See the Accept_Invite tag)
+
+
 
 This guide is broken down into three section: Setup, File Syntax, Execution. Also see the end for FAQ and the TeachHub API
 
@@ -16,37 +31,39 @@ This guide is broken down into three section: Setup, File Syntax, Execution. Als
 
 To change this, create an enviorment variable called "TeachHub" (without quotes) with the value being the location you would like the application to create the sub directory "/TeachHub" to store the files.
 
-3. GitHub is no longer allowing the use of ones regular password to be used at the API interface, rather the user must create a Personal Access Token (PAT). TeachHub has built in a PAT manger that securly stores the token on the file system to be reused between different sessions. Please see https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line for more info. Below is a picture of the PAT Manger. There is also a demo video in the main folder of this repository demonstrating the use of the PAT Manger. Accessing the PAT Manger can be done with a -p command of the main TeachHub UI.
+3. GitHub is no longer allowing the use of ones regular password to be used at the API interface, rather the user must create a Personal Access Token (PAT). TeachHub has built in a PAT manger that securly stores the token on the file system to be reused between different sessions. Please see https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line for more info. Below is a picture of the PAT Manger. There is also a demo video in the main folder of this repository demonstrating the use of the PAT Manger. Accessing the PAT Manger can be done with a -p command of the main TeachHub UI. If the user plans to use TeachHub only once on any particular computer, it is not worthwhile storing a PAT locally, rather the user will be able to copy the PAT to the command line as if it were his password. However if the user plans to use TeachHub on this computer in more than one instance: the creation of a PAT is a somewhat annoying process, the ability to store them locally can be advantagous. 
 
 ![GitHub_Logo](README_src/PAT_Manger_Main.png)
 
 
 ## File Syntax
-Currently, TeachHub can only operate on .CSV files (possible update for excel files coming). That being said, the CSV files must be formatted properly for the application to work correctly. These are the proper headers that the first line of the CSV must have. It does not have to have all the heads, just the ones applicable. Paired with each header is the "argument" it is meant to take in the cells beneath it, the argument is in [] brackets. For all Yes/No parameters, yes activates the tag for that row, while anything else leaves the feature turned off. Any String parameter is assumed to be what you want to pass in. Meaning I can selectivly turn off or on Yes/No features per command, but I cannot do so for String parameters.
+Currently, TeachHub can only operate on .CSV files (possible update for excel files coming). That being said, the CSV files must be formatted properly for the application to work correctly. These are the proper headers that the first line of the CSV must have. It does not have to have all the heads, just the ones applicable. Paired with each header is the "argument" it is meant to take in the cells beneath it, the argument type is in [] brackets. For all Yes/No parameters, yes activates the tag for that row, while anything else leaves the feature turned off. Any String parameter is assumed to be what you want to pass in. Meaning you can selectivly turn off or on Yes/No features per command, but you cannot do so for String parameters. After the [] brackets there is a brief description of what the tag does. Unless otherwise specified, all fields are optional to be used.
 
- * Owner \[String\]
- * Repo_Name \[String\]
- * Create_Repo \[Yes/No\]
- * Make_Private \[Yes/No\]
- * Prof_Add_Collab \[String\]
- * Prof_Remove_Collab \[String\]
- * TA_Add_Collab \[String\]
- * TA_Remove_Collab \[String\]
- * Student_Add_Collab \[String\]
- * Student_Remove_Collab \[String\]
- * Accept_Invite \[Yes/No\]
- * Read_Only \[Yes/No\]
- * Git_Clone_To_Computer? \[Yes/No\]
- * Git_Clone_Location \[String\]
- * Delete_Repo \[Yes/No\]
+ * Owner \[String\] -> The owner of the respository. This is a required field!
+ * Repo_Name \[String\] -> The respitory name. This is a required field!
+ * Create_Repo \[Yes/No\] -> Specifies if this repository should be created.
+ * Make_Private \[Yes/No\] -> If when creating a repository it should be private, does not work if the repository already exists
+ * Prof_Add_Collab \[String\] -> Add a collaborator (see reason for Prof, TA, and Student below)
+ * Prof_Remove_Collab \[String\] -> Remove collabrator
+ * TA_Add_Collab \[String\] -> Add a collaborator
+ * TA_Remove_Collab \[String\] -> Remove collabrator
+ * Student_Add_Collab \[String\] -> Add a collaborator
+ * Student_Remove_Collab \[String\] -> Remove collabrator
+ * Accept_Invite \[Yes/No\] -> Accept inviation to repository
+ * Read_Only \[Yes/No\] -> Make all inviations on this line to read-only invitations
+ * Git_Clone_To_Computer? \[Yes/No\] -> Clone respository to computer?
+ * Git_Clone_Location \[String\] -> Location to clone to
+ * Delete_Repo \[Yes/No\] -> Delete repository, will require confirmation.
  
  Each line under the header line will be parsed into its own command to be executed. Note that each command must be "reletively complete" to each other command in the file. This means that if one line uses a tag, so must all the rest. There cannot be empty slots in the CSV file. That does not mean that the command must make sense though, if you want to invite two people to one repository, but only one to a different one, you can invite the same person twice to the second repository to make the command complete.
+ 
+  You might be wondering why there are three different add collaborator tags (Prof, TA, and Student) and the same for removing a collaborator. When TeachHub executes a file, it stores an "undo" file that will reverse most of the actions attempted by the first file. This can be helpful if the professor either creates many repositories for a temporary use and wants to delete them after - TeachHub made the file for the professor. Alternatively if the professor added people to many respositories for a temporary amount of time, again TeachHub generates the undo file. The different tags do not actaully change the type of collaborator being added, but when the user wants to use an undo file, he can edit it before use. Having different headers can make it clearer which should or should not be removed from the file he now wants to execute.
 
  When it comes to defining a repository's "absolute" location, the URL of a repository shows the relevant information. For example, this repository is ShalomGottesman/TeachHub, ShalomGottesman is the owner of the repository, and TeachHub is the repository's name. It could be however that I am the owner, but the repository is under a guthub organization(ie. TeachHubOrg/TeachHub). In this case the organization's name is the owner field in defining the absolute location of the repository, not the person who owns the organization.
  
  It is recommended that at max one of Create_Repo and Delete_Repo be used per file to be executed, as it has not been tested if the logic will compute fully when trying to deal with both.
  
- Please note that the Read_Only invite tag is only available for Organization repositories, it will not work for personal ones. Also note that the Read_Only tag will make all the invites on that line read only! Lastly, read only commands are sent via cURL, many operating systems have this preinstalled, please check before useing this tag.
+ Please note that the Read_Only invite tag is only available for Organization repositories, it will not work for personal ones. Also note that the Read_Only tag will make all the invites on that line read only!
  
  Sample CSVs are shown beloew:
  
