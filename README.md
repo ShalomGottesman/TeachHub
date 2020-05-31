@@ -3,7 +3,7 @@
 An ease-of-use application based on an abstraction of the GitHub REST API designed to assist professors in generating, cloning and managing many git repositories for students. Additional usage allows user to add/remove many collaborators to repositories (specifically TAs and other Professors).
 
 
-![GitHub Logo](/README_src/TeachHub_openMsg.png)
+![GitHub Logo](README_src/TeachHub_openMsg.png)
 
 
 This guide is broken down into three section: Setup, File Syntax, Execution. Also see the end for FAQ and the TeachHub API
@@ -12,7 +12,7 @@ This guide is broken down into three section: Setup, File Syntax, Execution. Als
 1. For this application to run correctly, you should have Java 8 or later installed on you computer. 
 2. This application stores .CSV files on your computer for undo/redo purposes. By default, this application will create a folder called "TeachHub" in your home directory and will output a message on startup declaring this. 
 
-![GitHub Logo](/README_src/TeachHub_envrVar.png)
+![GitHub Logo](README_src/TeachHub_envrVar.png)
 
 To change this, create an enviorment variable called "TeachHub" (without quotes) with the value being the location you would like the application to create the sub directory "/TeachHub" to store the files.
 
@@ -51,17 +51,17 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  
  Sample 1
  
- ![GitHub Logo](/README_src/TeachHub_CSV-ex1.png)
+ ![GitHub Logo](README_src/TeachHub_CSV-ex1.png)
  
  
  Sample 2
  
- ![GitHub Logo](/README_src/TeachHub_CSV-ex2.png)
+ ![GitHub Logo](README_src/TeachHub_CSV-ex2.png)
  
  
  Sample 3
  
- ![GitHub Logo](/README_src/TeachHub_CSV-ex3.png)
+ ![GitHub Logo](README_src/TeachHub_CSV-ex3.png)
  
  Once you have a file ready to execute, save the file in any location of your computer that you know the path to.
  
@@ -75,7 +75,7 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  
  Note that for all undo/redo purposes, the Cloneing information from the execution file is left out, this is to prevent trying to clone again to the same location or accidentaly deleting files from the local computer.
  
- ![GitHub Logo](/README_src/TeachHub_ExecutionEx.png)
+ ![GitHub Logo](README_src/TeachHub_ExecutionEx.png)
 
  
  ## FAQ
@@ -91,7 +91,7 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  
  A: This is very important, when dealing with excel to format your table and then exporting out to a csv file you must make sure you export in the correct format. Excel has many options for how to export to a CSV, there is UTF-8, for Mac, ect. just select Comma Deliminated and it should work. If it does not work try exporting the file again and rerun the application. 
  
- ![GitHub Logo](/README_src/TeachHub_ExcelExport.png)
+ ![GitHub Logo](README_src/TeachHub_ExcelExport.png)
  
  ## API
  Both the PAT manager and the main class of TeachHub can be interfaced for scripting use, or to avoid typing. Please see the runner.Main class, specifically the mainW_File and mainW_FileW_Creds methods. Also see the pat_manger.PAT_Manger.retreiveToken() methods.
