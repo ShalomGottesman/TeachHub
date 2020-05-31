@@ -18,6 +18,7 @@ TeachHub has the following uses:
 2. Professor wants to add the same people to many different repositories (such as one or more Teach Assistants, or other professors). From the GitHub UI this is a highly repetitive process. (See tags: all Add_Collab tags, all Remove_Collab tags, Read_Only)
 3. Professor wants to add many students to one repository that contains starter code for an assignment.
 4. A TA or proffesor who was just invited to many repositories can accept invitations to specified repositories, something that can also be highly repetitive (See the Accept_Invite tag)
+5. Clone many repositories to your computer (See 
 
 
 
@@ -31,7 +32,7 @@ This guide is broken down into three section: Setup, File Syntax, Execution. Als
 
 To change this, create an enviorment variable called "TeachHub" (without quotes) with the value being the location you would like the application to create the sub directory "/TeachHub" to store the files.
 
-3. GitHub is no longer allowing the use of ones regular password to be used at the API interface, rather the user must create a Personal Access Token (PAT). TeachHub has built in a PAT manger that securly stores the token on the file system to be reused between different sessions. Please see https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line for more info. Below is a picture of the PAT Manger. There is also a demo video in the main folder of this repository demonstrating the use of the PAT Manger. Accessing the PAT Manger can be done with a -p command of the main TeachHub UI. If the user plans to use TeachHub only once on any particular computer, it is not worthwhile storing a PAT locally, rather the user will be able to copy the PAT to the command line as if it were his password. However if the user plans to use TeachHub on this computer in more than one instance: the creation of a PAT is a somewhat annoying process, the ability to store them locally can be advantagous. 
+3. GitHub is no longer allowing the use of ones regular password to be used at the API interface, rather the user must create a Personal Access Token (PAT). TeachHub has built in a PAT manger that securly stores the token on the file system to be reused between different sessions. Please see https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line for more info. Below is a picture of the PAT Manger. There is also a demo video in the main folder of this repository demonstrating the use of the PAT Manger. Accessing the PAT Manger can be done with a -p command of the main TeachHub UI. If the user plans to use TeachHub only once on any particular computer, it is not worthwhile storing a PAT locally, rather the user will be able to copy the PAT to the command line as if it were his password. However if the user plans to use TeachHub on this computer in more than one instance: the creation of a PAT is a somewhat annoying process, the ability to store them locally can be advantagous. For more details how this works, see the end of this README.
 
 ![GitHub_Logo](README_src/PAT_Manger_Main.png)
 
@@ -134,6 +135,9 @@ A: The username you provided will be added to the lsit of collaborators for that
 A: This is very important, when dealing with excel to format your table and then exporting out to a csv file you must make sure you export in the correct format. Excel has many options for how to export to a CSV, there is UTF-8, for Mac, ect. just select Comma Deliminated and it should work. If it does not work try exporting the file again and rerun the application. 
  
  ![GitHub Logo](README_src/TeachHub_ExcelExport.png)
+ 
+## PAT Manager in Depth
+ When the user gets a PAT from the GitHub UI and passes it to TeachHub for storage, the PAT is always encryped so that it is not stored in plain text. The user is able to specify how much security he wants behind that encryption. Selecting NONE when prompted will use a default encyption, it will not be stored in plain text, but the symmetric encryption key is hard coded into the program. Chosing a level of LOW or HIGH (where the difference is the minimum requirment of password strength) will then encypt the PAT over a password provided by the user. In no way are the origional PAT, not the password/encyption key stored locally on the system. An attempt at decryption will check the hashvalue of the provided password if it matches the hashcode of the origional key used, if they match the key is decrypted and then sent with the username to GitHub for verification. Only if GitHub verifies the PAT will the user be able to continue. 
  
 ## API
 
