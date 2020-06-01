@@ -105,6 +105,10 @@ When executing a file, the application will first analyze the file passed in and
  Note that for all undo/redo purposes, the Cloning information from the execution file is left out, this is to prevent trying to clone again to the same location or accidentally deleting files from the local computer.
  
  ![GitHub Logo](README_src/TeachHub_ExecutionEx.png)
+ 
+ As shown, to run a file use the -f flag followed by the absolute path to the file. You will then be asked if you want to use a password/PAT that you have to put into the system or if you want to use a PAT that is stored on disk (see the setup section). After you select either method of authentication TeachHub will run the file you provided. At the end it will display a summery of what was done along with any errors along the way that were encountered.
+ 
+ For a full demonstration, there is a demo video in the root directory of this project.
 
  
 ## FAQ
