@@ -66,23 +66,31 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  
  Please note that the Read_Only invite tag is only available for Organization repositories, it will not work for personal ones. Also note that the Read_Only tag will make all the invites on that line read only!
  
- Sample CSVs are shown beloew:
+ Sample CSVs and their "cases" are shown below:
  
- Sample 1
+ ### Case 1
  
- ![GitHub Logo](README_src/TeachHub_CSV-ex1.png)
- 
- 
- Sample 2
- 
- ![GitHub Logo](README_src/TeachHub_CSV-ex2.png)
+ ![GitHub Logo](README_src/examples_src/example1_csv.png)
+ The user (in this case me: ShalomGottesman) wants to generate 4 private repositories named Example1 through Example4, except he does not want Example3 to be private (hence the Make_Private column is labled no in the Exmple3 row). Additionally he wants to add Foo as a collaborator to all 4 of them. Lastly, he wants to clone the repository to his local computer at C:\Users. 
  
  
- Sample 3
+ ### Case 2
  
- ![GitHub Logo](README_src/TeachHub_CSV-ex3.png)
+ ![GitHub Logo](README_src/examples_src/example2_csv.png)
+ The user wants to generate 4 private repositories under his ogranization, called MyOrg, for 4 students to each have one repository. Each repository will have only student added to that repository, but there will be a professor, prof1, added to all the repositories as well. (This is an example where seperate types of adding collaborators can be helpful, they do the same thing, but the tags make clear what information is what)
  
- Once you have a file ready to execute, save the file in any location of your computer that you know the path to.
+ 
+ ### Case 3
+ 
+ ![GitHub Logo](README_src/examples_src/example3_csv.png)
+ The user has one repository that already exists in his organization. He wants to add 4 students to that repository with read only access. Note that the same result can be accomplished with the following layout as well.
+ ![GitHub Logo](README_src/examples_src/example3a_csv.png)
+ 
+ 
+ ### Case 4
+ 
+ ![GitHub Logo](README_src/examples_src/example4_csv.png)
+ User wants to accept many the invitations to many different repositories he was invited to.
  
 ## Execution
 
