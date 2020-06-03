@@ -6,14 +6,17 @@ An ease-of-use application based on an abstraction of the GitHub REST API design
 ![GitHub Logo](README_src/TeachHub_openMsg.png)
 
 ## Capabilities
+
 TeachHub has the following uses:
+
 1. Create repositories at wiil (either personally owned or under an organization)
 2. Add/Remove collaborators to respositories (that either existed beforehand or that were created by TeachHub)
 3. For organization repositories: can add collaborators with read-only access
 4. Delete repositories
 5. Clone repositories to a given location on user's computer
 
-## Case Uses
+## Use Cases
+
 1. Professor wants to generate GitHub repositories for each student in his class and does not want to go though the repetitive process of creating them from the GitHub UI. (See tags: Create_Repo, Make_Private)
 2. Professor wants to add the same people to many different repositories (such as one or more Teach Assistants, or other professors). From the GitHub UI this is a highly repetitive process. (See tags: all Add_Collab tags, all Remove_Collab tags, Read_Only)
 3. Professor wants to add many students to one repository that contains starter code for an assignment.
