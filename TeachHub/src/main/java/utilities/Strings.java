@@ -54,40 +54,60 @@ public class Strings {
 			"This is a repository generated as a test of TeachHub";
 	
 	public static void main (String[] args) {
-		System.out.println(PAT_MangerInfo);
-		System.out.println(PAT_MangerOptions);
+		System.out.println(PAT_STRINGS.PAT_MangerInfo);
+		System.out.println(PAT_STRINGS.PAT_MangerOptions);
 	}
 	
-	public static String PAT_MangerInfo = 
-			"\n"+
-			"As of July 01 2020, the GitHub API is no longer accepting the use of regular passwords. Instead they\n" +
-			"are requiring that users make use of Personal Access Tokens (PATs). For more information on PATs, please see\n" +
-			"https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line \n" +
-			"To make this easier, TeachHub has an encrypted PAT storage mechanism, the security of which is determined by the user. Please\n" +
-			"note when creating a PAT online, you are going to have to copy the PAT into your terminal, so only create one when prompted \n" +
-			"Additionally, PATs should only be created with permissions required for that PATs usage. All functionality of TeachHub falls under the\n" +
-			"\"repo\" scope, with the exception of deleting repositories, that has its own scope. The user should decide if delete scope is neccesary \n";
+	public static class PAT_STRINGS {
 	
-	public static String PAT_MangerOptions = 
-			"Usage : [-l  | --list]          -> List all PATs on file \n" +
-			"        [-a  | --add ]          -> Add a new PAT to the system \n" +
-			"        [-d  | --delete]        -> delete PAT from system \n" +
-			"        [-h  | --help]          -> reprint options message \n" +
-			"        [-e  | --exit]          -> exit PAT Manger \n"+
-			"\n"+
-			"Only one command can be used at a time";
-	
-	public static String AddNewPATInfo = 
-			"There are 4 peices of information to create a local PAT to be stored. There is the username of the owner of the PAT, the \n"+
-			"PAT itself that is copied from the GitHub online User Interface. A name or tag for you to associate what the tag is (in case \n"+
-			"you want to store more than one on the system), and lastly there is the level of security in which the PAT is stored on the local computer \n" +
-			"There are three security levels: \n"+
-			"1-NONE: The PAT will be stored with a default encryption to not be stored in plain text, but to use the PAT no password will be needed \n"+
-			"2-LOW:  The PAT will be encrypted with a user provided password whose length and contents is up to the user to define, said password will be need to decrypt the PAT for use \n"+
-			"3-HIGH: Again the PAT will be encrypted with a user provided password whose strength must contain a minimum charachter set to satisfy stength requirements\n";
-	
-	public static String StoredPAT_OrUserInput = 
-			"Would you like to use a Personal Access Token stored on file or type in your credentials? Please be aware that starting July 01 2020 you will not have \n"+
-			"the option to use your regular password, either you have to store a PAT on file, or generate one for one time use.";
+		public static String PAT_MangerInfo = 
+				"\n"+
+				"As of July 01 2020, the GitHub API is no longer accepting the use of regular passwords. Instead they\n" +
+				"are requiring that users make use of Personal Access Tokens (PATs). For more information on PATs, please see\n" +
+				"https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line \n" +
+				"To make this easier, TeachHub has an encrypted PAT storage mechanism, the security of which is determined by the user. Please\n" +
+				"note when creating a PAT online, you are going to have to copy the PAT into your terminal, so only create one when prompted \n" +
+				"Additionally, PATs should only be created with permissions required for that PATs usage. All functionality of TeachHub falls under the\n" +
+				"\"repo\" scope, with the exception of deleting repositories, that has its own scope. The user should decide if delete scope is neccesary \n";
+		
+		public static String PAT_MangerOptions = 
+				"Usage : [-l  | --list]          -> List all PATs on file \n" +
+				"        [-a  | --add ]          -> Add a new PAT to the system \n" +
+				"        [-d  | --delete]        -> delete PAT from system \n" +
+				"        [-h  | --help]          -> reprint options message \n" +
+				"        [-e  | --exit]          -> exit PAT Manger \n"+
+				"\n"+
+				"Only one command can be used at a time";
+		
+		public static String AddNewPATInfo = 
+				"There are 4 peices of information to create a local PAT to be stored. There is the username of the owner of the PAT, the \n"+
+				"PAT itself that is copied from the GitHub online User Interface. A name or tag for you to associate what the tag is (in case \n"+
+				"you want to store more than one on the system), and lastly there is the level of security in which the PAT is stored on the local computer \n" +
+				"There are three security levels: \n"+
+				"1-NONE: The PAT will be stored with a default encryption to not be stored in plain text, but to use the PAT no password will be needed \n"+
+				"2-LOW:  The PAT will be encrypted with a user provided password whose length and contents is up to the user to define, said password will be need to decrypt the PAT for use \n"+
+				"3-HIGH: Again the PAT will be encrypted with a user provided password whose strength must contain a minimum charachter set to satisfy stength requirements\n";
+		
+		public static String StoredPAT_OrUserInput = 
+				"Would you like to use a Personal Access Token stored on file or type in your credentials? Please be aware that starting July 01 2020 you will not have \n"+
+				"the option to use your regular password, either you have to store a PAT on file, or generate one for one time use.";
+	}
 
+	public static class CSV_Strings{
+		public static String OWNER = "Owner";
+		public static String REPO_NAME = "Repo_Name";
+		public static String CREATE_REPO = "Create_Repo";
+		public static String MAKE_PRIVATE = "Make_Private";
+		public static String ADD_COLLAB_PROF = "Prof_Add_Collab";
+		public static String ADD_COLLAB_TA = "TA_Add_Collab";
+		public static String ADD_COLLAB_STUD = "Student_Add_Collab";
+		public static String REMOVE_COLLAB_PROF = "Prof_Remove_Collab";
+		public static String REMOVE_COLLAB_TA = "TA_Remove_Collab";
+		public static String REMOVE_COLLAB_STUD = "Student_Remove_Collab";
+		public static String READ_ONLY_INVITE = "Read_Only";
+		public static String ACCEPT_INVITATION = "Accept_Invite";
+		public static String CLONE_QUESTION = "Git_Clone_To_Computer?";
+		public static String CLONE_LOCATION = "Git_Clone_Location?";
+		public static String DELETE_REPOSITORY = "Delete_Repo";
+	}
 }

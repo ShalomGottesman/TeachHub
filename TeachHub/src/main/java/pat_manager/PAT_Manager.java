@@ -95,7 +95,7 @@ public class PAT_Manager {
 	}
 	
 	private void addNewPATDialogue(Scanner sc) {
-		System.out.println(utilities.Strings.AddNewPATInfo);
+		System.out.println(utilities.Strings.PAT_STRINGS.AddNewPATInfo);
 		String[] userAndToken = ReadCredentials.readCredentialForPAT(sc);
 		String password = "";
 		securityLevel secLvl = null;
@@ -388,8 +388,8 @@ public class PAT_Manager {
 	//file name syntax: [name]-[PAT_Name]-[security level].json
 	//example: [ShalomGottesman]-[main]-[NONE].json
 	public void commandLoop(Scanner sc) {
-		System.out.println(utilities.Strings.PAT_MangerInfo);
-		System.out.println(utilities.Strings.PAT_MangerOptions);
+		System.out.println(utilities.Strings.PAT_STRINGS.PAT_MangerInfo);
+		System.out.println(utilities.Strings.PAT_STRINGS.PAT_MangerOptions);
 		while(true) {
 			System.out.print("TeachHub PAT Manager> ");
 			String[] input = sc.nextLine().split("\\s");
@@ -406,7 +406,7 @@ public class PAT_Manager {
 				continue;
 			}
 			if(input[0].equals("-h") || input[0].equals("--help")) {
-				System.out.println(utilities.Strings.PAT_MangerOptions);
+				System.out.println(utilities.Strings.PAT_STRINGS.PAT_MangerOptions);
 				continue;
 			}
 			if(input[0].equals("-e") || input[0].equals("--exit")) {

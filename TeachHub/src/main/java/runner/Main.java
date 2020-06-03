@@ -54,7 +54,7 @@ public class Main {
 			}
 			System.out.println(utilities.Strings.optionsMsg);
 			if (new PAT_Manager().numberOfPatFiles() == 0) {
-				System.out.println(utilities.Strings.PAT_MangerInfo);
+				System.out.println(utilities.Strings.PAT_STRINGS.PAT_MangerInfo);
 			}
 		} else {
 			System.out.println("verification failed, has your license expired?");
@@ -116,7 +116,7 @@ public class Main {
 		}
 		if (login) {
 			if (intCon.isConnectionAvailable()) {
-				if(new UserChoice().yesNo(utilities.Strings.StoredPAT_OrUserInput, sc)) {
+				if(new UserChoice().yesNo(utilities.Strings.PAT_STRINGS.StoredPAT_OrUserInput, sc)) {
 					creds = new PAT_Manager().retreiveToken(sc);
 				} else {
 					creds = ReadCredentials.readCredential("user name and password to use to execute the file", sc);
@@ -179,7 +179,7 @@ public class Main {
 			//pass the returned stack from the parsing and the credentials to the execution class			
 			if (intCon.isConnectionAvailable()) {
 				if(creds == null) {
-					if(new UserChoice().yesNo(utilities.Strings.StoredPAT_OrUserInput, sc)) {
+					if(new UserChoice().yesNo(utilities.Strings.PAT_STRINGS.StoredPAT_OrUserInput, sc)) {
 						creds = new PAT_Manager().retreiveToken(sc);
 					} else {
 						creds = ReadCredentials.readCredential("user name and password to use to execute the file", sc);

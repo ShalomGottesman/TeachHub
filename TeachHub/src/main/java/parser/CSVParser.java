@@ -199,7 +199,7 @@ public class CSVParser {
 			this.numberOfColumns = tokens.length;
 			for (int x = 0; x < tokens.length; x++) {//for each token
 				tokens[x] = tokens[x].trim();
-				if (tokens[x].toLowerCase().equals("Owner".toLowerCase())){
+				if (tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.OWNER.toLowerCase())){
 					if (this.userColumn != -1) {
 						String msg = "there can only be one column defined with the \"Owner\" header!";
 						throw new IllegalHeaderException(x, tokens[x], msg);
@@ -207,7 +207,7 @@ public class CSVParser {
 					this.userColumn = x;
 					continue;
 				}
-				if (tokens[x].toLowerCase().equals("Repo_Name".toLowerCase())){
+				if (tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.REPO_NAME.toLowerCase())){
 					if (this.RepoNameColumn != -1) {
 						String msg = "there can only be one column defined with the \"Repo_Name\" header!";
 						throw new IllegalHeaderException(x, tokens[x], msg);
@@ -215,7 +215,7 @@ public class CSVParser {
 					this.RepoNameColumn = x;
 					continue;
 				}
-				if (tokens[x].toLowerCase().equals("Create_Repo".toLowerCase())){
+				if (tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.CREATE_REPO.toLowerCase())){
 					if (this.createRepoColumn != -1) {
 						String msg = "there can only be one column defined with the \"Create_Repo\" header!";
 						throw new IllegalHeaderException(x, tokens[x], msg);
@@ -223,7 +223,7 @@ public class CSVParser {
 					this.createRepoColumn = x;
 					continue;
 				}
-				if(tokens[x].toLowerCase().equals("Make_Private".toLowerCase())) {
+				if(tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.MAKE_PRIVATE.toLowerCase())) {
 					if(this.makeRepoPrivate != -1) {
 						String msg = "there can only be one column defined with the \"Make_Private\" header!";
 						throw new IllegalHeaderException(x, tokens[x], msg);
@@ -231,39 +231,39 @@ public class CSVParser {
 					this.makeRepoPrivate = x;
 					continue;
 				}
-				if (tokens[x].toLowerCase().equals("Prof_Add_Collab".toLowerCase())){
+				if (tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.ADD_COLLAB_PROF.toLowerCase())){
 					this.Prof_Add_Columns.add(x);
 					continue;
 				}
-				if (tokens[x].toLowerCase().equals("Prof_Remove_Collab".toLowerCase())){
+				if (tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.REMOVE_COLLAB_PROF.toLowerCase())){
 					this.Prof_Remove_Columns.add(x);
 					continue;
 				}
-				if (tokens[x].toLowerCase().equals("TA_Add_Collab".toLowerCase())){
+				if (tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.ADD_COLLAB_TA.toLowerCase())){
 					this.TA_Add_Columns.add(x);
 					continue;
 				}
-				if (tokens[x].toLowerCase().equals("TA_Remove_Collab".toLowerCase())){
+				if (tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.REMOVE_COLLAB_TA.toLowerCase())){
 					this.TA_Remove_Columns.add(x);
 					continue;
 				}
-				if (tokens[x].toLowerCase().equals("Student_Add_Collab".toLowerCase())){
+				if (tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.ADD_COLLAB_STUD.toLowerCase())){
 					this.Student_Add_Columns.add(x);
 					continue;
 				}
-				if (tokens[x].toLowerCase().equals("Student_Remove_Collab".toLowerCase())){
+				if (tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.REMOVE_COLLAB_STUD.toLowerCase())){
 					this.Student_Remove_Columns.add(x);
 					continue;
 				}
-				if (tokens[x].toLowerCase().equals("Read_Only".toLowerCase())) {
+				if (tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.READ_ONLY_INVITE.toLowerCase())) {
 					this.readOnlyInvitesColumn = x;
 					continue;
 				}
-				if(tokens[x].toLowerCase().equals("Accept_Invite".toLowerCase())) {
+				if(tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.ACCEPT_INVITATION.toLowerCase())) {
 					this.acceptInviteColumn = x;
 					continue;
 				}
-				if (tokens[x].toLowerCase().equals("Git_Clone_To_Computer?".toLowerCase())) {
+				if (tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.CLONE_QUESTION.toLowerCase())) {
 					if(this.cloneRepo != -1) {
 						String msg = "there can only be one column defined with the \"Git_Clone_To_Computer?\" header!";
 						throw new IllegalArgumentException(msg);
@@ -271,7 +271,7 @@ public class CSVParser {
 					this.cloneRepo = x;
 					continue;
 				}
-				if (tokens[x].toLowerCase().equals("Git_Clone_Location".toLowerCase())) {
+				if (tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.CLONE_LOCATION.toLowerCase())) {
 					if(this.repoCloneLocation != -1) {
 						String msg = "there can only be one column defined with the \"repoCloneLocation?\" header!";
 						throw new IllegalArgumentException(msg);
@@ -279,7 +279,7 @@ public class CSVParser {
 					this.repoCloneLocation = x;
 					continue;
 				}
-				if (tokens[x].toLowerCase().equals("Delete_Repo".toLowerCase())){
+				if (tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.DELETE_REPOSITORY.toLowerCase())){
 					if (this.deleteRepoColumn != -1) {
 						String msg = "there can only be one column defined with the \"Delete_Repo\" header!";
 						throw new IllegalHeaderException(x, tokens[x], msg);
