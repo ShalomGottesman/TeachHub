@@ -45,6 +45,10 @@ public class ReadCredentials {
 			System.out.println("Please be aware that your token will NOT appear on screen as you type/copy");
 			char[] pwd = console.readPassword("token: ");
 			password = new String(pwd);
+			if (password.length() == 0) {
+				System.out.println("read password was on length zero, please try again");
+				return readCredentialForPAT(sc);
+			}
 		} else {
 			System.out.println("could not get instance of System console, token will be printed");
 			System.out.print("token: ");

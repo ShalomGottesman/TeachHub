@@ -102,7 +102,7 @@ public class PAT_Manager {
 		String pat_name = "";
 		while(true) {
 			System.out.println("Please select a security level, NONE, LOW, or HIGH. (not case sensitive)");
-			System.out.print("security level: ");
+			System.out.print("security level (please one of NONE, LOW or HIGH. Case insensitive): ");
 			String input = sc.nextLine();
 			if(input.toLowerCase().equals("none")) {
 				secLvl = securityLevel.NONE;
