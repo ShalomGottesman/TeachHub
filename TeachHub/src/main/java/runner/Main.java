@@ -118,6 +118,10 @@ public class Main {
 			if (intCon.isConnectionAvailable()) {
 				if(new UserChoice().yesNo(utilities.Strings.PAT_STRINGS.StoredPAT_OrUserInput, sc)) {
 					creds = new PAT_Manager().retreiveToken(sc);
+					if (creds == null) {
+						System.out.println("PAT not retreived from PAT, please try again");
+						run(new String[0], sc, null); //recall the method
+					}
 				} else {
 					creds = ReadCredentials.readCredential("user name and password to use to execute the file", sc);
 				}
@@ -181,6 +185,10 @@ public class Main {
 				if(creds == null) {
 					if(new UserChoice().yesNo(utilities.Strings.PAT_STRINGS.StoredPAT_OrUserInput, sc)) {
 						creds = new PAT_Manager().retreiveToken(sc);
+						if (creds == null) {
+							System.out.println("PAT not retreived from PAT, please try again");
+							run(new String[0], sc, null); //recall the method
+						}
 					} else {
 						creds = ReadCredentials.readCredential("user name and password to use to execute the file", sc);
 					}

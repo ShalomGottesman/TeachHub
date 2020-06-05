@@ -325,11 +325,16 @@ public class PAT_Manager {
 		System.out.println("All PATs on file:");
 		formatPrintAllPATs();
 		while(true) {
-			System.out.print("PAT number to retreive: ");
+			System.out.print("PAT number to retreive, or type back to go back: ");
 			int index;
+			String input = "";
 			try {
-				index = Integer.parseInt(sc.nextLine().trim());
+				input = sc.nextLine().trim();
+				index = Integer.parseInt(input);
 			} catch (Exception e){
+				if (input.toLowerCase().equals("back")) {
+					return null;
+				}
 				System.out.println("Input must be an integer number");
 				continue;
 			}
