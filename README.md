@@ -45,7 +45,7 @@ The process to set up PATs in the manager is as follows:
   5. You will then be asked for the token, but it will not appear on screen when you copy it from your clipboard. The manager will make sure that you sucessfully pasted your token, and will ask to try again if nothing showed up. For that reason only try once to paste, worst case you didnt actually do so and will try again.
   6. You will then be asked to select a security level with which to encrypt the token.
   
- An view of the PAT Manger, and an example of storing a PAT on file is shown below
+ An view of the PAT Manger, and an example of storing a PAT on file is shown below (you can ignore the lines starting with "SLF4J" they do not have any meaning for our purposes)
 
 ![GitHub_Logo](README_src/PAT_Manager_Flow.png)
 
@@ -77,7 +77,11 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  
  Please note that the Read_Only invite tag is only available for Organization repositories, it will not work for personal ones. Also note that the Read_Only tag will make all the invites on that line read only!
  
- A couple points to keep in mind in terms of combining different tags:
+ The flow of execution for each row of the csv file is as follows, each for if that row is trying to do that step: accept invite -> create repository -> add colaborators -> remove collaborators, delete repository -> clone repository.
+ 
+ Based one this, there are very few rules that need be defined on what can and cannot be be put in the csv file, many combinations make sense, some just don't. Like don't try to create a repository that you are accepting an invitation to, it doesn't make sense!
+ 
+ However, a couple points to keep in mind in terms of combining different tags:
  
  1. It is recommended that only one of Create_Repo and Delete_Repo is used per file to be executed, as it has not been tested if the logic will compute fully when trying to deal with both.
  
