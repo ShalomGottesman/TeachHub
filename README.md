@@ -115,6 +115,8 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
 
 Once you have called the application to begin, the options will appear, they are all self explanatory in their purpose. 
 
+There is a login option in the menu. The user has the option to choose the mode of authentication before passing in a file to use, if none was selected the user will be prompted after specifying the file to be executed.
+
 When executing a file, the application will first analyze the file passed in and present: a summery of what is about to be executed, and samples of the undo/redo files that will be generated and saved in the "/TeachHub" folder as discussed in the first section.
  Also when executing a file, there will be some user dialog to complete with the command line:
  1. User credentials for the application to use with the Github API
@@ -125,7 +127,7 @@ When executing a file, the application will first analyze the file passed in and
  
  ![GitHub Logo](README_src/TeachHub_ExecutionEx.png)
  
- As shown, to run a file use the -f flag followed by the absolute path to the file. You will then be asked if you want to use a password/PAT that you have to put into the system or if you want to use a PAT that is stored on disk (see the setup section). After you select either method of authentication TeachHub will run the file you provided. At the end it will display a summery of what was done along with any errors along the way that were encountered.
+ As shown, to run a file use the -f command followed by the absolute path to the file (Some terminals have the feature that if you drag and drop the file to the terminal, its path will be pasted in the terminal). You will then be asked, if you havnt done so already, if you want to use a password/PAT that you have to put into the system or if you want to use a PAT that is stored on disk (see the setup section). After you select either method of authentication TeachHub will run the file you provided. At the end it will display a summery of what was done along with any errors along the way that were encountered.
  
  For a full demonstration, there is a demo video in the root directory of this project.
 
