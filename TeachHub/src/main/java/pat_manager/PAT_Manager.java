@@ -101,7 +101,7 @@ public class PAT_Manager {
 		securityLevel secLvl = null;
 		String pat_name = "";
 		while(true) {
-			System.out.println("Please select a security level, NONE, LOW, or HIGH. (not case sensitive)");
+			System.out.println("Please select a security level: NONE, LOW, or HIGH. (not case sensitive)");
 			System.out.print("security level (please one of NONE, LOW or HIGH. Case insensitive): ");
 			String input = sc.nextLine();
 			if(input.toLowerCase().equals("none")) {
@@ -178,7 +178,7 @@ public class PAT_Manager {
 				newToken.encryptToken(password);
 			}
 			String ret = serializer.serialize(newToken);
-			System.out.println("succesful storage of new token in file: " + ret);
+			System.out.println("Succesful storage of new token in file: " + ret);
 		} catch (InvalidCredentialException e) {
 			e.printStackTrace();
 			boolean tryAgain = new UserChoice().yesNo("Provided info did not check out, would you like to try again", sc);
