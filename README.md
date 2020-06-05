@@ -37,7 +37,17 @@ To change this, create an enviorment variable called "TeachHub" (without quotes)
 
 3. GitHub is no longer allowing the use of ones regular password to be used at the API interface, rather the user must create a Personal Access Token (PAT). TeachHub has built in a PAT manager that securly stores the token on the file system to be reused between different sessions. Please see https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line for more info on creating such tokens. Below is a picture of the PAT Manger. There is also a demo video in the main folder of this repository demonstrating the use of the PAT Manger. Accessing the PAT Manger can be done with a -p command of the main TeachHub UI. If the user plans to use TeachHub only once on any particular computer, it is not worthwhile storing a PAT locally, rather the user will be able to copy the PAT to the command line as if it were his password. However if the user plans to use TeachHub on this computer in more than one instance: the creation of a PAT is a somewhat annoying process, the ability to store them locally can be advantagous. For more details how this works, see the end of this README. This can come in handy if the user operates two GitHub accounts on the local computer. When executing a file the user can choose which accounts PAT to use for that file. Each PAT will have the user's profile name attached so it will be easy to tell which PAT to use.
 
-![GitHub_Logo](README_src/PAT_Manger_Main.png)
+The process to set up PATs in the manager is as follows:
+  1. First follow the link above to create the token copy the token to notepad, or somewhere else to store the token temporarily
+  2. Start up TeachHub (shown below) and start up the manager with a -p command.
+  3. Once in the PAT manager, type -a to add a new token
+  4. You will then be asked for the username that will be used with token when authenticating with GitHub
+  5. You will then be asked for the token, but it will not appear on screen when you copy it from your clipboard. The manager will make sure that you sucessfully pasted your token, and will ask to try again if nothing showed up. For that reason only try once to paste, worst case you didnt actually do so and will try again.
+  6. You will then be asked to select a security level with which to encrypt the token.
+  
+ An view of the PAT Manger, and an example of storing a PAT on file is shown below
+
+![GitHub_Logo](README_src/PAT_Manager_Flow.png)
 
 
 ## File Syntax
