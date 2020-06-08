@@ -1,0 +1,5 @@
+Owner,Repo_Name,Create_Repo,Make_Private,Prof_Add_Collab,Git_Clone_To_Computer?,Git_Clone_Location
+ShalomGottesman,Example1,yes,yes,Foo,yes,C:\Users
+ShalomGottesman,Example2,yes,yes,Foo,yes,C:\Users
+ShalomGottesman,Example3,yes,no,Foo,yes,C:\Users
+ShalomGottesman,Example4,yes,yes,Foo,yes,C:\Users
