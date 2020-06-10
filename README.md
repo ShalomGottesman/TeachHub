@@ -3,7 +3,7 @@
 An ease-of-use application based on an abstraction of the GitHub REST API designed to assist professors in generating, cloning and managing many git repositories for students. Additional usage allows user to add/remove many collaborators to repositories (specifically TAs and other Professors).
 
 
-![GitHub Logo](README_src/TeachHub_openMsg.png)
+[GitHub Logo](./README_src/TeachHub_openMsg.png)
 
 ## Capabilities
 
@@ -31,7 +31,7 @@ This guide is broken down into three section: Setup, File Syntax, Execution. Als
 1. For this application to run correctly, you should have Java 8 or later installed on you computer. 
 * This application stores .CSV files on your computer for undo/redo purposes. By default, this application will create a folder called "TeachHub" in your home directory and will output a message on startup declaring this. 
 
-![GitHub Logo](README_src/TeachHub_envrVar.png)
+[GitHub Logo](./README_src/TeachHub_envrVar.png)
 
 To change this, create an enviorment variable called "TeachHub" (without quotes) with the value being the location you would like the application to create the sub directory "/TeachHub" to store the files.
 
@@ -48,7 +48,7 @@ The process to set up PATs in the manager is as follows:
   
  An view of the PAT Manger, and an example of storing a PAT on file is shown below (you can ignore the lines starting with "SLF4J" they do not have any meaning for our purposes)
 
-![GitHub_Logo](README_src/PAT_Manager_Flow.png)
+[GitHub_Logo](./README_src/PAT_Manager_Flow.png)
 
 
 ## File Syntax
@@ -94,35 +94,32 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  
  ### Case 1
  
- ![GitHub Logo](README_src/examples_src/example1_csv.png)
+ [GitHub Logo](./README_src/examples_src/example1_csv.png)
  The user (in this case me: ShalomGottesman) wants to generate 4 private repositories named Example1 through Example4, except he does not want Example3 to be private (hence the Make_Private column is labled no in the Exmple3 row). Additionally he wants to add Foo as a collaborator to all 4 of them. Lastly, he wants to clone the repository to his local computer at C:\Users. 
  
- [Case 1 file](./README_src/examples_src/case1.csv)
- 
- ![Case 1 file](README_src/examples_src/case1.csv)
- 
+ [Case 1 file](./README_src/examples_src/case1.csv) 
  
  ### Case 2
  
- ![GitHub Logo](README_src/examples_src/example2_csv.png)
+ [GitHub Logo](./README_src/examples_src/example2_csv.png)
  The user wants to generate 4 private repositories under his ogranization, called MyOrg, for 4 students to each have one repository. Each repository will have only student added to that repository, but there will be a professor, prof1, added to all the repositories as well. (This is an example where seperate types of adding collaborators can be helpful, they do the same thing, but the tags make clear what information is what)
-  ![Case 2 file](README_src/examples_src/case2.csv)
+  [Case 2 file](./README_src/examples_src/case2.csv)
  
  
  ### Case 3
  
- ![GitHub Logo](README_src/examples_src/example3_csv.png)
+ [GitHub Logo](./README_src/examples_src/example3_csv.png)
  The user has one repository that already exists in his organization. He wants to add 4 students to that repository with read only access. Note that the same result can be accomplished with the following layout as well.
- ![GitHub Logo](README_src/examples_src/example3a_csv.png)
-  ![Case 3 file](README_src/examples_src/case3.csv)
-  ![Case 3a file](README_src/examples_src/case3a.csv)
+ [GitHub Logo](./README_src/examples_src/example3a_csv.png)
+  [Case 3 file](./README_src/examples_src/case3.csv)
+  [Case 3a file](./README_src/examples_src/case3a.csv)
  
  
  ### Case 4
  
- ![GitHub Logo](README_src/examples_src/example4_csv.png)
+ [GitHub Logo](./README_src/examples_src/example4_csv.png)
  User wants to accept many the invitations to many different repositories he was invited to.
- ![Case 4 file](README_src/examples_src/case4.csv)
+ [Case 4 file](./README_src/examples_src/case4.csv)
  
 ## Execution
 
@@ -138,7 +135,7 @@ When executing a file, the application will first analyze the file passed in and
  
  Note that for all undo/redo purposes, the Cloning information from the execution file is left out, this is to prevent trying to clone again to the same location or accidentally deleting files from the local computer.
  
- ![GitHub Logo](README_src/TeachHub_ExecutionEx.png)
+ [GitHub Logo](./README_src/TeachHub_ExecutionEx.png)
  
  As shown, to run a file use the -f command followed by the absolute path to the file (Some terminals have the feature that if you drag and drop the file to the terminal, its path will be pasted in the terminal). You will then be asked, if you havnt done so already, if you want to use a password/PAT that you have to put into the system or if you want to use a PAT that is stored on disk (see the setup section). After you select either method of authentication TeachHub will run the file you provided. At the end it will display a summery of what was done along with any errors along the way that were encountered.
  
@@ -180,7 +177,7 @@ A: The username you provided will be added to the lsit of collaborators for that
  
 A: This is very important, when dealing with excel to format your table and then exporting out to a csv file you must make sure you export in the correct format. Excel has many options for how to export to a CSV, there is UTF-8, for Mac, ect. just select Comma Deliminated and it should work. If it does not work try exporting the file again and rerun the application. 
  
- ![GitHub Logo](README_src/TeachHub_ExcelExport.png)
+ [GitHub Logo](./README_src/TeachHub_ExcelExport.png)
  
 ## PAT Manager in Depth
  When the user gets a PAT from the GitHub UI and passes it to TeachHub for storage, the PAT is always encryped so that it is not stored in plain text. The user is able to specify how much security he wants behind that encryption. Selecting NONE when prompted will use a default encyption, it will not be stored in plain text, but the symmetric encryption key is hard coded into the program. Chosing a level of LOW or HIGH (where the difference is the minimum requirment of password strength) will then encypt the PAT over a password provided by the user. In no way are the origional PAT, not the password/encyption key stored locally on the system. An attempt at decryption will check the hashvalue of the provided password if it matches the hashcode of the origional key used, if they match the key is decrypted and then sent with the username to GitHub for verification. Only if GitHub verifies the PAT will the user be able to continue. 
