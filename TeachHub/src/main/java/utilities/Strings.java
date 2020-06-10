@@ -107,7 +107,7 @@ public class Strings {
 		public static String READ_ONLY_INVITE = "Read_Only";
 		public static String ACCEPT_INVITATION = "Accept_Invite";
 		public static String CLONE_QUESTION = "Git_Clone_To_Computer?";
-		public static String CLONE_LOCATION = "Git_Clone_Location?";
+		public static String CLONE_LOCATION = "Git_Clone_Location";
 		public static String DELETE_REPOSITORY = "Delete_Repo";
 	}
 }
