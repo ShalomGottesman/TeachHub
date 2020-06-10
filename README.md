@@ -96,6 +96,9 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  
  ![GitHub Logo](README_src/examples_src/example1_csv.png)
  The user (in this case me: ShalomGottesman) wants to generate 4 private repositories named Example1 through Example4, except he does not want Example3 to be private (hence the Make_Private column is labled no in the Exmple3 row). Additionally he wants to add Foo as a collaborator to all 4 of them. Lastly, he wants to clone the repository to his local computer at C:\Users. 
+ 
+ [Case 1 file](./README_src/examples_src/case1.csv)
+ 
  ![Case 1 file](README_src/examples_src/case1.csv)
  
  
