@@ -48,7 +48,7 @@ The process to set up PATs in the manager is as follows:
   
  An view of the PAT Manger, and an example of storing a PAT on file is shown below (you can ignore the lines starting with "SLF4J" they do not have any meaning for our purposes)
 
-[GitHub_Logo](./README_src/PAT_Manager_Flow.png)
+![GitHub_Logo](README_src/PAT_Manager_Flow.png)
 
 
 ## File Syntax
