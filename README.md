@@ -78,7 +78,7 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  
  Please note that the Read_Only invite tag is only available for Organization repositories, it will not work for personal ones. Also note that the Read_Only tag will make all the invites on that line read only!
  
- The flow of execution for each row of the csv file is as follows, each for if that row is trying to do that step: accept invite -> create repository -> add colaborators -> remove collaborators, delete repository -> clone repository.
+ The flow of execution for each row of the csv file is as follows, each for if that row is trying to do that step: accept invite -> create repository -> add colaborators -> remove collaborators -> delete repository -> clone repository.
  
  Based one this, there are very few rules that need be defined on what can and cannot be be put in the csv file, many combinations make sense, some just don't. Like don't try to create a repository that you are accepting an invitation to, it doesn't make sense!
  
@@ -96,14 +96,14 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  
  ![GitHub Logo](README_src/examples_src/example1_csv.png)
  The user (in this case me: ShalomGottesman) wants to generate 4 private repositories named Example1 through Example4, except he does not want Example3 to be private (hence the Make_Private column is labled no in the Exmple3 row). Additionally he wants to add Foo as a collaborator to all 4 of them. Lastly, he wants to clone the repository to his local computer at C:\Users. 
- ![Case 1 file](README_src/examples_src/case1.csv)
  
+ [Case 1 file](./README_src/examples_src/case1.csv) 
  
  ### Case 2
  
  ![GitHub Logo](README_src/examples_src/example2_csv.png)
  The user wants to generate 4 private repositories under his ogranization, called MyOrg, for 4 students to each have one repository. Each repository will have only student added to that repository, but there will be a professor, prof1, added to all the repositories as well. (This is an example where seperate types of adding collaborators can be helpful, they do the same thing, but the tags make clear what information is what)
-  ![Case 2 file](README_src/examples_src/case2.csv)
+  [Case 2 file](./README_src/examples_src/case2.csv)
  
  
  ### Case 3
@@ -111,15 +111,15 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  ![GitHub Logo](README_src/examples_src/example3_csv.png)
  The user has one repository that already exists in his organization. He wants to add 4 students to that repository with read only access. Note that the same result can be accomplished with the following layout as well.
  ![GitHub Logo](README_src/examples_src/example3a_csv.png)
-  ![Case 3 file](README_src/examples_src/case3.csv)
-  ![Case 3a file](README_src/examples_src/case3a.csv)
+  [Case 3 file](./README_src/examples_src/case3.csv)
+  [Case 3a file](./README_src/examples_src/case3a.csv)
  
  
  ### Case 4
  
  ![GitHub Logo](README_src/examples_src/example4_csv.png)
  User wants to accept many the invitations to many different repositories he was invited to.
- ![Case 4 file](README_src/examples_src/case4.csv)
+ [Case 4 file](./README_src/examples_src/case4.csv)
  
 ## Execution
 
