@@ -8,5 +8,6 @@ public interface Authentication {
 	
 	public Github authenticate();
 	public UsernamePasswordCredentialsProvider getUsernamePasswordCredentialsProvider();
+	public String getUser();
 	
 }

@@ -125,4 +125,9 @@ public class PAT_Token implements PAT{
 		}
 		return new UsernamePasswordCredentialsProvider(this.userName, this.token);
 	}
+
+	@Override
+	public String getUser() {
+		return this.userName;
+	}
 }

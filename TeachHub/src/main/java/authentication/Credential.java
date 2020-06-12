@@ -34,4 +34,9 @@ public class Credential implements Authentication {
 	public UsernamePasswordCredentialsProvider getUsernamePasswordCredentialsProvider() {
 		return new UsernamePasswordCredentialsProvider(this.userName, this.password);
 	}
+
+	@Override
+	public String getUser() {
+		return this.userName;
+	}
 }
