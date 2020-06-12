@@ -18,6 +18,7 @@ import com.jcabi.github.Repos;
 import com.jcabi.github.Repos.RepoCreate;
 import com.jcabi.http.Request;
 import com.jcabi.http.RequestBody;
+import com.jcabi.http.Response;
 import com.jcabi.http.response.JsonResponse;
 import com.jcabi.http.response.RestResponse;
 
@@ -58,6 +59,7 @@ public class CLICommandRunner {
 			String msg = messegeQueue.deque();
 			System.out.println(msg);
 		}
+		System.out.println();
 		if (totalCreates != 0) {
 			System.out.println("Succesful Creates: " + succesfulCreates +"/"+ totalCreates);
 			totalCreates = 0;
@@ -154,18 +156,39 @@ public class CLICommandRunner {
 	}
 	
 	private void createRepository(ExecuteCommand cmd) throws IOException {
-		try {
-			//generate basic settings
-			RepoCreate createRepoSettings = new RepoCreate(cmd.getRepoName(), cmd.isMakeRepoPrivate())
-					.withDescription(initMsg)
-					.withAutoInit(true);
-			if (!cmd.getUser().equals(this.username)) {//implies creation of an organization repository
-				createRepoSettings = createRepoSettings.withOrganization(cmd.getUser());
-			}
-			this.github.repos().create(createRepoSettings);
-			succesfulCreates++;
-		} catch (AssertionError e) {
-			String msg = "WARNING: couldn't generate repository [" + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()) + "] becuase it already exists, skipping feature";
+		//generate basic settings
+		RepoCreate createRepoSettings = new RepoCreate(cmd.getRepoName(), cmd.isMakeRepoPrivate())
+				.withDescription(initMsg)
+				.withAutoInit(true);
+		if (!cmd.getUser().equals(this.username)) {//implies creation of an organization repository
+			createRepoSettings = createRepoSettings.withOrganization(cmd.getUser());
+		}
+		String uriPath = "user/repos";
+        final String org = createRepoSettings.organization();
+        if (org != null && !org.isEmpty()) {
+            uriPath = "/orgs/".concat(org).concat("/repos");
+        }
+        Response response = this.github.entry().uri().path(uriPath)
+            .back().method(Request.POST)
+            .body().set(createRepoSettings.json()).back()
+            .fetch().as(RestResponse.class);
+        if (response.status() == HttpURLConnection.HTTP_CREATED) {
+        	succesfulCreates++;
+        } 
+        else if (response.status() == HttpURLConnection.HTTP_FORBIDDEN) {
+        	String msg = repoURLAbstractor(cmd.getUser(), cmd.getRepoName()) + " could not be created, unauthorized access. Probable causes: You don't have access to the [" + cmd.getUser() + "] domain in which you are trying to create the repository, or this token does not the repo scope enabled on the GitHub UI";
+        	printMessegeAndAddToQue(msg);
+        }
+        else if (response.status() == 422) {//Unprocessable Entity
+        	String msg = repoURLAbstractor(cmd.getUser(), cmd.getRepoName()) + " could not be created because it already exists";
+    		printMessegeAndAddToQue(msg);
+        }
+        else if (response.status() == HttpURLConnection.HTTP_NOT_FOUND) {//Unprocessable Entity
+        	String msg = repoURLAbstractor(cmd.getUser(), cmd.getRepoName()) + " could not be created because the [" + cmd.getUser() + "] domain exists";
+    		printMessegeAndAddToQue(msg);
+        }
+        else {        	
+        	String msg = repoURLAbstractor(cmd.getUser(), cmd.getRepoName()) + " could not be created. Unknown error code response ["+ response.status()+"]. Please check GitHub developer pages for reason behind response";
 			printMessegeAndAddToQue(msg);
 		}
 		updateRepos();
