@@ -35,6 +35,7 @@ public class Main {
 	private static verify status = verify.UNVERIFIED;
 		
 	private static boolean login;
+	private static boolean invalidate;
 	private static boolean analyze;
 	private static boolean file;
 	private static boolean openManager;
@@ -45,6 +46,8 @@ public class Main {
 	private static boolean openUndo;
 	private static boolean help;
 	private static boolean exit;
+	
+	private static Authentication credentials = null;
 	
 	private static void precheck() {
 		if (verify()) {
@@ -65,7 +68,7 @@ public class Main {
 	public static void main(String[] args) throws IllegalDataException, IOException {
 		precheck();
 		Scanner sc = new Scanner(System.in);
-		run(new String[0], sc, null);
+		run(new String[0], sc);
 	}
 	
 	/**
@@ -80,7 +83,7 @@ public class Main {
 		String[] args = new String[2];
 		args[0] = "-f";
 		args[1] = file.toString();
-		run(args, sc, null);
+		run(args, sc);
 	}
 	
 	/**
@@ -96,13 +99,18 @@ public class Main {
 		String[] args = new String[2];
 		args[0] = "-f";
 		args[1] = file.toString();
-		run(args, sc, creds);
+		credentials = creds;
+		run(args, sc);
 	}
 	
-	private static void run(String[] args, Scanner sc, Authentication creds) throws IllegalDataException, IOException {
+	private static void run(String[] args, Scanner sc) throws IllegalDataException, IOException {
 		resetAll();
 		InternetConnection intCon = new InternetConnection();
-		System.out.print("TeachHub> ");
+		String prompt = "TeachHub> ";
+		if(credentials != null) {
+			prompt = "TeachHub ("+credentials.getUser()+")> ";
+		}
+		System.out.print(prompt);
 		String[] input = null;
 		if (args.length == 0) {
 			input = sc.nextLine().split("\\s");
@@ -114,16 +122,19 @@ public class Main {
 			new PAT_Manager().commandLoop(sc);
 			resetAll();
 		}
+		if(invalidate) {
+			credentials = null;
+		}
 		if (login) {
 			if (intCon.isConnectionAvailable()) {
 				if(new UserChoice().yesNo(utilities.Strings.PAT_STRINGS.StoredPAT_OrUserInput, sc)) {
-					creds = new PAT_Manager().retreiveToken(sc);
-					if (creds == null) {
+					credentials = new PAT_Manager().retreiveToken(sc);
+					if (credentials == null) {
 						System.out.println("PAT not retreived from PAT, please try again");
-						run(new String[0], sc, null); //recall the method
+						run(new String[0], sc); //recall the method
 					}
 				} else {
-					creds = ReadCredentials.readCredential("user name and password to use to execute the file", sc);
+					credentials = ReadCredentials.readCredential("user name and password to use to execute the file", sc);
 				}
 			} else {
 				System.out.println("could not connect to " + intCon.getURL().getPath() + ". Do you have an active intenet connection?");
@@ -151,11 +162,11 @@ public class Main {
 				commandQue = parseFileAndPrintInfo(input, sc);
 			} catch (ArrayIndexOutOfBoundsException e) {
 				System.out.println("there was no input after the tag " + input[filePath-1] + "!");
-				run(new String[0], sc, null); //recall the method
+				run(new String[0], sc); //recall the method
 				System.exit(0);
 			} catch (FileNotFoundException e) {
 				System.out.println("The File passed in at " + input[filePath] + " does not exist!");
-				run(new String[0], sc, null); //recall the method
+				run(new String[0], sc); //recall the method
 				System.exit(0);
 			}
 			
@@ -182,19 +193,19 @@ public class Main {
 		if (file) {
 			//pass the returned stack from the parsing and the credentials to the execution class			
 			if (intCon.isConnectionAvailable()) {
-				if(creds == null) {
+				if(credentials == null) {
 					if(new UserChoice().yesNo(utilities.Strings.PAT_STRINGS.StoredPAT_OrUserInput, sc)) {
-						creds = new PAT_Manager().retreiveToken(sc);
-						if (creds == null) {
+						credentials = new PAT_Manager().retreiveToken(sc);
+						if (credentials == null) {
 							System.out.println("PAT not retreived from PAT, please try again");
-							run(new String[0], sc, null); //recall the method
+							run(new String[0], sc); //recall the method
 						}
 					} else {
-						creds = ReadCredentials.readCredential("user name and password to use to execute the file", sc);
+						credentials = ReadCredentials.readCredential("user name and password to use to execute the file", sc);
 					}
 				}
 				
-				Github github = creds.authenticate();
+				Github github = credentials.authenticate();
 				String username = github.users().self().login();
 				Authentication cloneCreds = null;
 				
@@ -204,15 +215,15 @@ public class Main {
 						boolean useAlreadyProvided = new UserChoice().yesNo("do these credentials happen to be the same as the ones already provided to \n" + 
 																	 "execute the commands?", sc);
 						if (useAlreadyProvided) {
-							cloneCreds = creds;
+							cloneCreds = credentials;
 						} else {
 							cloneCreds = ReadCredentials.readCredential("user name and password to clone the repositories", sc);
 						}
 					} else {
-						cloneCreds = creds;
+						cloneCreds = credentials;
 					}
 				}
-				CLICommandRunner cliCR = new CLICommandRunner(creds, false, username, sc);
+				CLICommandRunner cliCR = new CLICommandRunner(credentials, false, username, sc);
 				//CLICommandRunner cliCR = new CLICommandRunner(github, false, username, sc);
 				cliCR.executeStack(commandQue2, isAnyCommandClone, cloneCreds);
 				//now use que3 to create an undo/redo file set
@@ -238,7 +249,7 @@ public class Main {
 			String[] argsToRun = {"-f", undoFile.toString()};
 			if (execute) {
 				resetAll();
-				run(argsToRun, sc, null);
+				run(argsToRun, sc);
 			}
 		}
 		if (redo) {
@@ -248,7 +259,7 @@ public class Main {
 			String[] argsToRun = {"-f", redoFile.toString()};
 			if (execute) {
 				resetAll();
-				run(argsToRun, sc, null);
+				run(argsToRun, sc);
 			}
 		}
 		if (openRedo) {
@@ -274,7 +285,7 @@ public class Main {
 			System.exit(0);
 		}
 		resetAll();
-		run(new String[0], sc, null);
+		run(new String[0], sc);
 	}
 	
 	private static void displayFileContents(File file) throws FileNotFoundException {
@@ -314,6 +325,9 @@ public class Main {
 		for (String str : inputAry) {
 			if (str.equals("-l") || str.equals("--login")) {
 				login = true;
+			}
+			if (str.equals("-i")  || str.equals("--invalidate")) {
+				invalidate = true;
 			}
 			if (str.equals("-a")  || str.equals("--analyze")) {
 				analyze = true;

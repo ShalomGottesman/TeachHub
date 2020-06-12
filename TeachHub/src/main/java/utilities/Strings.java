@@ -22,6 +22,7 @@ public class Strings {
 	
 	public static String optionsMsg = 
 			"Usage : [-l  | --login]                  -> Enter login credentials for the file you want to execute \n" +
+			"        [-i  | --invalidate              -> Invalidates the current login credentials provided (if applicable) \n" +
 			"        [-a  | --analyze <path-to-file>] -> Analyze a file without executing it \n" +
 			"        [-f  | --file <path-to-file>]    -> A file to execute (implicitly calls -a on the file also) \n" +
 			"        [-p  | -m  | --pat-manager]      -> Opens Personal Access Token Manager\n"+
