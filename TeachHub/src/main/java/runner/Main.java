@@ -161,13 +161,13 @@ public class Main {
 			try {
 				commandQue = parseFileAndPrintInfo(input, sc);
 			} catch (ArrayIndexOutOfBoundsException e) {
-				System.out.println("there was no input after the tag " + input[filePath-1] + "!");
+				System.out.println("there was no input after the tag " + input[filePath-1] + "! Please correct and try again");
 				run(new String[0], sc); //recall the method
-				System.exit(0);
 			} catch (FileNotFoundException e) {
 				System.out.println("The File passed in at " + input[filePath] + " does not exist!");
 				run(new String[0], sc); //recall the method
-				System.exit(0);
+			} catch (IllegalArgumentException e) {
+				run(new String[0], sc); //recall the method
 			}
 			
 			while (commandQue.size() != 0) {
@@ -191,45 +191,49 @@ public class Main {
 			
 		}
 		if (file) {
+			if(new UserChoice().yesNo("Please review the printout above. Do you want to continue?", sc)) {
 			//pass the returned stack from the parsing and the credentials to the execution class			
-			if (intCon.isConnectionAvailable()) {
-				if(credentials == null) {
-					if(new UserChoice().yesNo(utilities.Strings.PAT_STRINGS.StoredPAT_OrUserInput, sc)) {
-						credentials = new PAT_Manager().retreiveToken(sc);
-						if (credentials == null) {
-							System.out.println("PAT not retreived from PAT, please try again");
-							run(new String[0], sc); //recall the method
-						}
-					} else {
-						credentials = ReadCredentials.readCredential("user name and password to use to execute the file", sc);
-					}
-				}
-				
-				Github github = credentials.authenticate();
-				String username = github.users().self().login();
-				Authentication cloneCreds = null;
-				
-				if (isAnyCommandClone) {
-					boolean needCredsForClone = new UserChoice().yesNo(utilities.Strings.cloneDetectMsg, sc);
-					if (needCredsForClone) {
-						boolean useAlreadyProvided = new UserChoice().yesNo("do these credentials happen to be the same as the ones already provided to \n" + 
-																	 "execute the commands?", sc);
-						if (useAlreadyProvided) {
-							cloneCreds = credentials;
+				if (intCon.isConnectionAvailable()) {
+					if(credentials == null) {
+						if(new UserChoice().yesNo(utilities.Strings.PAT_STRINGS.StoredPAT_OrUserInput, sc)) {
+							credentials = new PAT_Manager().retreiveToken(sc);
+							if (credentials == null) {
+								System.out.println("PAT not retreived from PAT, please try again");
+								run(new String[0], sc); //recall the method
+							}
 						} else {
-							cloneCreds = ReadCredentials.readCredential("user name and password to clone the repositories", sc);
+							credentials = ReadCredentials.readCredential("user name and password to use to execute the file", sc);
 						}
 					} else {
-						cloneCreds = credentials;
+						System.out.println("Using already provided credentials");
 					}
+					
+					Github github = credentials.authenticate();
+					String username = github.users().self().login();
+					Authentication cloneCreds = null;
+					
+					if (isAnyCommandClone) {
+						boolean needCredsForClone = new UserChoice().yesNo(utilities.Strings.cloneDetectMsg, sc);
+						if (needCredsForClone) {
+							boolean useAlreadyProvided = new UserChoice().yesNo("do these credentials happen to be the same as the ones already provided to \n" + 
+																		 "execute the commands?", sc);
+							if (useAlreadyProvided) {
+								cloneCreds = credentials;
+							} else {
+								cloneCreds = ReadCredentials.readCredential("user name and password to clone the repositories", sc);
+							}
+						} else {
+							cloneCreds = credentials;
+						}
+					}
+					CLICommandRunner cliCR = new CLICommandRunner(credentials, false, username, sc);
+					//CLICommandRunner cliCR = new CLICommandRunner(github, false, username, sc);
+					cliCR.executeStack(commandQue2, isAnyCommandClone, cloneCreds);
+					//now use que3 to create an undo/redo file set
+					setUndoRedoFiles(redoCSV, undoCSV);
+				} else {
+					System.out.println("could not connect to " + intCon.getURL().getPath() + ". Do you have an active intenet connection?");
 				}
-				CLICommandRunner cliCR = new CLICommandRunner(credentials, false, username, sc);
-				//CLICommandRunner cliCR = new CLICommandRunner(github, false, username, sc);
-				cliCR.executeStack(commandQue2, isAnyCommandClone, cloneCreds);
-				//now use que3 to create an undo/redo file set
-				setUndoRedoFiles(redoCSV, undoCSV);
-			} else {
-				System.out.println("could not connect to " + intCon.getURL().getPath() + ". Do you have an active intenet connection?");
 			}
 		}
 		if (history) {
@@ -374,9 +378,7 @@ public class Main {
 				filePath = x+1;
 			}
 		}
-		//File file = null;
 		File file = new File(input[filePath]);
-		//Scanner fileSc = null;
 		Scanner fileSc = new Scanner(file);
 		String topLine = fileSc.nextLine();
 		CSVParser csvp = new CSVParser();
@@ -388,7 +390,14 @@ public class Main {
 		}
 		while (fileSc.hasNextLine()) {
 			String nextLine = fileSc.nextLine();
-			ExecuteCommand cmd = csvp.parseLine(nextLine);
+			ExecuteCommand cmd = null;
+			try{
+				cmd = csvp.parseLine(nextLine);
+			} catch (IllegalDataException e) {
+				System.out.println("data [" + e.getIllegalData() +"] in column "+e.getColumn()+" does not represent a valid path, please correct");
+				fileSc.close();
+				throw new IllegalArgumentException();
+			}
 			System.out.println(cmd.getCommandInfo());
 			commandQue.enque(cmd);
 		}

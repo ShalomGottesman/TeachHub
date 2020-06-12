@@ -42,30 +42,29 @@ public class ExecuteCommand implements Command{
 	
 	public String getCommandInfo() {
 		StringBuilder builder = new StringBuilder();
-		builder.append(String.format("owner: %15s | ", this.user));
-		builder.append(String.format("repo name: %15s | ", this.repoName));
+		builder.append(String.format("[owner: %15s", this.user.trim()));
+		builder.append(String.format(" | repo name: %15s", this.repoName.trim()));
 		if (createRepo) {
-			builder.append("Create Repo | ");
+			builder.append(" | Create Repo");
 		}
 		if (this.isAcceptInvite()) {
-			builder.append("Accept Invite | ");
+			builder.append(" | Accept Invite");
 		}
-		builder.append("Adding: " + Arrays.toString(this.getAllAddCollabs().toArray(new String[1])));
+		builder.append(" | Adding: " + Arrays.toString(this.getAllAddCollabs().toArray(new String[1])));
 		if (this.isInvitesReadonly()) {
 			builder.append(" as READ ONLY ");
 		}
-		builder.append(" | ");
-		builder.append("Removing: " + Arrays.toString(this.getAllRemoveCollabs().toArray(new String[1])) + " | ");
+		builder.append(" | Removing: " + Arrays.toString(this.getAllRemoveCollabs().toArray(new String[1])));
 		if (this.isMakeRepoPrivate()) {
-			builder.append("Make private | ");
+			builder.append(" | Make private");
 		}
 		if (this.isCloneRepo()) {
-			builder.append("clone repo to " + cloneLocation.toString() + " | ");
+			builder.append(" | clone repo to " + cloneLocation.toString());
 		}
 		if (deleteRepo) {
-			builder.append(" DELETE REPO | ");
+			builder.append(" | DELETE REPO");
 		} 
-		return builder.toString();
+		return builder.append("]").toString();
 		
 	}
 	

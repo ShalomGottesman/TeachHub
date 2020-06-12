@@ -16,7 +16,7 @@ public class IllegalDataException extends Exception{
 		return this.columnNum;
 	}
 	
-	public String getIllegalHeader() {
+	public String getIllegalData() {
 		return this.illegalData;
 	}
 

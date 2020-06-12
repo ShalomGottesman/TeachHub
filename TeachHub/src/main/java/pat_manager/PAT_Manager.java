@@ -358,6 +358,9 @@ public class PAT_Manager {
 				if(token.getSecLevel() == PAT.securityLevel.NONE) {
 					System.out.println("decrypting PAT with default encrpytion");
 					token.decryptToken(defaultPassword);
+					if (token.isEncrypted()) {
+						return null;
+					}
 					return token;
 				} else {
 					while(true) {
