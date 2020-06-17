@@ -156,6 +156,7 @@ public class CLICommandRunner {
 	}
 	
 	private void createRepository(ExecuteCommand cmd) throws IOException {
+		System.out.println("Creating");
 		//generate basic settings
 		RepoCreate createRepoSettings = new RepoCreate(cmd.getRepoName(), cmd.isMakeRepoPrivate())
 				.withDescription(initMsg)
