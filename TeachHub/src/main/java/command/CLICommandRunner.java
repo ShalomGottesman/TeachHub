@@ -54,7 +54,7 @@ public class CLICommandRunner {
 	
 	private void printStats() {
 		System.out.println("\n****************");
-		System.out.println("MESSEGES:");
+		System.out.println("MESSAGES:");
 		while(this.messegeQueue.size() != 0) {
 			String msg = messegeQueue.deque();
 			System.out.println(msg);
