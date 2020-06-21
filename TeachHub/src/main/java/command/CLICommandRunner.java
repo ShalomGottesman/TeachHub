@@ -35,7 +35,18 @@ public class CLICommandRunner {
 	private Scanner sc;
 	private String initMsg;
 	
-	static enum Permissions {PULL, PUSH, ADMIN, MAINTAIN, TRIAGE};
+	static enum Permissions {
+		PULL("pull"), 
+		PUSH("push"), 
+		ADMIN("admin"), 
+		MAINTAIN("maintain"),
+		TRIAGE("triage");
+	
+		String permission;
+		Permissions(String str){
+			this.permission = str;
+		}
+	};
 	
 	Queue<String> messegeQueue = new Queue<String>();
 	//stats
@@ -135,22 +146,30 @@ public class CLICommandRunner {
 		System.out.println("Accepting invitation");
 		String url = "/user/repository_invitations";
 		Iterator<JsonValue> iter = genericRequest(url, Request.GET, HttpURLConnection.HTTP_OK, null).readArray().iterator();
+		boolean idFound = false;
 		int idToAccept = 0;
 		String thisCoord = coords.user() +"/"+ coords.repo();
 		while (iter.hasNext()) {
 			JsonObject obj = (JsonObject) iter.next();
 			String fullRepoName = obj.getJsonObject("repository").getString("full_name");
 			if (fullRepoName.equals(thisCoord)) {
+				idFound = true;
 				idToAccept = obj.getInt("id");
 				break;
 			}
 		}
-		String path = "/user/repository_invitations/" + idToAccept;
-		try {
-			genericRequest(path, Request.PATCH, HttpURLConnection.HTTP_NO_CONTENT, null);
-			succesfulInvitesAccepted++;
-			return true;
-		} catch (AssertionError e) {
+		if (idFound) {
+			String path = "/user/repository_invitations/" + idToAccept;
+			try {
+				genericRequest(path, Request.PATCH, HttpURLConnection.HTTP_NO_CONTENT, null);
+				succesfulInvitesAccepted++;
+				return true;
+			} catch (AssertionError e) {
+				return false;
+			}
+		} else {
+			String msg = "Did not find an invitation for " + thisCoord + ", moving on";
+			printMessegeAndAddToQue(msg);
 			return false;
 		}
 	}
@@ -197,7 +216,7 @@ public class CLICommandRunner {
 	
 	private void addCollaboratorWithPermission(Coordinates coords, String userToAdd, Permissions permission) throws IOException {
 		try {
-			JsonObject obj = Json.createObjectBuilder().add("permission", permission.toString().toLowerCase()).build();
+			JsonObject obj = Json.createObjectBuilder().add("permission", permission.permission).build();
 			String url = "/repos/"+coords.user()+"/"+coords.repo()+"/collaborators/"+userToAdd;
 			JsonObject ret = genericRequest(url, Request.PUT, HttpsURLConnection.HTTP_CREATED, obj).readObject();
 			if ((permission.equals(Permissions.PULL)    && ret.containsKey("permissions") && ret.getString("permissions").equals("read")) ||
@@ -234,11 +253,15 @@ public class CLICommandRunner {
 				} else {
 					System.out.println();
 					String path = "/repos/" + coords.user() +"/"+ coords.repo() +"/collaborators/"+ collabToAdd;
-					try {
-						genericRequest(path, Request.PUT, HttpURLConnection.HTTP_CREATED, null);
+					RestResponse resp = genericRequest(path, Request.PUT, null);
+					if (resp.status() == HttpURLConnection.HTTP_CREATED) {
 						succesfulInvites++;
-					} catch(AssertionError e) {
-						String msg = "unsecessful add of user ["+collabToAdd+"] to repo["+repoURLAbstractor(cmd.getUser(), cmd.getRepoName())+"]";
+					}
+					else if (resp.status() == HttpURLConnection.HTTP_NOT_FOUND) {
+						String msg = "Could not find user ["+collabToAdd+"] to invite to repo["+repoURLAbstractor(cmd.getUser(), cmd.getRepoName())+"]";
+						printMessegeAndAddToQue(msg);
+					} else {
+						String msg = "Unknown response [" + resp.status() +"], unsecessful add of user ["+collabToAdd+"] to repo["+repoURLAbstractor(cmd.getUser(), cmd.getRepoName())+"]";
 						printMessegeAndAddToQue(msg);
 					}
 				}
@@ -373,7 +396,6 @@ public class CLICommandRunner {
 	
 	private boolean deleteProcess(ExecuteCommand cmd) throws IOException {
 		Coordinates coords = new Coordinates.Simple(cmd.getUser(), cmd.getRepoName());
-		System.out.println();
 		boolean verify = verifyDelete(cmd.getUser(), cmd.getRepoName(), this.sc);
 		if (verify) {
 			try {
@@ -464,6 +486,15 @@ public class CLICommandRunner {
 				.assertStatus(statusAssertion)
 				.as(JsonResponse.class).json();
 		
+	}
+	
+	private RestResponse genericRequest(String url, String type, JsonObject requestObj) throws IOException {
+		RequestBody bd = github.entry().uri().path(url).back().method(type).body();
+		if(requestObj != null) {
+			bd = bd.set(requestObj);
+		}
+		return bd.back()
+				.fetch().as(RestResponse.class);	
 	}
 	
 	private void printMessegeAndAddToQue(String msg) {
