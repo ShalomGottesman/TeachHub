@@ -113,7 +113,8 @@ public class CSVParser {
 		if(format.permissionsInviteColumn != -1) {
 			boolean match = false;
 			for(Permissions permission : Permissions.values()) {
-				if(info[format.permissionsInviteColumn].toLowerCase().equals(permission.permission)) {
+				String arg = info[format.permissionsInviteColumn].toLowerCase();
+				if(arg.equals(permission.permission) || arg.equals(permission.displayName)) {
 					match = true;
 					cmd.setPermissionInvite(permission);
 				}
