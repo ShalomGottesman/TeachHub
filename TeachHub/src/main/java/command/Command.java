@@ -2,6 +2,8 @@ package command;
 
 import java.util.ArrayList;
 
+import command.CLICommandRunner.Permissions;
+
 public interface Command {
 	
 	public ArrayList<String> getAllAddCollabs();
@@ -58,7 +60,7 @@ public interface Command {
 
 	public void setRemoveCollabs_Studs(ArrayList<String> removeCollabs_Studs);
 	
-	public boolean isInvitesReadonly();
+	public void setPermissionInvite(Permissions perm);
 	
-	public void setInvitesReadOnly(boolean bool);
+	public Permissions permissionInvite();
 }

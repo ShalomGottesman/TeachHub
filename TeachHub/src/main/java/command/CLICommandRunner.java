@@ -35,16 +35,19 @@ public class CLICommandRunner {
 	private Scanner sc;
 	private String initMsg;
 	
-	static enum Permissions {
-		PULL("pull"), 
-		PUSH("push"), 
-		ADMIN("admin"), 
-		MAINTAIN("maintain"),
-		TRIAGE("triage");
+	public enum Permissions {
+		PULL("pull", "Read_Only"), 
+		PUSH("push", "Push"), 
+		ADMIN("admin", "Admin"), 
+		MAINTAIN("maintain", "Maintain"),
+		TRIAGE("triage", "Triage");
 	
-		String permission;
-		Permissions(String str){
+		final public String permission;
+		final public String displayName;
+		
+		Permissions(String str, String disp){
 			this.permission = str;
+			this.displayName = disp;
 		}
 	};
 	
@@ -215,10 +218,11 @@ public class CLICommandRunner {
 	}
 	
 	private void addCollaboratorWithPermission(Coordinates coords, String userToAdd, Permissions permission) throws IOException {
-		try {
-			JsonObject obj = Json.createObjectBuilder().add("permission", permission.permission).build();
-			String url = "/repos/"+coords.user()+"/"+coords.repo()+"/collaborators/"+userToAdd;
-			JsonObject ret = genericRequest(url, Request.PUT, HttpsURLConnection.HTTP_CREATED, obj).readObject();
+		JsonObject obj = Json.createObjectBuilder().add("permission", permission.permission).build();
+		String url = "/repos/"+coords.user()+"/"+coords.repo()+"/collaborators/"+userToAdd;
+		RestResponse resp = genericRequest(url, Request.PUT, obj);
+		if (resp.status() == HttpsURLConnection.HTTP_CREATED) {
+			JsonObject ret = resp.as(JsonResponse.class).json().readObject();
 			if ((permission.equals(Permissions.PULL)    && ret.containsKey("permissions") && ret.getString("permissions").equals("read")) ||
 			   (permission.equals(Permissions.PUSH)     && ret.containsKey("permissions") && ret.getString("permissions").equals("write"))||
 			   (permission.equals(Permissions.ADMIN)    && ret.containsKey("permissions") && ret.getString("permissions").equals("admin"))||
@@ -228,13 +232,16 @@ public class CLICommandRunner {
 					succesfulInvites++;
 					return;
 			} else {
-				String msg = "Invite of " + userToAdd+ " tried with permission " + permission.toString().toLowerCase() +
+				String msg = "Invite of " + userToAdd+ " tried with permission " + permission.permission +
 						"but came back with permission: " + ret.getString("permissions");
 				System.out.println(msg);
 				messegeQueue.enque(msg);
 			}
-		} catch (AssertionError e) {
-			String msg = "invite of "+ userToAdd+ " failed.";
+		} else if (resp.status() == HttpsURLConnection.HTTP_NOT_FOUND) {
+			String msg = "Invitee [" + userToAdd + "] not found";
+			printMessegeAndAddToQue(msg);
+		} else {
+			String msg = "response unknown ["+resp.status()+"] invite of "+ userToAdd+ " failed.";
 			printMessegeAndAddToQue(msg);
 		}
 	}
@@ -247,9 +254,9 @@ public class CLICommandRunner {
 			}
 			if (!repo.collaborators().isCollaborator(collabToAdd)) {
 				System.out.print("adding: " + collabToAdd + " for: " + repoURLAbstractor(cmd.getUser(), cmd.getRepoName()));
-				if(cmd.isInvitesReadonly()) {
-					System.out.println(" as read only");
-					addCollaboratorWithPermission(coords, collabToAdd, Permissions.PULL);
+				if(cmd.permissionInvite() != null) {
+					System.out.println(" as ["+ cmd.permissionInvite().displayName +"]");
+					addCollaboratorWithPermission(coords, collabToAdd, cmd.permissionInvite());
 				} else {
 					System.out.println();
 					String path = "/repos/" + coords.user() +"/"+ coords.repo() +"/collaborators/"+ collabToAdd;
