@@ -3,6 +3,8 @@ package command;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import command.CLICommandRunner.Permissions;
+
 public class UndoCommand implements Command{
 	private String user;
 	private boolean createRepo;
@@ -38,15 +40,13 @@ public class UndoCommand implements Command{
 		if(exeCmd.isCreateRepo()) {
 			this.deleteRepo = true;
 		}
-		if (!this.deleteRepo) { // if I am deleting the repo, then all add and remove fields remain empty
-			this.addCollabs_Profs = exeCmd.getRemoveCollabs_Profs();
-			this.addCollabs_TAs = exeCmd.getRemoveCollabs_TAs();
-			this.addCollabs_Studs = exeCmd.getRemoveCollabs_Studs();
-			
-			this.removeCollabs_Profs = exeCmd.getAddCollabs_Profs();
-			this.removeCollabs_TAs = exeCmd.getAddCollabs_TAs();
-			this.removeCollabs_Studs = exeCmd.getAddCollabs_Studs();
-		}
+		this.addCollabs_Profs = exeCmd.getRemoveCollabs_Profs();
+		this.addCollabs_TAs = exeCmd.getRemoveCollabs_TAs();
+		this.addCollabs_Studs = exeCmd.getRemoveCollabs_Studs();
+		
+		this.removeCollabs_Profs = exeCmd.getAddCollabs_Profs();
+		this.removeCollabs_TAs = exeCmd.getAddCollabs_TAs();
+		this.removeCollabs_Studs = exeCmd.getAddCollabs_Studs();
 	}
 	
 	public ArrayList<String> getAllAddCollabs(){
@@ -187,14 +187,13 @@ public class UndoCommand implements Command{
 	}
 
 	@Override
-	public boolean isInvitesReadonly() {
+	public void setPermissionInvite(Permissions perm) {
 		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
-	public void setInvitesReadOnly(boolean bool) {
+	public Permissions permissionInvite() {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
 }

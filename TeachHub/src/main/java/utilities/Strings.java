@@ -106,6 +106,7 @@ public class Strings {
 		public static String REMOVE_COLLAB_TA = "TA_Remove_Collab";
 		public static String REMOVE_COLLAB_STUD = "Student_Remove_Collab";
 		public static String READ_ONLY_INVITE = "Read_Only";
+		public static String PERMISSION_INVITE = "Permission_Invite";
 		public static String ACCEPT_INVITATION = "Accept_Invite";
 		public static String CLONE_QUESTION = "Git_Clone_To_Computer?";
 		public static String CLONE_LOCATION = "Git_Clone_Location";

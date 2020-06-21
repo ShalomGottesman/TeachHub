@@ -2,7 +2,9 @@ package parser;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import command.CLICommandRunner.Permissions;
 import command.ExecuteCommand;
 
 public class CSVParser {
@@ -104,7 +106,20 @@ public class CSVParser {
 		//set cmd invite to read only if applicable
 		if(format.readOnlyInvitesColumn != -1) {
 			if(info[format.readOnlyInvitesColumn].toLowerCase().equals("yes")) {
-				cmd.setInvitesReadOnly(true);
+				cmd.setPermissionInvite(Permissions.PULL);
+			}
+		}
+		
+		if(format.permissionsInviteColumn != -1) {
+			boolean match = false;
+			for(Permissions permission : Permissions.values()) {
+				if(info[format.permissionsInviteColumn].toLowerCase().equals(permission.permission)) {
+					match = true;
+					cmd.setPermissionInvite(permission);
+				}
+			}
+			if(!match) {
+				throw new IllegalDataException(format.permissionsInviteColumn, info[format.permissionsInviteColumn], "The data did not conform to one of the permissions types: " + Arrays.toString(Permissions.values()));
 			}
 		}
 		//clone repo? -data can be empirically invalid
@@ -173,6 +188,7 @@ public class CSVParser {
 		public int deleteRepoColumn = -1;
 		public int makeRepoPrivate = -1;
 		public int readOnlyInvitesColumn = -1;
+		public int permissionsInviteColumn = -1;
 		public int acceptInviteColumn = -1;
 		
 		/*
@@ -259,6 +275,10 @@ public class CSVParser {
 					this.readOnlyInvitesColumn = x;
 					continue;
 				}
+				if (tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.PERMISSION_INVITE.toLowerCase())) {
+					this.permissionsInviteColumn = x;
+					continue;
+				}
 				if(tokens[x].toLowerCase().equals(utilities.Strings.CSV_Strings.ACCEPT_INVITATION.toLowerCase())) {
 					this.acceptInviteColumn = x;
 					continue;
@@ -298,7 +318,6 @@ public class CSVParser {
 			if (this.makeRepoPrivate != -1 && !(this.createRepoColumn != -1)) {
 				throw new IllegalHeaderException(-1, "N/A", "If the \"Make_Private\" header is used, then so must \"Create_Repo\" header must be present in the top line of the CSV file!");
 			}
-			
 		}
 
 		public int getUserColumn() {
@@ -356,9 +375,5 @@ public class CSVParser {
 		public int getMakeRepoPrivate() {
 			return makeRepoPrivate;
 		}
-		
-		
-		
 	}
-
 }

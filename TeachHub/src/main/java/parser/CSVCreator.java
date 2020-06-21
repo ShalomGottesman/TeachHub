@@ -1,6 +1,8 @@
 package parser;
 
 import java.io.File;
+import java.util.Arrays;
+
 import command.Command;
 import data_structures.Queue;
 
@@ -28,9 +30,11 @@ public class CSVCreator {
 		}
 		//parse each cmd into a CSV line
 		Queue<String[]> allLines = new Queue<String[]>();
+		System.out.println("que size: " + que2.size());
 		while (que2.size() != 0) {
 			Command cmd = que2.deque();
 			String[] lineInfo = analyzeCommandForInfo(cmd);
+			System.out.println(Arrays.toString(lineInfo));
 			allLines.enque(lineInfo);
 		}
 		
@@ -217,14 +221,12 @@ public class CSVCreator {
 			if (deleteRepo) {
 				header = header + ",Delete_Repo";
 			}
-			if (!deleteRepo) {//We only care about the adds/deletes if we are not deleting the repo
-				header = addRepeated(header, "Prof_Add_Collab", numToAdd_Profs, true);
-				header = addRepeated(header, "TA_Add_Collab", numToAdd_TAs, true);
-				header = addRepeated(header, "Student_Add_Collab", numToAdd_Studs, true);
-				header = addRepeated(header, "Prof_Remove_Collab", numToRemove_Profs, true);
-				header = addRepeated(header, "TA_Remove_Collab", numToRemove_TAs, true);
-				header = addRepeated(header, "Student_Remove_Collab", numToRemove_Studs, true);
-			}
+			header = addRepeated(header, "Prof_Add_Collab", numToAdd_Profs, true);
+			header = addRepeated(header, "TA_Add_Collab", numToAdd_TAs, true);
+			header = addRepeated(header, "Student_Add_Collab", numToAdd_Studs, true);
+			header = addRepeated(header, "Prof_Remove_Collab", numToRemove_Profs, true);
+			header = addRepeated(header, "TA_Remove_Collab", numToRemove_TAs, true);
+			header = addRepeated(header, "Student_Remove_Collab", numToRemove_Studs, true);
 			return header;
 		}
 		
@@ -257,14 +259,13 @@ public class CSVCreator {
 			if (repoName) {
 				total++;
 			}
-			if (!deleteRepo) {//again, we only care about add/removes if we are not deleting
-				total += numToAdd_Profs
-						+ numToAdd_TAs
-						+ numToAdd_Studs
-						+ numToRemove_Profs
-						+ numToRemove_TAs
-						+ numToRemove_Studs;
-			}
+			total += numToAdd_Profs
+					+ numToAdd_TAs
+					+ numToAdd_Studs
+					+ numToRemove_Profs
+					+ numToRemove_TAs
+					+ numToRemove_Studs;
+			
 			if (privateColumn) {
 				total++;
 			}

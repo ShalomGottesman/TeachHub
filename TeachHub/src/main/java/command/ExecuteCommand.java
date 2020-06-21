@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import command.CLICommandRunner.Permissions;
+
 public class ExecuteCommand implements Command{
 	private String user;
 	private boolean createRepo;
@@ -19,8 +21,8 @@ public class ExecuteCommand implements Command{
 	private File cloneLocation;
 	private boolean makeRepoPrivate;
 	private boolean deleteRepo;
-	private boolean invitesReadonly;
 	private boolean acceptInvite;
+	private Permissions permission = null;
 	
 	public ExecuteCommand(){}
 	
@@ -46,18 +48,18 @@ public class ExecuteCommand implements Command{
 		builder.append(String.format(" | repo name: %15s", this.repoName.trim()));
 		if (createRepo) {
 			builder.append(" | Create Repo");
+			if (this.isMakeRepoPrivate()) {
+				builder.append(" (private)");
+			}
 		}
 		if (this.isAcceptInvite()) {
 			builder.append(" | Accept Invite");
 		}
 		builder.append(" | Adding: " + Arrays.toString(this.getAllAddCollabs().toArray(new String[1])));
-		if (this.isInvitesReadonly()) {
-			builder.append(" as READ ONLY ");
+		if (this.permissionInvite() != null) {
+			builder.append(" as [" + this.permissionInvite().displayName +"] ");
 		}
 		builder.append(" | Removing: " + Arrays.toString(this.getAllRemoveCollabs().toArray(new String[1])));
-		if (this.isMakeRepoPrivate()) {
-			builder.append(" | Make private");
-		}
 		if (this.isCloneRepo()) {
 			builder.append(" | clone repo to " + cloneLocation.toString());
 		}
@@ -114,6 +116,14 @@ public class ExecuteCommand implements Command{
 
 	public void setRepoName(String repoName) {
 		this.repoName = repoName;
+	}
+	
+	public void setPermissionInvite(Permissions perm) {
+		this.permission = perm;
+	}
+	
+	public Permissions permissionInvite() {
+		return this.permission;
 	}
 
 
@@ -180,14 +190,6 @@ public class ExecuteCommand implements Command{
 
 	public void setCloneLocation(File cloneLocation) {
 		this.cloneLocation = cloneLocation;
-	}
-
-	public boolean isInvitesReadonly() {
-		return invitesReadonly;
-	}
-
-	public void setInvitesReadOnly(boolean bool) {
-		this.invitesReadonly = bool;
 	}
 	
 	public boolean isAcceptInvite() {
