@@ -128,6 +128,11 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  User wants to accept many the invitations to many different repositories he was invited to.
  [Case 4 file](./README_src/examples_src/case4.csv)
  
+ ### Case 5
+ ![GitHub Logo](README_src/examples_src/example5_csv.png)
+ User wants to create a new repository in an organization and invite 5 people each with a differet permission level
+ [Case 5 file](./README_src/examples_src/case5.csv)
+ 
 ## Execution
 
 Once you have called the application to begin, the options will appear, they are all self explanatory in their purpose. 
