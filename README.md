@@ -83,7 +83,7 @@ Currently, TeachHub can only operate on .CSV files (possible update for excel fi
  
  Please note that the Read_Only invite tag is only available for Organization repositories, it will not work for personal ones. Also note that the Read_Only tag will make all the invites on that line read only!
  
- The Permission_Invite is of the same type as the Read_Only tag, except there are more options for types of invitations. See step 6 of [this link](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/adding-outside-collaborators-to-repositories-in-your-organization)
+ The Permission_Invite is of the same type as the Read_Only tag, except there are more options for types of invitations. See more about this at [this link](https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/adding-outside-collaborators-to-repositories-in-your-organization)
  
  The flow of execution for each row of the csv file is as follows, each for if that row is trying to do that step: accept invite -> create repository -> add colaborators -> remove collaborators -> delete repository -> clone repository.
  
