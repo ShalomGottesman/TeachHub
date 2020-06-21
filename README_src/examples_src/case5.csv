@@ -1,0 +1,6 @@
+Owner,Repo_Name,Create_Repo,Prof_Add_Collab ,Permission_Invite
+MyOrg,Repo,yes,Invitee1,Admin
+MyOrg,Repo,no,Invitee2,Triage
+MyOrg,Repo,no,Invitee3,Maintain
+MyOrg,Repo,no,Invitee4,Push
+MyOrg,Repo,no,Invitee5,Pull
