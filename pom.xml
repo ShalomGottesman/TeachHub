@@ -6,7 +6,7 @@
   <!-- Output to jar format -->
   <packaging>jar</packaging>
   
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0</version>
   <name>TeachHub- an abstraction of the GitHub API</name>
   <description>API designed to assist teachers in creating github repos for new students in classes programically with added use of adding/removing TAs as seen fit</description>
   
