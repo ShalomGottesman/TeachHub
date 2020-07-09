@@ -164,12 +164,10 @@ A:  When you clone the TeachHub repository, the result is a `TeachHub` root dire
 
 A: 
 
-> cd TeachHub
-> 
 > mvn package
 
 
-After the build process completes, you should see `TeachHub.jar` in `TeachHub/target` directory.
+After the build process completes, you should see `TeachHub.jar` in `TeachHub/target` directory. Note that all of TeachHub's dependencies are in a a subdirectory under the tager directory. This means that the TeachHub.jar file cannot be moved to a different location unless the dependencies are moved along with it.
 
 ### Q: How do I start TeachHub?
  
