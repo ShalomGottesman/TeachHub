@@ -167,7 +167,7 @@ A:
 > mvn package
 
 
-After the build process completes, you should see `TeachHub.jar` in `TeachHub/target` directory. Note that all of TeachHub's dependencies are in a a subdirectory under the tager directory. This means that the TeachHub.jar file cannot be moved to a different location unless the dependencies are moved along with it.
+After the build process completes, you should see `TeachHub.jar` in `/target` directory. Note that all of TeachHub's dependencies are in a the `/target/dependency-jars` directory. This means that the TeachHub.jar file cannot be moved to a different location unless the dependencies directory is moved along with it.
 
 ### Q: How do I start TeachHub?
  
