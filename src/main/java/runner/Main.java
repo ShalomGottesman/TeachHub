@@ -402,7 +402,6 @@ public class Main {
 			commandQue.enque(cmd);
 		}
 		fileSc.close();
-		System.out.println("returning que of size: " + commandQue.size());
 		return commandQue;
 	}
 	

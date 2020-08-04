@@ -1,7 +1,6 @@
 package parser;
 
 import java.io.File;
-import java.util.Arrays;
 
 import command.Command;
 import data_structures.Queue;
@@ -30,11 +29,9 @@ public class CSVCreator {
 		}
 		//parse each cmd into a CSV line
 		Queue<String[]> allLines = new Queue<String[]>();
-		System.out.println("que size: " + que2.size());
 		while (que2.size() != 0) {
 			Command cmd = que2.deque();
 			String[] lineInfo = analyzeCommandForInfo(cmd);
-			System.out.println(Arrays.toString(lineInfo));
 			allLines.enque(lineInfo);
 		}
 		
