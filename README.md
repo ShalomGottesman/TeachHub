@@ -158,7 +158,7 @@ When executing a file, the application will first analyze the file passed in and
 
 ### Q: What is the "root directory" for this FAQ?
 
-A:  When you clone the TeachHub repository, the result is a `TeachHub` root directory.  The source code resides in `TeachHub/TeachHub`.
+A:  When you clone the TeachHub repository, the result is a `TeachHub` root directory.  The source code resides in `TeachHub/`.
 
 ### Q: How do I build TeachHub?
 
